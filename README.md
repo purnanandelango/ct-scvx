@@ -4,6 +4,6 @@ Examples implemented:
 - Quadrotor path-planning (convex)
 - 3-DoF powered descent guidance (convex)
 - Quadrotor path-planning (nonconvex)
-- 6-DoF powered descent guidance
+- 6-DoF powered descent guidance (nonconvex)
 
 ## Citation
