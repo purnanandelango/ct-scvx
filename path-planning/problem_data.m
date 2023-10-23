@@ -2,9 +2,6 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.K = K;
 
-    % No. of constraints included in constraint integrator
-    prb.m = 6;
-
     % Dimension of system
     prb.n = 2; n = prb.n;
 
@@ -15,7 +12,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.tau = grid.generate_grid(0,1,K,'uniform'); 
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
-    prb.h = (1/20)*min_dtau;                    % Step size for integration that computes FOH matrices
+    prb.h = (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
     prb.Kfine = 1+50*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
@@ -50,9 +47,14 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % Obstacle avoidance
 
     prb.nobs        = 2;
-    prb.qobs        = [-5 -10;                  % Center
+
+    % Centers
+    prb.qobs        = [-5 -10;                  
                         6  20];
-    prb.Hobs        = {diag([0.1,0.3]),0.1*[2,-1;-1,2]};  % Shape matrices
+
+    % Shape matrices
+    prb.Hobs        = {geom.rot_mat_2D(30)*diag([0.1,0.3]), ...
+                       geom.rot_mat_2D(60)*diag([0.3,0.1])};  
 
     % Boundary conditions
 
@@ -66,10 +68,10 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     % Initialization generator
 
-    prb.x1 = [prb.r1;prb.v1;prb.p1;prb.bet1];
-    prb.xK = [prb.rK;prb.vK;prb.p1;prb.bet1];    
-    prb.u1 = [0.5*(prb.umax+prb.umin)*ones(n,1);prb.ToFguess];
-    prb.uK = [0.5*(prb.umax+prb.umin)*ones(n,1);prb.ToFguess];
+    prb.x1 = [prb.r1; prb.v1; prb.p1; prb.bet1];
+    prb.xK = [prb.rK; prb.vK; prb.p1; prb.bet1];    
+    prb.u1 = [0.5*(prb.umax+prb.umin)*ones(n,1); prb.ToFguess];
+    prb.uK = [0.5*(prb.umax+prb.umin)*ones(n,1); prb.ToFguess];
 
     % Scaling parameters
     xmin = [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1); prb.pmin; prb.betmin];
@@ -125,13 +127,14 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.disc = "FOH";
     prb.foh_type = "v3";
+    prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
-    % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
+    prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
     % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false,'quadprog.OptimalityTolerance',1e-9);
-    prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7,'osqp.max_iter',5e4);        
+    % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7,'osqp.max_iter',5e4);        
    
 
     % prb.tr_norm = 2;
@@ -156,7 +159,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
 end
 
-function dxtil = evaluate_dyn_func(xtil,util,n,mass,c_d,accl,cnstr_fun)
+function F = evaluate_dyn_func(xtil,util,n,mass,c_d,accl,cnstr_fun)
 
     x = xtil(1:2*n+1);
     v = x(n+1:2*n);
@@ -165,15 +168,16 @@ function dxtil = evaluate_dyn_func(xtil,util,n,mass,c_d,accl,cnstr_fun)
 
     cnstr_val = cnstr_fun(x,u);
 
-    dx = [v;
-          u + mass*accl - c_d*norm(v)*v;
-          norm(u)];
+    f = [v;
+         u + mass*accl - c_d*norm(v)*v;
+         norm(u)];
 
-    dxtil = s*[dx;
-               sum( arrayfun(@(y) max(0,y),cnstr_val) .^ 2 )];
+    F = s*[f;
+           sum( arrayfun(@(y) max(0,y),cnstr_val) .^ 2 )];
 end
 
-function [A,B,w] = evaluate_linearization(xtil,util,n,mass,c_d,accl,cnstr_fun,cnstr_fun_jac_x,cnstr_fun_jac_u)
+function [A,B,w] = evaluate_linearization(xtil,util,n,mass,c_d,accl,cnstr_fun, ...
+                                          cnstr_fun_jac_x,cnstr_fun_jac_u)
 
     x = xtil(1:2*n+1);
     v = x(n+1:2*n);
