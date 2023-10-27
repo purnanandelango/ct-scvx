@@ -28,8 +28,8 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.pmin        = 0;
     prb.pmax        = 20;
 
-    prb.betmin      = 0;
-    prb.betmax      = 0.5;
+    prb.ymin        = 0;
+    prb.ymax        = 0.5;
 
     prb.umax        = 6;
     prb.umin        = 1;
@@ -53,29 +53,29 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                         6  20];
 
     % Shape matrices
-    prb.Hobs        = {geom.rot_mat_2D(30)*diag([0.1,0.3]), ...
-                       geom.rot_mat_2D(60)*diag([0.3,0.1])};  
+    prb.Hobs        = {diag([0.3,0.1])*geom.rot_mat_2D(30), ...
+                       diag([0.3,0.1])*geom.rot_mat_2D(60)};  
 
     % Boundary conditions
 
     prb.r1 = [0;0];
     prb.v1 = [0;0];
     prb.p1 = 0;
-    prb.bet1 = 0;
+    prb.y1 = 0;
     
     prb.rK = [-15;28];
     prb.vK = [-1;0];
 
     % Initialization generator
 
-    prb.x1 = [prb.r1; prb.v1; prb.p1; prb.bet1];
-    prb.xK = [prb.rK; prb.vK; prb.p1; prb.bet1];    
+    prb.x1 = [prb.r1; prb.v1; prb.p1; prb.y1];
+    prb.xK = [prb.rK; prb.vK; prb.p1; prb.y1];    
     prb.u1 = [0.5*(prb.umax+prb.umin)*ones(n,1); prb.ToFguess];
     prb.uK = [0.5*(prb.umax+prb.umin)*ones(n,1); prb.ToFguess];
 
     % Scaling parameters
-    xmin = [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1); prb.pmin; prb.betmin];
-    xmax = [ 0.5*prb.rmax*ones(n,1);  0.5*prb.vmax*ones(n,1); prb.pmax; prb.betmax];
+    xmin = [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1); prb.pmin; prb.ymin];
+    xmax = [ 0.5*prb.rmax*ones(n,1);  0.5*prb.vmax*ones(n,1); prb.pmax; prb.ymax];
     
     umin = [-0.5*prb.umax*ones(n,1); prb.smin+5];
     umax = [ 0.5*prb.umax*ones(n,1); prb.smax-5];
@@ -153,7 +153,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.time_grid = @(tau,z,u) disc.time_grid(prb.disc,tau,u(n+1,:));    
     
     % Convenient functions for accessing RHS of nonlinear and linearized ODE
-    prb.dyn_func = @(tau,xtil,util)             evaluate_dyn_func(xtil,util,n,prb.mass,prb.c_d,prb.accl,prb.cnstr_fun);
+    prb.dyn_func = @(tau,xtil,util)             evaluate_dyn_func     (xtil,util,n,prb.mass,prb.c_d,prb.accl,prb.cnstr_fun);
     prb.dyn_func_linearize = @(tau,xtil,util)   evaluate_linearization(xtil,util,n,prb.mass,prb.c_d,prb.accl,prb.cnstr_fun,...
                                                                        prb.cnstr_fun_jac_x,prb.cnstr_fun_jac_u);
 
@@ -173,7 +173,7 @@ function F = evaluate_dyn_func(xtil,util,n,mass,c_d,accl,cnstr_fun)
          norm(u)];
 
     F = s*[f;
-           sum( arrayfun(@(y) max(0,y),cnstr_val) .^ 2 )];
+           sum( arrayfun(@(y) max(0,y)^2,cnstr_val) )];
 end
 
 function [A,B,w] = evaluate_linearization(xtil,util,n,mass,c_d,accl,cnstr_fun, ...

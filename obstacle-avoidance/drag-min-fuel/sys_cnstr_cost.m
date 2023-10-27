@@ -3,19 +3,19 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,util,prb,...
 % r    = xtil(1:n)
 % v    = xtil(n+1:2*n)
 % p    = xtil(2*n+1)
-% bet  = xtil(2*n+2)
+% y    = xtil(2*n+2)
 % s    = util(1:n)
 % s    = util(n+1)
 
     K = prb.K;
 
     % Unscaled variables
-    bet = sdpvar(1,K);
+    y = sdpvar(1,K);
     u   = sdpvar(prb.n,K);
     s   = sdpvar(1,K);
 
     for k = 1:K
-        bet(k)   = prb.Sx(2*prb.n+2,2*prb.n+2)              *xtil(2*prb.n+2,k)        + prb.cx(2*prb.n+2);
+        y(k)   = prb.Sx(2*prb.n+2,2*prb.n+2)              *xtil(2*prb.n+2,k)        + prb.cx(2*prb.n+2);
         u(:,k)   = prb.Su(1:prb.n,1:prb.n)                  *util(1:prb.n,k)          + prb.cu(1:prb.n);        
         s(k)     = prb.Su(prb.n+1,prb.n+1)                  *util(prb.n+1,k)          + prb.cu(prb.n+1); 
     end
@@ -32,7 +32,7 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,util,prb,...
              rK     == prb.rK;
              vK     == prb.vK;
              p1     == prb.p1;   
-             bet(1) == prb.bet1];
+             y(1) == prb.y1];
 
     cost_fun = prb.cost_factor*pK;
 
@@ -44,7 +44,7 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,util,prb,...
 
         if k < K
             cnstr = [cnstr;
-                     bet(k+1) <= bet(k) + 1e-5];
+                     y(k+1) <= y(k) + 1e-5];
         end
 
     end
