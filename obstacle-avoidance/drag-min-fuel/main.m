@@ -27,7 +27,8 @@ v = x(prb.n+1:2*prb.n,:);
 
 fprintf('\nFinal position error: %.3f\nFinal velocity error: %.3f\n',norm(r(:,end)-prb.rK),norm(v(:,end)-prb.vK));
 
-save('recent_solution','r','v','tvec','tau','u','x','prb',...
+save('recent_solution','r','v','x','u','tvec','tau', ...
+                       'prb', ...
                        'xbar','ubar','tvecbar','taubar');
 
 % plot_solution;
