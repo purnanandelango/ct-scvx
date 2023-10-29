@@ -10,17 +10,18 @@ function prb = problem_data(K,T, ...
     prb.dtau = T/(K-1);
         
     prb.h = (1/10)*prb.dtau;
-    prb.Kfine = 1+50*round(1/prb.dtau);
+    prb.Kfine = 20*K;
 
     % System parameters
     prb.box_width   = 0.1;                          % Width of box [m]
-    prb.mass        = 0.2;                          % Mass [kg]
+    prb.mass        = 0.4;                          % Mass [kg]
     prb.accl        = 9.806;                        % Acceleration due to gravity [kg m/s^2]
-    prb.mu          = [1.6;                         % Friction coefficient
+    prb.mu          = [1.1;                         % Friction coefficient
                        1.7;
                        1.8;
                        1.9];
 
+    % Input indices
     prb.idx = {1:3,4:6,7:9,10:12};
 
     % Position vector of contact points in block frame
@@ -38,36 +39,37 @@ function prb = problem_data(K,T, ...
     % Bounds
     prb.rmax  = 10;                  % Position
     prb.vmax  = 2;                   % Speed
-    prb.pmax  = 30;                  % Cost 
-    prb.F1max = 0.4;                 % First finger        
-    prb.F2max = 0.4;                 % Second finger         
-    prb.F3max = 1;                   % Third finger        
-    prb.F4max = 1;                   % Fourth finger 
+    prb.pmax  = 50;                  % Cost 
+    prb.F1max = 2;                   % First finger        
+    prb.F2max = 2;                   % Second finger         
+    prb.F3max = 3;                   % Third finger        
+    prb.F4max = 3;                   % Fourth finger 
+    prb.Fmin = 0.2;                  % Minimum normal force
 
     prb.ymin = 0;
-    prb.ymax = 1;
+    prb.ymax = 0.1;
 
     % Boundary conditions
 
-    prb.r1 = [2;2;2];
+    prb.r1 = [20;-2;10];
     prb.v1 = [0;0;0];
     prb.p1 = 0;
     prb.y1 = 0;
 
-    prb.rK = [10;0;10];
+    prb.rK = [20;10;20];
     prb.vK = [0;0;0];
 
     % Initialization generator
 
-    prb.x1 = [prb.r1; prb.v1; prb.p1; prb.y1];
-    prb.xK = [prb.rK; prb.vK; prb.p1; prb.y1];    
+    prb.x1 = [prb.r1; 0.5*prb.vmax*ones(3,1); 0.5*prb.pmax; prb.y1];
+    prb.xK = [prb.rK; 0.5*prb.vmax*ones(3,1); 0.5*prb.pmax; prb.y1];    
 
     prb.u1 = min([prb.F1max,prb.F2max,prb.F3max,prb.F4max])*ones(prb.nu,1);
     prb.uK = min([prb.F1max,prb.F2max,prb.F3max,prb.F4max])*ones(prb.nu,1);
 
     % Scaling parameters
 
-    xmin =   [-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1);-0.5*prb.pmax; prb.ymin];
+    xmin = 0*[-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1); 0;            prb.ymin];
     xmax =   [ 0.5*prb.rmax*ones(3,1); 0.5*prb.vmax*ones(3,1); 0.5*prb.pmax; prb.ymax];
 
     umin =   [-0.5*prb.F1max*ones(3,1);
@@ -88,8 +90,8 @@ function prb = problem_data(K,T, ...
     prb.cx = cz{1};
     prb.cu = cz{2};    
     
-    cnstr_scl = diag(ones(16,1));
-    cnstr_buffer = zeros(16,1);
+    cnstr_scl = diag([0.05,ones(1,11)]);
+    cnstr_buffer = zeros(12,1);
 
     % Path constraints
 
@@ -103,14 +105,10 @@ function prb = problem_data(K,T, ...
                                       norm(u(prb.idx{2})) - prb.F2max;
                                       norm(u(prb.idx{3})) - prb.F3max;
                                       norm(u(prb.idx{4})) - prb.F4max;
-                                     -u(prb.idx{1}(1)) + prb.Fmin;
-                                      u(prb.idx{2}(1)) + prb.Fmin;
-                                     -u(prb.idx{3}(2)) + prb.Fmin;
-                                      u(prb.idx{4}(2)) + prb.Fmin;
                                       ] + cnstr_buffer;
 
     prb.cnstr_fun_jac_x = @(x,u) cnstr_scl*[zeros(1,3), 2*x(4:6)', 0;
-                                            zeros(15,7);
+                                            zeros(11,7);
                                             ];
 
     prb.cnstr_fun_jac_u = @(x,u) cnstr_scl*[zeros(1,prb.nu);
@@ -123,20 +121,20 @@ function prb = problem_data(K,T, ...
                                             zeros(1,3), u(4:6)'/norm(u(4:6)), zeros(1,6);
                                             zeros(1,6), u(7:9)'/norm(u(7:9)), zeros(1,3);
                                             zeros(1,9), u(10:12)'/norm(u(10:12));
-                                            -1, zeros(1,11);
-                                            zeros(1,3),  1, zeros(1,8);
-                                            zeros(1,7), -1, zeros(1,4);
-                                            zeros(1,10), 1, 0];
+                                            ];
 
 % SCP parameters
 
     prb.disc = "ZOH";
+    prb.foh_type = "v3";
     prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
-    % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
+    prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
-    prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);   
+    % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);   
+    % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);
+    % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7,'osqp.max_iter',5e4);        
 
     prb.tr_norm = 'quad';
     
@@ -154,7 +152,7 @@ function prb = problem_data(K,T, ...
     % Convenient functions for accessing RHS of nonlinear and linearized ODE
     prb.dyn_func = @(tau,xtil,u)             evaluate_dyn_func     (xtil,u,prb.mass,prb.accl,prb.cnstr_fun);
     prb.dyn_func_linearize = @(tau,xtil,u)   evaluate_linearization(xtil,u,prb.mass,prb.accl,prb.cnstr_fun,...
-                                                                       prb.cnstr_fun_jac_x,prb.cnstr_fun_jac_u);    
+                                                                    prb.cnstr_fun_jac_x,prb.cnstr_fun_jac_u);    
 
 end
 function F = evaluate_dyn_func(xtil,u,mass,accl,cnstr_fun)
@@ -162,46 +160,56 @@ function F = evaluate_dyn_func(xtil,u,mass,accl,cnstr_fun)
    v = x(4:6);
    
    cnstr_val = cnstr_fun(x,u);
+
+   Bsys = repmat(eye(3),[1,4]);
    
    f = [v;
-        sum(reshape(u,[3,4]),2)/mass + [0;0;-accl];
-        norm(u(1:3)) + norm(u(4:6)) + norm(u(7:9)) + norm(u(10:12))];
+        Bsys*u/mass + [0;0;-accl];
+        % norm(u(1:3)) + norm(u(4:6)) + norm(u(7:9)) + norm(u(10:12));
+        norm(u(1:3))^2 + norm(u(4:6))^2 + norm(u(7:9))^2 + norm(u(10:12))^2;
+        ];
     
    F = [f;
         sum([arrayfun(@(y) max(0,y)^2,cnstr_val(1)); ...
              arrayfun(@(y) y^2,       cnstr_val(2:4)); ...
-             arrayfun(@(y) max(0,y)^2,cnstr_val(5:16))])];
+             arrayfun(@(y) max(0,y)^2,cnstr_val(5:12))])];
 end
 function [A,B,w] = evaluate_linearization(xtil,u,mass,accl,cnstr_fun,cnstr_fun_jac_x,cnstr_fun_jac_u)
    x = xtil(1:7);
-   v = x(4:6);
+   % v = x(4:6);
 
    cnstr_val = cnstr_fun(x,u);
    abs_cnstr_val = [arrayfun(@(y) max(0,y),cnstr_val(1));
                     cnstr_val(2:4);
-                    arrayfun(@(y) max(0,y),cnstr_val(5:16))];
+                    arrayfun(@(y) max(0,y),cnstr_val(5:12))];
    cnstr_val_jac_x = cnstr_fun_jac_x(x,u);
-   cnstr_val_jac_u = cnstr_fun_jac_u(x,u);   
+   cnstr_val_jac_u = cnstr_fun_jac_u(x,u);
+
+   Bsys = repmat(eye(3),[1,4]);
 
    % f = [v;
-   %      sum(reshape(u,[3,4]),2)/mass + [0;0;-accl];
-   %      norm(u(1:3)) + norm(u(4:6)) + norm(u(7:9)) + norm(u(10:12))];   
+   %      Bsys*u/mass + [0;0;-accl];
+   %      % norm(u(1:3)) + norm(u(4:6)) + norm(u(7:9)) + norm(u(10:12));
+   %      norm(u(1:3))^2 + norm(u(4:6))^2 + norm(u(7:9))^2 + norm(u(10:12))^2;
+   % ];   
 
    dfdx = [zeros(3,3), eye(3), zeros(3,1);
            zeros(3,7);
            zeros(1,7)];
 
    dfdu = [zeros(3,12);
-           [eye(3) eye(3) eye(3) eye(3)]/mass;
-           u(1:3)'/norm(u(1:3)), u(4:6)'/norm(u(4:6)), u(7:9)'/norm(u(7:9)), u(10:12)'/norm(u(10:12))];
+           Bsys/mass;
+           % u(1:3)'/norm(u(1:3)), u(4:6)'/norm(u(4:6)), u(7:9)'/norm(u(7:9)), u(10:12)'/norm(u(10:12));
+           2*u(1:3)', 2*u(4:6)', 2*u(7:9)', 2*u(10:12)';
+           ];
 
    A = [dfdx, zeros(7,1);
         2*abs_cnstr_val'*cnstr_val_jac_x, 0];
 
-    B = [dfdu;
-         2*abs_cnstr_val'*cnstr_val_jac_u];
+   B = [dfdu;
+        2*abs_cnstr_val'*cnstr_val_jac_u];
     
-    F = evaluate_dyn_func(xtil,u,mass,accl,cnstr_fun);
+   F = evaluate_dyn_func(xtil,u,mass,accl,cnstr_fun);
     
-    w = F - A*xtil - B*u;   
+   w = F - A*xtil - B*u;   
 end

@@ -9,13 +9,14 @@ function prb = problem_data_cvx(K,T)
 
     % System parameters
     prb.box_width   = 0.1;                          % Width of box [m]
-    prb.mass        = 0.2;                          % Mass [kg]
+    prb.mass        = 0.4;                          % Mass [kg]
     prb.accl        = 9.806;                        % Acceleration due to gravity [kg m/s^2]
-    prb.mu          = [1.6;                         % Friction coefficient
+    prb.mu          = [1.1;                         % Friction coefficient
                        1.7;
                        1.8;
                        1.9];
 
+    % Input indices    
     prb.idx = {1:3,4:6,7:9,10:12};
 
 
@@ -34,23 +35,23 @@ function prb = problem_data_cvx(K,T)
     % Bounds
     prb.rmax  = 10;                  % Position
     prb.vmax  = 2;                   % Speed
-    prb.F1max = 0.4;                 % First finger        
-    prb.F2max = 0.4;                 % Second finger         
-    prb.F3max = 1;                   % Third finger        
-    prb.F4max = 1;                   % Fourth finger
-    prb.Fmin = 0.2;
-
+    prb.F1max = 2;                   % First finger        
+    prb.F2max = 2;                   % Second finger         
+    prb.F3max = 3;                   % Third finger        
+    prb.F4max = 3;                   % Fourth finger
+    prb.Fmin = 0.2;                  % Minimum normal force
+    
     % Boundary conditions
 
-    prb.r1 = [2;2;2];
+    prb.r1 = [20;-2;10];
     prb.v1 = [0;0;0];
 
-    prb.rK = [10;0;10];
+    prb.rK = [20;10;20];
     prb.vK = [0;0;0];
 
     % Scaling parameters
 
-    xmin =   [-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1)];
+    xmin =   0*[-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1)];
     xmax =   [ 0.5*prb.rmax*ones(3,1); 0.5*prb.vmax*ones(3,1)];
 
     umin =   [-0.5*prb.F1max*ones(3,1);
@@ -72,6 +73,12 @@ function prb = problem_data_cvx(K,T)
     prb.cu = cz{2};    
 
     % System matrices
+    prb.Ac = [zeros(3), eye(3);
+              zeros(3,6)];
+    prb.Bc = repmat(eye(3),[1,4])/prb.mass;
+    prb.wc = [zeros(3,1);0;0;-prb.accl];
+
+
     prb.Ad = [eye(3),   prb.dtau*eye(3);
               zeros(3), eye(3)];
     
@@ -85,6 +92,6 @@ function prb = problem_data_cvx(K,T)
               0;
              -prb.dtau*prb.accl];
 
-
-    prb.solver_settings = sdpsettings('solver','ecos','verbose',true,'ecos.abstol',1e-8,'ecos.reltol',1e-8);    
+    prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
+    % prb.solver_settings = sdpsettings('solver','ecos','verbose',true,'ecos.abstol',1e-8,'ecos.reltol',1e-8);    
 end
