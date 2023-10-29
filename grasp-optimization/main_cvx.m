@@ -70,7 +70,7 @@ x_guess = [x;
 RotEq(1,prb.K-1) = 0;
 Fcone(4,prb.K-1) = 0;
 Fmag(4,prb.K-1) = 0;
-Vmag(1,prb.K-1) = 0;
+vmag(1,prb.K-1) = 0;
 for j=1:prb.K-1
     RotEq(j)    = norm(prb.contact_mat*u(:,k),Inf);                                 % Rotational equilibrium
     Fcone(1,j)  = norm(u(prb.idx{1}(2:3),k))   - prb.mu(1)*u(prb.idx{1}(1),k);              % Friction cone
@@ -81,7 +81,7 @@ for j=1:prb.K-1
     Fmag(2,j)   = norm(u(prb.idx{2},k)) - prb.F2max;                                    % Grasp force magnitude
     Fmag(3,j)   = norm(u(prb.idx{3},k)) - prb.F3max;                                    % Grasp force magnitude
     Fmag(4,j)   = norm(u(prb.idx{4},k)) - prb.F4max;                                    % Grasp force magnitude
-    Vmag(j)     = norm(x(4:6,k));                                        % Velocity magnitude                  
+    vmag(j)     = norm(x(4:6,k)) - prb.vmax;                                        % Velocity magnitude                  
 end
 fprintf("\nConstraint Activity:\n");
 fprintf("Rotational eqb.: %.3f\n",max(abs(RotEq)));
@@ -93,7 +93,7 @@ fprintf("Friction mag. 1: %.3f\n",max(Fmag(1,:)));
 fprintf("Friction mag. 2: %.3f\n",max(Fmag(2,:)));
 fprintf("Friction mag. 3: %.3f\n",max(Fmag(3,:)));
 fprintf("Friction mag. 4: %.3f\n",max(Fmag(4,:)));
-fprintf("Velocity mag.  : %.3f\n",max(Vmag));
+fprintf("Velocity mag.  : %.3f\n",max(vmag));
 
 save('recent_solution_cvx','x','u','prb','cost_val','x_guess');
 

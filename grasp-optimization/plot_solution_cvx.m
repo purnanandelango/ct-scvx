@@ -1,16 +1,16 @@
 clc
-% close all
+close all
 clearvars
 
 load recent_solution_cvx
 
-% figure
-plot3(x(1,:),x(2,:),x(3,:),'.-k','MarkerSize',13);
+figure
+plot3(x(1,:),x(2,:),x(3,:),'.-m','MarkerSize',13);
 hold on
 axis('manual')
 
 lw = 1.5;
-scl = 1.5;
+scl = 1;
 scl_box = 4;
 for j=1:4:prb.K-1
 

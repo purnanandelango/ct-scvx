@@ -5,8 +5,8 @@ prb = problem_data(20, ...          % K
                    09, ...          % T
                    10, ...          % scp_iters
                    2e2, ...         % wvc
-                   7e1, ...         % wtr
-                   1e-1);            % cost_factor
+                   5e1, ...         % wtr
+                   0.1);            % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,2, ...

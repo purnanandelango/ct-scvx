@@ -5,12 +5,12 @@ clearvars
 load recent_solution
 
 figure
-plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.-k','MarkerSize',13);
+plt_ptr = plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.-k','MarkerSize',13);
 hold on
 axis('manual')
 
 lw = 1.5;
-scl = 1.5;
+scl = 1;
 scl_box = 4;
 for j=1:4:prb.K-1
 
@@ -38,8 +38,15 @@ xlabel('$x$ [m]')
 ylabel('$y$ [m]');
 zlabel('$z$ [m]');
 grid on
+% view(0,90);
 
 axis equal 
+
+load recent_solution_cvx
+
+plt_cvx = plot3(x(1,:),x(2,:),x(3,:),'.-m','MarkerSize',13);
+
+legend([plt_ptr,plt_cvx],{'Prox-Linear','One-shot Convex Solve'})
 
 ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];
