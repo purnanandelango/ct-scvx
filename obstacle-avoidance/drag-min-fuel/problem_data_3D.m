@@ -36,7 +36,7 @@ function prb = problem_data_3D(K,scp_iters,wvc,wtr,cost_factor)
     prb.ehat        = [0;0;1];
     prb.deltamax    = 85;                       % [deg] 
 
-    prb.smin        = 0.1;
+    prb.smin        = 01;
     prb.smax        = 15;
     prb.ToFguess    = 15;
 

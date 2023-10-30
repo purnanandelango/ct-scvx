@@ -14,8 +14,21 @@ if prb.n == 2
     hold on
     for j = 1:prb.nobs
         pobs = prb.qobs(:,j) + prb.Hobs{j}\[cos(th);sin(th)];
-        plot(pobs(1,:),pobs(2,:),'-k','LineWidth',1);
+        plot(pobs(1,:),pobs(2,:),'-b','LineWidth',2);
     end
+
+    ax = gca;
+    ticklab = ax.XTickLabel;
+    for j = 1:length(ticklab)
+        ticklab{j} = horzcat('$',ticklab{j},'$');
+    end
+    ax.XTickLabel = ticklab;
+    ticklab = ax.YTickLabel;
+    for j = 1:length(ticklab)
+        ticklab{j} = horzcat('$',ticklab{j},'$');
+    end
+    ax.YTickLabel = ticklab;    
+
 else
     plot3(r(1,:),r(2,:),r(3,:),'-k');
     hold on 
@@ -38,11 +51,14 @@ else
 
     view(-6,1);
 end
-title('Position');
+title('Position [m]');
 
 ax = gca;
 ax.DataAspectRatio = [1,1,1];
 ax.PlotBoxAspectRatio = [1,1,1];
+
+ax = gca;
+exportgraphics(ax,'results_3D/position.pdf','BackgroundColor','none');
 
 figure
 nrm_T(prb.Kfine) = 0;
@@ -61,28 +77,33 @@ end
 subplot(2,2,2)
 plot(tvec,nrm_v,'-m');
 hold on 
-plot(tvecbar,nrm_vbar,'om');
-plot(tvecbar,prb.vmax*ones(1,prb.K),'-r','LineWidth',1);
-title('Speed')
-xlabel('$t$');
+plot(tvecbar,nrm_vbar,'.m');
+plot(tvecbar,prb.vmax*ones(1,prb.K),'-r');
+title('Speed [m s$^{-1}$]')
+xlabel('$t$ [s]');
 xlim([0,tvec(end)])
+ylim([0,1.1*prb.vmax]);
+ax = gca;
+exportgraphics(ax,'results_3D/speed.pdf','BackgroundColor','none');
 
 subplot(2,2,3)
 plot(tvec,nrm_T,'-b');
 hold on 
-plot(tvecbar,nrm_Tbar,'ob');
-plot(tvecbar,prb.umin*ones(1,prb.K),'-r','LineWidth',1);
-plot(tvecbar,prb.umax*ones(1,prb.K),'-r','LineWidth',1);
-title('Thrust');
-xlabel('$t$');
+plot(tvecbar,nrm_Tbar,'.b');
+plot(tvecbar,prb.umin*ones(1,prb.K),'-r');
+plot(tvecbar,prb.umax*ones(1,prb.K),'-r');
+title('Thrust [m s$^{-2}$]');
+xlabel('$t$ [s]');
 xlim([0,tvec(end)])
-ylim([0,prb.umax])
+ylim([0,1.1*prb.umax])
+ax = gca;
+exportgraphics(ax,'results_3D/thrust.pdf','BackgroundColor','none');
 
 subplot(2,2,4)
 hold on
-plot(prb.tau,tvecbar,'ok');
+plot(prb.tau,tvecbar,'.k');
 p1 = plot(tau,tvec,'-k');
-plot(prb.tau,ubar(prb.n+1,:),'og');
+plot(prb.tau,ubar(prb.n+1,:),'.g');
 p2 = plot(tau,u(prb.n+1,:),'-g');
 plot(prb.tau,prb.smin*ones(1,prb.K),'-r','LineWidth',1);
 plot(prb.tau,prb.smax*ones(1,prb.K),'-r','LineWidth',1);
