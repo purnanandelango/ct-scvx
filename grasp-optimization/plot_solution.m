@@ -51,3 +51,24 @@ legend([plt_ptr,plt_cvx],{'Prox-Linear','One-shot Convex Solve'})
 ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];
 ax.DataAspectRatio = [1,1,1];
+
+U = {zeros(3,prb.K),zeros(3,prb.K),zeros(3,prb.K),zeros(3,prb.K)};  
+nrmU = {zeros(1,prb.K),zeros(1,prb.K),zeros(1,prb.K),zeros(1,prb.K)};
+for k = 1:prb.K
+    U{1}(:,k) = ubar(1:3,k);
+    U{2}(:,k) = ubar(4:6,k);
+    U{3}(:,k) = ubar(7:9,k);
+    U{4}(:,k) = ubar(10:12,k);
+
+    nrmU{1}(:,k) = norm(ubar(1:3,k));
+    nrmU{2}(:,k) = norm(ubar(4:6,k));
+    nrmU{3}(:,k) = norm(ubar(7:9,k));
+    nrmU{4}(:,k) = norm(ubar(10:12,k));    
+end
+
+figure
+stairs(prb.tau,nrmU{1},'Color',[0,0,1]);
+hold on
+stairs(prb.tau,nrmU{2},'Color',[1,0,0]);
+stairs(prb.tau,nrmU{3},'Color',[0.7,0.7,0]);
+stairs(prb.tau,nrmU{4},'Color',[0,0.7,0.7]);

@@ -4,23 +4,47 @@ close all
 load recent_solution
 
 figure
-subplot(2,2,1)
-plot(r(1,:),r(2,:),'-b');
-hold on 
-plot(xbar(1,:),xbar(2,:),'ob');    
-title('Position');
 
-th = linspace(0,2*pi);
-hold on
-for j = 1:prb.nobs
-    pobs = prb.qobs(:,j) + prb.Hobs{j}\[cos(th);sin(th)];
-    plot(pobs(1,:),pobs(2,:),'-k','LineWidth',1);
+if prb.n == 2
+    plot(r(1,:),r(2,:),'-k');
+    hold on 
+    plot(xbar(1,:),xbar(2,:),'.k','MarkerSize',15);    
+
+    th = linspace(0,2*pi);
+    hold on
+    for j = 1:prb.nobs
+        pobs = prb.qobs(:,j) + prb.Hobs{j}\[cos(th);sin(th)];
+        plot(pobs(1,:),pobs(2,:),'-k','LineWidth',1);
+    end
+else
+    plot3(r(1,:),r(2,:),r(3,:),'-k');
+    hold on 
+    plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.k','MarkerSize',15);
+    grid on
+    
+    [X1,Y1,Z1] = ellipsoid(0,0,0,1/0.3,1/0.1,1/0.3);
+    X1 = X1 + prb.qobs(1,1);
+    Y1 = Y1 + prb.qobs(2,1);
+    Z1 = Z1 + prb.qobs(3,1);
+    ellip1 = surf(X1,Y1,Z1,'EdgeColor',[1,0,0],'EdgeAlpha',0.5,'FaceColor',[1,0,0],'FaceAlpha',0.2);
+    rotate(ellip1,[0,0,1],0);
+
+    [X2,Y2,Z2] = ellipsoid(0,0,0,1/0.1,1/0.3,1/0.3);
+    X2 = X2 + prb.qobs(1,2);
+    Y2 = Y2 + prb.qobs(2,2);
+    Z2 = Z2 + prb.qobs(3,2);
+    ellip2 = surf(X2,Y2,Z2,'EdgeColor',[0,0,1],'EdgeAlpha',0.5,'FaceColor',[0,0,1],'FaceAlpha',0.2);
+    rotate(ellip2,[0,0,1],0);    
+
+    view(-6,1);
 end
+title('Position');
 
 ax = gca;
 ax.DataAspectRatio = [1,1,1];
 ax.PlotBoxAspectRatio = [1,1,1];
 
+figure
 nrm_T(prb.Kfine) = 0;
 nrm_v(prb.Kfine) = 0;
 for j = 1:prb.Kfine

@@ -5,6 +5,7 @@ function prb = problem_data_cvx(K,T)
     prb.nx = 6;
     prb.nu = 12;
 
+    prb.tau = linspace(0,T,K);
     prb.dtau = T/(K-1);
 
     % System parameters

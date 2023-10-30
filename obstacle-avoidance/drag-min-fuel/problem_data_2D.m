@@ -1,4 +1,4 @@
-function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
+function prb = problem_data_2D(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.K = K;
 
@@ -70,13 +70,11 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.uK = [0.5*(prb.umax+prb.umin)*ones(n,1); prb.ToFguess];
 
     % Scaling parameters
-    % xmin = [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1); prb.pmin; prb.ymin];
-    xmin = zeros(prb.nx,1);
-    xmax = [ 0.5*prb.rmax*ones(n,1);  0.5*prb.vmax*ones(n,1); prb.pmax; prb.ymax];
+    xmin = 0*[-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1); prb.pmin; prb.ymin];
+    xmax =   [ 0.5*prb.rmax*ones(n,1);  0.5*prb.vmax*ones(n,1); prb.pmax; prb.ymax];
     
-    % umin = [-0.5*prb.umax*ones(n,1); prb.smin+5];
-    umin = zeros(prb.nu,1);
-    umax = [ 0.5*prb.umax*ones(n,1); prb.smax-5];
+    umin = 0*[-0.5*prb.umax*ones(n,1); prb.smin+5];
+    umax =   [ 0.5*prb.umax*ones(n,1); prb.smax-5];
 
     [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
 
@@ -104,7 +102,6 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                                              norm(x(n+1:2*n))^2 - prb.vmax^2;                                         % Speed upperbound
                                              norm(u(1:n)) - prb.umax;                                                 % Thrust upperbound
                                             -norm(u(1:n)) + prb.umin;                                                 % Thrust lowerbound
-                                             % norm(u(1:n)) - secd(prb.deltamax)*prb.ehat'*u(1:n);                      % Thrust pointing
                                              ] ... 
                                              + cnstr_buffer;
 
@@ -113,13 +110,11 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                                              zeros(1,n),                                         2*x(n+1:2*n)', 0;
                                              zeros(1,n),                                         zeros(1,n),    zeros(1,1);
                                              zeros(1,n),                                         zeros(1,n),    zeros(1,1);
-                                             % zeros(1,n),                                         zeros(1,n),    zeros(1,1);
                                              ];
 
     prb.cnstr_fun_jac_u = @(x,u) cnstr_scl*[ zeros(3,n);
                                              u(1:n)'/norm(u(1:n));
                                             -u(1:n)'/norm(u(1:n));
-                                             % u(1:n)'/norm(u(1:n)) - secd(prb.deltamax)*prb.ehat';
                                              ];
 
     % SCP parameters
