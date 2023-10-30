@@ -46,11 +46,13 @@ load recent_solution_cvx
 
 plt_cvx = plot3(x(1,:),x(2,:),x(3,:),'.-m','MarkerSize',13);
 
-legend([plt_ptr,plt_cvx],{'Prox-Linear','One-shot Convex Solve'})
+legend([plt_ptr,plt_cvx],{'Prox-Linear','One-shot Convex Solve'},'Location','north')
 
 ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];
 ax.DataAspectRatio = [1,1,1];
+
+% exportgraphics(ax,'results/position.pdf');
 
 U = {zeros(3,prb.K),zeros(3,prb.K),zeros(3,prb.K),zeros(3,prb.K)};  
 nrmU = {zeros(1,prb.K),zeros(1,prb.K),zeros(1,prb.K),zeros(1,prb.K)};
@@ -67,8 +69,16 @@ for k = 1:prb.K
 end
 
 figure
-stairs(prb.tau,nrmU{1},'Color',[0,0,1]);
+pltF1 = stairs(prb.tau,nrmU{1},'Color',[0,0,1]);
 hold on
-stairs(prb.tau,nrmU{2},'Color',[1,0,0]);
-stairs(prb.tau,nrmU{3},'Color',[0.7,0.7,0]);
-stairs(prb.tau,nrmU{4},'Color',[0,0.7,0.7]);
+pltF2 = stairs(prb.tau,nrmU{2},'Color',[1,0,0]);
+pltF3 = stairs(prb.tau,nrmU{3},'Color',[0.7,0.7,0]);
+pltF4 = stairs(prb.tau,nrmU{4},'Color',[0,0.7,0.7]);
+xlim([0,prb.tau(end)]);
+legend([pltF1,pltF2,pltF3,pltF4],{'Finger 1','Finger 2','Finger 3','Finger 4'});
+title('Grasping Force [kg m s$^{-2}$]');
+xlabel('$t$ [s]');
+
+ax = gca;
+% exportgraphics(ax,'results/grasp_force.pdf');
+
