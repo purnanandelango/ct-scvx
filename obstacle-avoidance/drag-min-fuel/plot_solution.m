@@ -5,10 +5,10 @@ load recent_solution
 
 figure
 
-if prb.n == 2
-    plot(r(1,:),r(2,:),'-k');
-    hold on 
-    plot(xbar(1,:),xbar(2,:),'.k','MarkerSize',15);    
+saveplot = true;
+
+if prb.n == 2    
+    suffix = '2D';
 
     th = linspace(0,2*pi);
     hold on
@@ -17,7 +17,19 @@ if prb.n == 2
         plot(pobs(1,:),pobs(2,:),'-b','LineWidth',2);
     end
 
+    plot(r(1,:),r(2,:),'-k');
+    plot(xbar(1,:),xbar(2,:),'.k');    
+    rinit = plot(r(1,1),r(2,1),'ko');
+    rfinal = plot(r(1,end),r(2,end),'kx');
+    legend([rinit,rfinal],{'$r_{\mathrm{i}}$','$r_{\mathrm{f}}$'});
+
     ax = gca;
+    ax.DataAspectRatio = [1,1,1];
+    ax.PlotBoxAspectRatio = [1,1,1];
+
+    ax.XLim = [-21,2];
+    ax.YLim = [-5,30];
+
     ticklab = ax.XTickLabel;
     for j = 1:length(ticklab)
         ticklab{j} = horzcat('$',ticklab{j},'$');
@@ -27,13 +39,19 @@ if prb.n == 2
     for j = 1:length(ticklab)
         ticklab{j} = horzcat('$',ticklab{j},'$');
     end
-    ax.YTickLabel = ticklab;    
+    ax.YTickLabel = ticklab; 
 
 else
+    suffix = '3D';
+
     plot3(r(1,:),r(2,:),r(3,:),'-k');
     hold on 
-    plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.k','MarkerSize',15);
+    plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.k');
     grid on
+
+    ax = gca;
+    ax.DataAspectRatio = [1,1,1];
+    ax.PlotBoxAspectRatio = [1,1,1];    
     
     [X1,Y1,Z1] = ellipsoid(0,0,0,1/0.3,1/0.1,1/0.3);
     X1 = X1 + prb.qobs(1,1);
@@ -53,12 +71,9 @@ else
 end
 title('Position [m]');
 
-ax = gca;
-ax.DataAspectRatio = [1,1,1];
-ax.PlotBoxAspectRatio = [1,1,1];
-
-ax = gca;
-exportgraphics(ax,'results_3D/position.pdf','BackgroundColor','none');
+if saveplot
+    exportgraphics(ax,horzcat('results_',suffix,'/position.pdf'),'BackgroundColor','none');
+end
 
 figure
 nrm_T(prb.Kfine) = 0;
@@ -75,39 +90,47 @@ for j = 1:prb.K
 end
 
 subplot(2,2,2)
-plot(tvec,nrm_v,'-m');
-hold on 
-plot(tvecbar,nrm_vbar,'.m');
 plot(tvecbar,prb.vmax*ones(1,prb.K),'-r');
+hold on 
+plot(tvec,nrm_v,'-m');
+plot(tvecbar,nrm_vbar,'.m');
 title('Speed [m s$^{-1}$]')
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax]);
-ax = gca;
-exportgraphics(ax,'results_3D/speed.pdf','BackgroundColor','none');
+if saveplot
+    ax = gca;
+    exportgraphics(ax,horzcat('results_',suffix,'/speed.pdf'),'BackgroundColor','none');
+end
 
 subplot(2,2,3)
-plot(tvec,nrm_T,'-b');
-hold on 
-plot(tvecbar,nrm_Tbar,'.b');
 plot(tvecbar,prb.umin*ones(1,prb.K),'-r');
+hold on 
 plot(tvecbar,prb.umax*ones(1,prb.K),'-r');
+plot(tvec,nrm_T,'-b');
+plot(tvecbar,nrm_Tbar,'.b');
 title('Thrust [m s$^{-2}$]');
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.umax])
-ax = gca;
-exportgraphics(ax,'results_3D/thrust.pdf','BackgroundColor','none');
+if saveplot
+    ax = gca;
+    exportgraphics(ax,horzcat('results_',suffix,'/thrust.pdf'),'BackgroundColor','none');
+end
 
 subplot(2,2,4)
+plot(prb.tau,prb.smin*ones(1,prb.K),'-r');
 hold on
+plot(prb.tau,prb.smax*ones(1,prb.K),'-r');
 plot(prb.tau,tvecbar,'.k');
 p1 = plot(tau,tvec,'-k');
 plot(prb.tau,ubar(prb.n+1,:),'.g');
 p2 = plot(tau,u(prb.n+1,:),'-g');
-plot(prb.tau,prb.smin*ones(1,prb.K),'-r','LineWidth',1);
-plot(prb.tau,prb.smax*ones(1,prb.K),'-r','LineWidth',1);
 legend([p1,p2],{'$t(\tau)$','$s(\tau)$'})
 xlabel('$\tau$');
 ylim([0,1.1*prb.smax]);
 title('Time \& Dilation')
+if saveplot
+    ax = gca;
+    exportgraphics(ax,horzcat('results_',suffix,'/time_dilation.pdf'),'BackgroundColor','none');
+end
