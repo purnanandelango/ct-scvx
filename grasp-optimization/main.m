@@ -6,15 +6,15 @@ prb = problem_data(20, ...          % K
                    10, ...          % scp_iters
                    2e2, ...         % wvc
                    5e1, ...         % wtr
-                   0.1);            % cost_factor
+                   0.01);            % cost_factor
 
-load('recent_solution','xbar','ubar','taubar');
-[xbar,ubar] = misc.create_initialization(prb,2, ...
-                                         xbar,ubar,taubar);
-
-% load('recent_solution_cvx','x_guess','u');
+% load('recent_solution','xbar','ubar','taubar');
 % [xbar,ubar] = misc.create_initialization(prb,2, ...
-%                                          x_guess,u,[]);
+%                                          xbar,ubar,taubar);
+
+load('recent_solution_cvx','x_guess','u');
+[xbar,ubar] = misc.create_initialization(prb,2, ...
+                                         x_guess,u,[]);
 
 [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
@@ -33,8 +33,8 @@ cost_val = x(7,end);
 
 fprintf('\nFinal position error: %.3f\nFinal velocity error: %.3f\n',norm(r(:,end)-prb.rK),norm(v(:,end)-prb.vK));
 
-save('recent_solution','r','v','x','u','tvec','tau', ...
-                       'prb', ...
-                       'xbar','ubar','tvecbar','taubar','cost_val');
+% save('recent_solution','r','v','x','u','tvec','tau', ...
+%                        'prb', ...
+%                        'xbar','ubar','tvecbar','taubar','cost_val');
 
 % plot_solution;                                         

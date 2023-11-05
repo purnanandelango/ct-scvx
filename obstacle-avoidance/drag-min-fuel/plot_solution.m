@@ -2,6 +2,8 @@ clearvars
 close all
 
 load recent_solution
+% load results_2D/result
+% load results_3D/result
 
 figure
 
@@ -14,13 +16,13 @@ if prb.n == 2
     hold on
     for j = 1:prb.nobs
         pobs = prb.qobs(:,j) + prb.Hobs{j}\[cos(th);sin(th)];
-        plot(pobs(1,:),pobs(2,:),'-b','LineWidth',2);
+        plot(pobs(1,:),pobs(2,:),'-k','LineWidth',2);
     end
 
-    plot(r(1,:),r(2,:),'-k');
-    plot(xbar(1,:),xbar(2,:),'.k');    
-    rinit = plot(r(1,1),r(2,1),'ko');
-    rfinal = plot(r(1,end),r(2,end),'kx');
+    plot(r(1,:),r(2,:),'-b');
+    plot(xbar(1,:),xbar(2,:),'.b','MarkerSize',25);    
+    rinit = plot(r(1,1),r(2,1),'bo');
+    rfinal = plot(r(1,end),r(2,end),'bx');
     legend([rinit,rfinal],{'$r_{\mathrm{i}}$','$r_{\mathrm{f}}$'});
 
     ax = gca;
@@ -46,7 +48,7 @@ else
 
     plot3(r(1,:),r(2,:),r(3,:),'-k');
     hold on 
-    plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.k');
+    plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.k','MarkerSize',25);
     grid on
 
     ax = gca;
@@ -92,8 +94,8 @@ end
 subplot(2,2,2)
 plot(tvecbar,prb.vmax*ones(1,prb.K),'-r');
 hold on 
-plot(tvec,nrm_v,'-m');
-plot(tvecbar,nrm_vbar,'.m');
+plot(tvec,nrm_v,'-b');
+plot(tvecbar,nrm_vbar,'.b','MarkerSize',25);
 title('Speed [m s$^{-1}$]')
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
@@ -108,7 +110,7 @@ plot(tvecbar,prb.umin*ones(1,prb.K),'-r');
 hold on 
 plot(tvecbar,prb.umax*ones(1,prb.K),'-r');
 plot(tvec,nrm_T,'-b');
-plot(tvecbar,nrm_Tbar,'.b');
+plot(tvecbar,nrm_Tbar,'.b','MarkerSize',25);
 title('Thrust [m s$^{-2}$]');
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
@@ -122,9 +124,9 @@ subplot(2,2,4)
 plot(prb.tau,prb.smin*ones(1,prb.K),'-r');
 hold on
 plot(prb.tau,prb.smax*ones(1,prb.K),'-r');
-plot(prb.tau,tvecbar,'.k');
+plot(prb.tau,tvecbar,'.k','MarkerSize',25);
 p1 = plot(tau,tvec,'-k');
-plot(prb.tau,ubar(prb.n+1,:),'.g');
+plot(prb.tau,ubar(prb.n+1,:),'.g','MarkerSize',25);
 p2 = plot(tau,u(prb.n+1,:),'-g');
 legend([p1,p2],{'$t(\tau)$','$s(\tau)$'})
 xlabel('$\tau$');

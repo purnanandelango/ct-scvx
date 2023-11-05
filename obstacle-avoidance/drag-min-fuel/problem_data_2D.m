@@ -23,7 +23,7 @@ function prb = problem_data_2D(K,scp_iters,wvc,wtr,cost_factor)
     % Bounds
 
     prb.rmax        = 40;
-    prb.vmax        = 07;
+    prb.vmax        = 5.3;
     prb.pmin        = 0;
     prb.pmax        = 20;
 

@@ -50,6 +50,8 @@ function prb = problem_data_cvx(K,T)
     prb.rK = [20;10;20];
     prb.vK = [0;0;0];
 
+    prb.xK = [prb.rK;prb.vK];
+
     % Scaling parameters
 
     xmin =   0*[-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1)];

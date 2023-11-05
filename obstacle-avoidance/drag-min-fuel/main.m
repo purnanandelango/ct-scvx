@@ -4,7 +4,7 @@ clc
 prb = problem_data_2D(10, ...          % K
                       30, ...          % scp_iters
                       5e1, ...         % wvc
-                      1e0, ...         % wtr
+                      3e0, ...         % wtr
                       1e-2);           % cost_factor
 
 % prb = problem_data_3D(10, ...          % K
