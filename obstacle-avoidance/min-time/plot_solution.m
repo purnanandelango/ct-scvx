@@ -1,7 +1,7 @@
-clearvars
-close all
+% clearvars
+% close all
 
-load recent_solution
+% load recent_solution
 
 figure
 subplot(2,2,1)

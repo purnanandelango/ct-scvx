@@ -9,24 +9,20 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.nu = n+1;
     
     % Generate grid in [0,1]
-    prb.tau = grid.generate_grid(0,1,K,'uniform'); 
+    prb.tau = grid.generate_grid(0,1,K,'uniform');
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
-    prb.h = (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
+    prb.h = (1/499)*min_dtau; % (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
     prb.Kfine = 1+50*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
 
     prb.mass        = 0.7;                      % Vehicle mass
-    prb.accl        = [0;-1];                   % External acceleration    
-    prb.c_d         = 0.01;                     % Drag coefficient
-    
+
     % Bounds
 
-    prb.rmax        = 40;
+    prb.rmax        = 30;
     prb.vmax        = 7;
-    prb.pmin        = 0;
-    prb.pmax        = 20;
 
     prb.ymin        = 0;
     prb.ymax        = 1;
@@ -34,8 +30,8 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.umax        = 7;
     prb.umin        = 1;
 
-    prb.ehat        = [0;1];
-    prb.deltamax    = 85;                       % [deg] 
+    % prb.ehat        = [0;1];
+    % prb.deltamax    = 85;                       % [deg] 
 
     prb.ToFmax      = 20;
     prb.ToFguess    = 15;
@@ -58,12 +54,12 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % Boundary conditions
 
     prb.r1 = [0;0];
-    prb.v1 = [0;0];
+    prb.v1 = [0.001;0.001];
     prb.p1 = 0;
     prb.y1 = 0;
     
-    prb.rK = [0;28];
-    prb.vK = [-1;0];
+    prb.rK = [0;30];
+    prb.vK = [0.001;0.001];
 
     % Initialization generator
 
@@ -71,6 +67,8 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.xK = [prb.rK; prb.vK; prb.y1];    
     prb.u1 = [0.5*(prb.umax+prb.umin)*ones(n,1); prb.ToFguess];
     prb.uK = [0.5*(prb.umax+prb.umin)*ones(n,1); prb.ToFguess];
+    % prb.u1 = [1; 1; prb.ToFguess];
+    % prb.uK = [4; 4; prb.ToFguess];
 
     % Scaling parameters
     xmin = zeros(prb.nx, 1);
@@ -86,64 +84,87 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cx = cz{1};
     prb.cu = cz{2};
 
+    nc = 5; % number of constraints
+    cnstr_indices = [4, 5]; % indices of the constraints to be imposed
+
+    % 0: no constraints
+    % 1: obstacle 1
+    % 2: obstacle 2
+    % 3: maximum speed
+    % 4: acceleration upper bound
+    % 5: acceleration lower bound
+
+    I_nc = eye(nc+1);
+    if cnstr_indices == 0
+        cnstr_selector = I_nc(nc+1, :);
+    else
+        cnstr_selector = [];
+        for i = cnstr_indices
+            cnstr_selector = [cnstr_selector; I_nc(i, :)];
+        end
+    end
+
     cnstr_scl = diag([ ...
                       1; ...
                       1; ...
-                      1; ...
-                      1; ...
-                      1 ...
+                      1/(sqrt(3) * 7); ...
+                      1/(sqrt(3) * 7); ...
+                      1/(sqrt(3) * 1); ...
+                      0
                       ]);
-    cnstr_buffer = [ ...
-                    0;
-                    0;
-                    0;
-                    0;
-                    0
-                    ];
+
+    cnstr_buffer = cnstr_selector * [ ...
+                                        0;
+                                        0;
+                                        0;
+                                        0;
+                                        0;
+                                        0
+                                        ];
 
     % Path constraints
 
-    prb.cnstr_fun       = @(x,u) cnstr_scl*[ ...
-                                            -norm(prb.Hobs{1}*(x(1:n)-prb.qobs(:,1)))^2 + 1;                          % Obstacle avoidance
-                                            -norm(prb.Hobs{2}*(x(1:n)-prb.qobs(:,2)))^2 + 1;                          % Obstacle avoidance
-                                             norm(x(n+1:2*n))^2 - prb.vmax^2;                                         % Speed upperbound
-                                             norm(u(1:n)) - prb.umax;                                                 % Thrust upperbound
-                                            -norm(u(1:n)) + prb.umin;                                                 % Thrust lowerbound
-                                             % norm(u(1:n)) - secd(prb.deltamax)*prb.ehat'*u(1:n);                      % Thrust pointing
-                                             ] ... 
-                                             + cnstr_buffer;
+    prb.cnstr_fun       = @(x,u) cnstr_selector * cnstr_scl * [ ...
+                                                                -norm(prb.Hobs{1}*(x(1:n)-prb.qobs(:,1)))^2 + 1;                          % Obstacle avoidance
+                                                                -norm(prb.Hobs{2}*(x(1:n)-prb.qobs(:,2)))^2 + 1;                          % Obstacle avoidance
+                                                                 norm(x(n+1:2*n)) - prb.vmax;                                         % Speed upperbound
+                                                                 norm(u(1:n)) - prb.umax;                                                 % Thrust upperbound
+                                                                -norm(u(1:n)) + prb.umin;                                                 % Thrust lowerbound
+                                                                 0
+                                                                 ] ... 
+                                                                 + cnstr_buffer;
 
-    prb.cnstr_fun_jac_x = @(x,u) cnstr_scl*[ ...
-                                            -2*(x(1:n)-prb.qobs(:,1))'*prb.Hobs{1}'*prb.Hobs{1}, zeros(1,n),    0;
-                                            -2*(x(1:n)-prb.qobs(:,2))'*prb.Hobs{2}'*prb.Hobs{2}, zeros(1,n),    0;
-                                             zeros(1,n),                                         2*x(n+1:2*n)', 0;
-                                             zeros(1,n),                                         zeros(1,n),    zeros(1,1);
-                                             zeros(1,n),                                         zeros(1,n),    zeros(1,1);
-                                             % zeros(1,n),                                         zeros(1,n),    zeros(1,1);
-                                             ];
+    prb.cnstr_fun_jac_x = @(x,u) cnstr_selector * cnstr_scl * [ ...
+                                                                -2*(x(1:n)-prb.qobs(:,1))'*prb.Hobs{1}'*prb.Hobs{1}, zeros(1,n),    0;
+                                                                -2*(x(1:n)-prb.qobs(:,2))'*prb.Hobs{2}'*prb.Hobs{2}, zeros(1,n),    0;
+                                                                 zeros(1,n),                                         x(n+1:2*n)'/norm(x(n+1:2*n)), 0;
+                                                                 zeros(1,n),                                         zeros(1,n),    zeros(1,1);
+                                                                 zeros(1,n),                                         zeros(1,n),    zeros(1,1);
+                                                                 zeros(1,n),                                         zeros(1,n),    zeros(1,1);
+                                                                 ];
 
-    prb.cnstr_fun_jac_u = @(x,u) cnstr_scl*[ ...
-                                             zeros(1,n);
-                                             zeros(1,n);
-                                             zeros(1,n);
-                                             u(1:n)'/norm(u(1:n));
-                                            -u(1:n)'/norm(u(1:n));
-                                             % u(1:n)'/norm(u(1:n)) - secd(prb.deltamax)*prb.ehat';
-                                             ];
+    prb.cnstr_fun_jac_u = @(x,u) cnstr_selector * cnstr_scl * [ ...
+                                                                 zeros(1,n);
+                                                                 zeros(1,n);
+                                                                 zeros(1,n);
+                                                                 u(1:n)'/norm(u(1:n));
+                                                                -u(1:n)'/norm(u(1:n));
+                                                                 zeros(1,n);
+                                                                 ];
 
     % SCP parameters
 
     prb.disc = "FOH";
-    prb.foh_type = "v3";
-    prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
+    prb.foh_type = "v3"; % "v3";
+    prb.ode_solver = {'ode45',odeset('RelTol',1e-7,'AbsTol',1e-9)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
     % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
-    % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);
+    prb.solver_settings = sdpsettings('solver','ecos','verbose',false);
+    % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-10,'ecos.reltol',1e-10,'ecos.feastol',1e-10);
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false,'quadprog.OptimalityTolerance',1e-9);
-    prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7,'osqp.max_iter',5e4);        
-   
+    % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7);
 
     % prb.tr_norm = 2;
     % prb.tr_norm = inf;   
@@ -153,7 +174,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.wtr = wtr;
     prb.cost_factor = cost_factor;
     
-    prb.epsvc = 1e-7;
+    prb.epsvc = 1e-8;
     prb.epstr = 1e-3;
 
     % Takes in unscaled data
