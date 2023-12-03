@@ -7,7 +7,7 @@ load recent_solution
 
 figure
 
-saveplot = true;
+saveplot = false;
 
 if prb.n == 2    
     suffix = '2D';
@@ -23,7 +23,7 @@ if prb.n == 2
     plot(xbar(1,:),xbar(2,:),'.b','MarkerSize',25);    
     rinit = plot(r(1,1),r(2,1),'bo');
     rfinal = plot(r(1,end),r(2,end),'bx');
-    legend([rinit,rfinal],{'$r_{\mathrm{i}}$','$r_{\mathrm{f}}$'});
+    legend([rinit,rfinal],{'$r_{\mathrm{i}}$','$r_{\mathrm{f}}$'},'Location','east');
 
     ax = gca;
     ax.DataAspectRatio = [1,1,1];
@@ -106,15 +106,15 @@ if saveplot
 end
 
 subplot(2,2,3)
-plot(tvecbar,prb.umin*ones(1,prb.K),'-r');
+plot(tvecbar,prb.Tmin*ones(1,prb.K),'-r');
 hold on 
-plot(tvecbar,prb.umax*ones(1,prb.K),'-r');
+plot(tvecbar,prb.Tmax*ones(1,prb.K),'-r');
 plot(tvec,nrm_T,'-b');
 plot(tvecbar,nrm_Tbar,'.b','MarkerSize',25);
 title('Thrust [m s$^{-2}$]');
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
-ylim([0,1.1*prb.umax])
+ylim([0,1.1*prb.Tmax])
 if saveplot
     ax = gca;
     exportgraphics(ax,horzcat('results_',suffix,'/thrust.pdf'),'BackgroundColor','none');

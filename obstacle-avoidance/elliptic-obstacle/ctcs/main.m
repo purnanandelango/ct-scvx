@@ -1,24 +1,27 @@
 clearvars
-clc
+% clc
 
-prb = problem_data_2D(10, ...          % K
-                      30, ...          % scp_iters
-                      5e1, ...         % wvc
-                      3e0, ...         % wtr
-                      1e-2);           % cost_factor
+% prb = problem_data_2D(05, ...          % K
+%                       100, ...         % scp_iters
+%                       4e1, ...         % wvc
+%                       1.00, ...        % wtr
+%                       0.01);           % cost_factor
 
-% prb = problem_data_3D(10, ...          % K
-%                       30, ...          % scp_iters
-%                       5e1, ...         % wvc
-%                       1e0, ...         % wtr
-%                       1e-2);           % cost_factor
+prb = problem_data_3D(05, ...          % K
+                      010, ...         % scp_iters
+                      4e1, ...         % wvc
+                      1.00, ...        % wtr
+                      0.10);           % cost_factor
 
 
 load('recent_solution','xbar','ubar','taubar');
-[xbar,ubar] = misc.create_initialization(prb,2, ...
+[xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
-[xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+
+[xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 taubar = prb.tau;
 
