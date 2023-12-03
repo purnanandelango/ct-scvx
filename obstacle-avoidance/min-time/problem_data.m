@@ -7,12 +7,24 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.nx = 2*n+1;
     prb.nu = n+1;
+
+    nx = prb.nx;
+    nu = prb.nu;
+    N = K;
+
+    % Initialize PIPG solution
+    prb.dx = zeros(nx, N);
+    prb.du = zeros(nu, N);
+    prb.phi = zeros(nx, N-1);
+    prb.psi = zeros(nx, N-1);
+    prb.w = zeros(nx, N-1);
+    prb.v = zeros(1, N-1);
     
     % Generate grid in [0,1]
     prb.tau = grid.generate_grid(0,1,K,'uniform');
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
-    prb.h = (1/499)*min_dtau; % (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
+    prb.h = (1/99)*min_dtau; % (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
     prb.Kfine = 1+50*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
@@ -83,6 +95,20 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
     prb.cx = cz{1};
     prb.cu = cz{2};
+
+    % Scaling matrices
+    Pr = prb.Sx(1:prb.n,1:prb.n);
+    Pv = prb.Sx(prb.n+1:2*prb.n,prb.n+1:2*prb.n);
+    Py = prb.Sx(2*prb.n+1,2*prb.n+1);
+    Pu = prb.Su(1:prb.n,1:prb.n);
+    Ps = prb.Su(prb.n+1,prb.n+1);
+
+    % Include the scaling matrices in the struct for convenience
+    prb.Pr = Pr;
+    prb.Pv = Pv;
+    prb.Py = Py;
+    prb.Pu = Pu;
+    prb.Ps = Ps;
 
     nc = 5; % number of constraints
     cnstr_indices = [4, 5]; % indices of the constraints to be imposed
@@ -156,13 +182,13 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.disc = "FOH";
     prb.foh_type = "v3"; % "v3";
-    prb.ode_solver = {'ode45',odeset('RelTol',1e-7,'AbsTol',1e-9)};
+    % prb.ode_solver = {'ode45',odeset('RelTol',1e-7,'AbsTol',1e-9)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
     % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
-    prb.solver_settings = sdpsettings('solver','ecos','verbose',false);
-    % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-10,'ecos.reltol',1e-10,'ecos.feastol',1e-10);
+    % prb.solver_settings = sdpsettings('solver','ecos','verbose',false);
+    prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-10,'ecos.reltol',1e-10,'ecos.feastol',1e-10);
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false,'quadprog.OptimalityTolerance',1e-9);
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7);
 

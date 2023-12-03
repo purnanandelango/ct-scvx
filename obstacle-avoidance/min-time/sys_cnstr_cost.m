@@ -30,7 +30,8 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,util,prb,...
              Pv \ v1     == Pv \ prb.v1;
              Pr \ rK     == Pr \ prb.rK;
              Pv \ vK     == Pv \ prb.vK;
-             (1/Py)*y(1) == (1/Py)*prb.y1];
+             (1/Py)*y(1) == (1/Py)*prb.y1
+             ];
 
     ToFfinal = 0.0;
     for k = 1:K-1
@@ -39,21 +40,43 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,util,prb,...
 
     cost_fun = prb.cost_factor*(1/Ps)*(ToFfinal);
 
-    for k = 1:K    
+    for k = 1:K   
+
+        % Conservatively approximated constraints imposed in practice 
+        % (the resulting solution will never violate the actual constraint)
         
+        % Approximation here is to ensure that the dilation factor is
+        % always nonnegative
         cnstr = [cnstr;
                  % -Pu \ (prb.umax*ones(prb.nu-1,1)) <= Pu \ u(:,k) <= Pu \ (prb.umax*ones(prb.nu-1,1)); % thrust bound
                  (1/Ps)*s(k) >= (1/Ps)*(K-1)*prb.dtmin % lower bound on the dilation factor
                 ];
 
-        if k < K
-            cnstr = [cnstr;
-                     (1/Ps)*(1/2)*(s(k) + s(k+1)) <= (1/Ps)*(1/prb.dtau(k))*prb.dtmax % upper bound on the dilation factor
-                    ];
+        % Approximation here is to avoid temporal entanglement of the
+        % constraint sets
+        cnstr = [cnstr;
+                 (1/Ps)*s(k) <= (1/Ps)*(K-1)*prb.dtmax % upper bound on the dilation factor
+                ];
 
-            cnstr = [cnstr;
-                     (1/Py)*y(k+1) <= (1/Py)*y(k) + (1/Py)*1e-6]; % relaxation
-        end
+    end
+
+    for k = 1:K-1
+
+        % Actual dilation constraints
+
+        % cnstr = [cnstr;
+        %          (1/Ps)*(1/2)*(s(k) + s(k+1)) <= (1/Ps)*(1/prb.dtau(k))*prb.dtmax % upper bound on the dilation factor
+        %         ];
+
+        % cnstr = [cnstr;
+        %          (1/Ps)*(1/2)*(s(k) + s(k+1)) >= (1/Ps)*(1/prb.dtau(k))*prb.dtmin % lower bound on the dilation factor
+        %         ];
+
+        cnstr = [cnstr;
+                 (1/Py)*y(k+1) <= (1/Py)*y(k) + (1/Py)*1e-6]; % relaxation
+
+        % cnstr = [cnstr;
+        %          (1/Py)*y(k+1) == (1/Py)*y(k)]; % no relaxation
 
     end
 

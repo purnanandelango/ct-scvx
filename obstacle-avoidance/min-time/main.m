@@ -13,7 +13,8 @@ load('recent_solution','xbar','ubar','taubar');
                                          xbar,ubar,taubar);
 
 % [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-[xbar,ubar] = scp.run_ptr_dvar_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar,ubar] = scp.run_ptr_dvar_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+[xbar,ubar] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,@sys_cnstr_cost);
 
 %%
 
@@ -37,4 +38,4 @@ fprintf('\nFinal position error: %.3f\nFinal velocity error: %.3f\n',norm(r(:,en
 save('recent_solution','r','v','tvec','tau','u','x','x2','prb',...
                        'xbar','ubar','tvecbar','taubar');
 
-plot_solution;
+% plot_solution;
