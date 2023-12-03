@@ -1,14 +1,14 @@
 function [dx, du, phi, psi, w, v, prb] = pipg_custom(scp_iter, sig, A1, A2, B1, B2, d, x, u, prb)
 
-j_max = 10000;
-j_min = 1000;
-j_check = 1000;
-eps_abs = 1e-10;
-eps_rel = 1e-10;
-omg = 0.01;
+j_max = 100000;
+j_min = 10000;
+j_check = 10000;
+eps_abs = 1e-12;
+eps_rel = 1e-12;
+omg = 1;
 rho = 1.85;
 
-epsilon = 1e-6;
+epsilon = (1 / prb.Py)*1e-6;
 lam = prb.wtr;
 
 nx = size(x, 1);
@@ -90,10 +90,10 @@ for j = 1:j_max
     du(:, 1) = zdu(:, 1) - alf*(lam*zdu(:, 1) + qu(:, 1) + B1(:, :, 1).'*eta(:, 1));
     du(:, 1) = proj_Du(du(:, 1) + u(:, 1), prb) - u(:, 1); % shifted
 
-    phi(:, 1) = zphi(:, 1) - alf*(lam*zphi(:, 1) + qphi(:, 1) + eta(:, 1));
+    phi(:, 1) = zphi(:, 1) - alf*(qphi(:, 1) + eta(:, 1));
     phi(:, 1) = proj_Dphi(phi(:, 1));
 
-    psi(:, 1) = zpsi(:, 1) - alf*(lam*zpsi(:, 1) + qpsi(:, 1) - eta(:, 1));
+    psi(:, 1) = zpsi(:, 1) - alf*(qpsi(:, 1) - eta(:, 1));
     psi(:, 1) = proj_Dpsi(psi(:, 1));
 
     for k = 2:N-1
@@ -104,10 +104,10 @@ for j = 1:j_max
         du(:, k) = zdu(:, k) - alf*(lam*zdu(:, k) + qu(:, k) + B1(:, :, k).'*eta(:, k) + B2(:, :, k-1).'*eta(:, k-1));
         du(:, k) = proj_Du(du(:, k) + u(:, k), prb) - u(:, k); % shifted
     
-        phi(:, k) = zphi(:, k) - alf*(lam*zphi(:, k) + qphi(:, k) + eta(:, k));
+        phi(:, k) = zphi(:, k) - alf*(qphi(:, k) + eta(:, k));
         phi(:, k) = proj_Dphi(phi(:, k));
     
-        psi(:, k) = zpsi(:, k) - alf*(lam*zpsi(:, k) + qpsi(:, 1) - eta(:, k));
+        psi(:, k) = zpsi(:, k) - alf*(qpsi(:, 1) - eta(:, k));
         psi(:, k) = proj_Dpsi(psi(:, k));
 
     end

@@ -38,4 +38,4 @@ fprintf('\nFinal position error: %.3f\nFinal velocity error: %.3f\n',norm(r(:,en
 save('recent_solution','r','v','tvec','tau','u','x','x2','prb',...
                        'xbar','ubar','tvecbar','taubar');
 
-% plot_solution;
+plot_solution;

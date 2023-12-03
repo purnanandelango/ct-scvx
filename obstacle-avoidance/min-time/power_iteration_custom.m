@@ -2,10 +2,10 @@ function sig = power_iteration_custom(A1, A2, B1, B2, x, u, phi, psi)
 %POWER_ITERATION_CUSTOM
 %   SIG = POWER_ITERATION_CUSTOM(A1, A2, B1, B2, X, U, PHI, PSI)
 
-j_max = 1000;
-eps_abs = 1e-12;
-eps_rel = 1e-12;
-eps_buff = 1e-6;
+j_max = 10000;
+eps_abs = 1e-16;
+eps_rel = 1e-16;
+eps_buff = 0;
 
 nx = size(x, 1);
 nu = size(u, 1);

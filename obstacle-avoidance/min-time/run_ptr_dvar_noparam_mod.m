@@ -151,7 +151,7 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
                 Hy_ = [Hy, sparse((K-1), nu*K + 2*nx*(K-1))];
                 H = [Hx, Hu, speye(nx*(K-1)), -speye(nx*(K-1)); Hy_];
 
-                sigs_svd = svds(H.'*H);
+                sigs_svd = svd(full(H.'*H));
                 sig_svd = max(sigs_svd);
 
                 % Customized power iteration %
@@ -241,8 +241,8 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
             vc_term = value(Jvc);
             vc_constr_term = value(vc_constr_term)/max(expnwt(:));
 
-            fprintf("Error in `dx`: %f\n", norm(dx_pipg - dx));
-            fprintf("Error in `du`: %f\n\n", norm(du_pipg - du));
+            fprintf("Error in `dx`: %f\n", norm(dx_pipg - dx) / norm(dx));
+            fprintf("Error in `du`: %f\n\n", norm(du_pipg - du) / norm(dx));
     
             % Ensure that the TR value is always displayed consistently with infinity norm
             % Note that this is for display and for evaluation of termination criteria 
@@ -255,6 +255,9 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
             % Update reference trajectory
             xbar = x_unscl;
             ubar = u_unscl;     
+
+            % xbar = prb.Sx * dx_pipg + xbar;
+            % ubar = prb.Su * du_pipg + ubar;
     
             ToF = prb.time_of_maneuver(xbar,ubar);        
             
@@ -274,4 +277,4 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
             
         end
     
-    end
+end

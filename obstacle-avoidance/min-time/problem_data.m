@@ -24,7 +24,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.tau = grid.generate_grid(0,1,K,'uniform');
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
-    prb.h = (1/99)*min_dtau; % (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
+    prb.h = (1/999)*min_dtau; % (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
     prb.Kfine = 1+50*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
@@ -37,7 +37,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.vmax        = 7;
 
     prb.ymin        = 0;
-    prb.ymax        = 1;
+    prb.ymax        = 0.1;
 
     prb.umax        = 7;
     prb.umin        = 1;
