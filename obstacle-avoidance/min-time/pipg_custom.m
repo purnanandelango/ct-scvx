@@ -1,8 +1,8 @@
-function [dx, du, phi, psi, w, v, prb] = pipg_custom(sig, A1, A2, B1, B2, d, x, u, prb)
+function [dx, du, phi, psi, w, v, prb] = pipg_custom(sig, A1, A2, B1, B2, d, x, u, prb, verbose)
 
-j_max = 10000;
-j_min = 1000;
-j_check = 1000;
+j_max = 100000;
+j_min = 100000;
+j_check = 100000;
 eps_abs = 1e-12;
 eps_rel = 1e-12;
 omg = 0.5;
@@ -126,8 +126,32 @@ for j = 1:j_max
 
         if z_inf_del_j <= eps_abs + eps_rel*max(z_inf_jp1, z_inf_j) && r_inf_del_j <= eps_abs + eps_rel*max(r_inf_jp1, r_inf_j)
 
-            if j == j_min
+            if verbose == 1
 
+                if j == j_min
+    
+                    fprintf("\n");
+                    fprintf("+-----------------------------------------------------------------------+\n");
+                    fprintf("|                             ..:: PIPG ::..                            |\n");
+                    fprintf("+-----------+-----------+------------------+--------------+-------------+\n");
+                    fprintf("| Iteration | Objective | Constraint Viol. | Primal Diff. |  Dual Diff. |\n");
+                    fprintf("+-----------+-----------+------------------+--------------+-------------+\n");
+        
+                end
+    
+                fprintf("| %9.2e | %9.2e |     %9.2e    |   %9.2e  |  %9.2e  |\n", ...
+                j,NaN,NaN,z_inf_del_j,r_inf_del_j);
+
+            end
+
+            break
+
+        end
+
+        if verbose == 1
+
+            if j == j_min
+    
                 fprintf("\n");
                 fprintf("+-----------------------------------------------------------------------+\n");
                 fprintf("|                             ..:: PIPG ::..                            |\n");
@@ -136,33 +160,21 @@ for j = 1:j_max
                 fprintf("+-----------+-----------+------------------+--------------+-------------+\n");
     
             end
-
+    
             fprintf("| %9.2e | %9.2e |     %9.2e    |   %9.2e  |  %9.2e  |\n", ...
-            j,NaN,NaN,z_inf_del_j,r_inf_del_j);
-
-            break
+                j,NaN,NaN,z_inf_del_j,r_inf_del_j);
 
         end
-
-        if j == j_min
-
-            fprintf("\n");
-            fprintf("+-----------------------------------------------------------------------+\n");
-            fprintf("|                             ..:: PIPG ::..                            |\n");
-            fprintf("+-----------+-----------+------------------+--------------+-------------+\n");
-            fprintf("| Iteration | Objective | Constraint Viol. | Primal Diff. |  Dual Diff. |\n");
-            fprintf("+-----------+-----------+------------------+--------------+-------------+\n");
-
-        end
-
-        fprintf("| %9.2e | %9.2e |     %9.2e    |   %9.2e  |  %9.2e  |\n", ...
-            j,NaN,NaN,z_inf_del_j,r_inf_del_j);
 
     end
 
 end
 
-fprintf("+-----------+-----------+------------------+--------------+-------------+\n\n");
+if verbose == 1
+
+    fprintf("+-----------+-----------+------------------+--------------+-------------+\n\n");
+
+end
 
 end
 

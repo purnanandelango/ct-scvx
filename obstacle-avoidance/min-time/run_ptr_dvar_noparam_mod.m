@@ -3,6 +3,15 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
     % Provision for updating problem parameters after each SCP iteration
     % Scaling terms cx and cu are not used
     % Exact penalty weight can be matrix-valued
+
+    % Row-normalization flags %
+    row_normalization_flag = 1; % 0, 1
+    row_normalization_type = 'inf'; % 2, 'inf'
+    
+    % PIPG flags %
+    pipg_flag = 1;    % 0, 1
+    use_pipg_sol = 0; % 0, 1
+    pipg_verbose = 1; % 0, 1
     
         converged = false;
         K = prb.K;
@@ -89,8 +98,8 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
                 Ek= zeros(nx,nx,K-1);
                 dx_prop = zeros(nx,K);
     
-                for k = 1:K-1
-                    Ek(:,:,k) = prb.Sx;
+                for k = 1:(K-1)
+                    Ek(:,:,k) = -prb.Sx;
                     dx_prop(:,k+1) = xbarprop(:,k+1) - xbar(:,k+1);
                 end
     
@@ -100,7 +109,7 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
                 Bpk_hat = zeros(nx,nu,K-1);
                 dx_prop_hat = zeros(nx,K);
     
-                for k = 1:K-1
+                for k = 1:(K-1)
                     Ek_hat(:,:,k) = prb.invSx*Ek(:,:,k);
                     Ak_hat(:,:,k) = prb.invSx*Ak(:,:,k)*prb.Sx;
                     Bmk_hat(:,:,k) = prb.invSx*Bmk(:,:,k)*prb.Su;
@@ -109,21 +118,25 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
                 end
 
                 % Row-normalization %
+
+                if row_normalization_flag == 1
     
-                for k = 1:(K-1)
-                    for l = 1:nx
-                        row = [Ak_hat(l,:,k), -Ek_hat(l,:,k), Bmk_hat(l,:,k), Bpk_hat(l,:,k), dx_prop_hat(l,k+1)];
-                        row_norm = norm(row, 'inf');
-                        % fprintf("row_norm: %f\n", row_norm);
-                        if row_norm > 1e-4
-                            row_norm_inv = 1 / row_norm;
-                            Ek_hat(l,:,k) = row_norm_inv*Ek_hat(l,:,k);
-                            Ak_hat(l,:,k) = row_norm_inv*Ak_hat(l,:,k);
-                            Bmk_hat(l,:,k) = row_norm_inv*Bmk_hat(l,:,k);
-                            Bpk_hat(l,:,k) = row_norm_inv*Bpk_hat(l,:,k);
-                            dx_prop_hat(l,k+1) = row_norm_inv*dx_prop_hat(l,k+1);
+                    for k = 1:(K-1)
+                        for l = 1:nx
+                            row = [Ak_hat(l,:,k), Ek_hat(l,:,k), Bmk_hat(l,:,k), Bpk_hat(l,:,k), dx_prop_hat(l,k+1)];
+                            row_norm = norm(row, row_normalization_type);
+                            % fprintf("row_norm: %f\n", row_norm);
+                            if row_norm > 1e-4
+                                row_norm_inv = 1 / row_norm;
+                                Ek_hat(l,:,k) = row_norm_inv*Ek_hat(l,:,k);
+                                Ak_hat(l,:,k) = row_norm_inv*Ak_hat(l,:,k);
+                                Bmk_hat(l,:,k) = row_norm_inv*Bmk_hat(l,:,k);
+                                Bpk_hat(l,:,k) = row_norm_inv*Bpk_hat(l,:,k);
+                                dx_prop_hat(l,k+1) = row_norm_inv*dx_prop_hat(l,k+1);
+                            end
                         end
                     end
+                    
                 end
 
                 % %%%%%%%%%%%%%%%%%%%
@@ -132,60 +145,83 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
 
                 % SVD %
 
-                Amhat = [];
-                Aphat = [];
-                Bmhat = [];
-                Bphat = [];
+                if pipg_flag == 1
 
-                for k = 1:prb.K-1
-                    Amhat = blkdiag(Amhat, Ak_hat(:,:,k));
-                    Aphat = blkdiag(Aphat, -Ek_hat(:,:,k));
-                    Bmhat = blkdiag(Bmhat, Bmk_hat(:,:,k));
-                    Bphat = blkdiag(Bphat, Bpk_hat(:,:,k));
-                end  
+                    Amhat = [];
+                    Aphat = [];
+                    Bmhat = [];
+                    Bphat = [];
+    
+                    for k = 1:(K-1)
+                        Amhat = blkdiag(Amhat, Ak_hat(:,:,k));
+                        Aphat = blkdiag(Aphat, Ek_hat(:,:,k));
+                        Bmhat = blkdiag(Bmhat, Bmk_hat(:,:,k));
+                        Bphat = blkdiag(Bphat, Bpk_hat(:,:,k));
+                    end  
+    
+                    Hx = [Amhat, sparse(nx*(K-1),nx)] + [sparse(nx*(K-1),nx), Aphat];
+                    Hu = [Bmhat, sparse(nx*(K-1),nu)] + [sparse(nx*(K-1),nu), Bphat];
+                    Ey = [zeros(1, nx-1), 1];
+                    Hy = -[kron(speye(K-1),Ey), sparse((K-1),nx)] + [sparse((K-1),nx), kron(speye(K-1),Ey)];
+                    Hy_ = [Hy, sparse((K-1), nu*K + 2*nx*(K-1))];
+                    H = [Hx, Hu, speye(nx*(K-1)), -speye(nx*(K-1)); Hy_];
+    
+                    sigs_svd = svd(full(H.'*H));
+                    sig_svd = max(sigs_svd);
+    
+                    % Customized power iteration %
+    
+                    phibar = ones(nx, K-1);
+                    psibar = ones(nx, K-1);
+    
+                    sig = power_iteration_custom(Ak_hat, Ek_hat, Bmk_hat, Bpk_hat, prb.invSx*xbar, prb.invSu*ubar, phibar, psibar);
+    
+                    sig_rel_err = norm(sig - sig_svd) / sig_svd;
 
-                Hx = [Amhat, sparse(nx*(K-1),nx)] + [sparse(nx*(K-1),nx), Aphat];
-                Hu = [Bmhat, sparse(nx*(K-1),nu)] + [sparse(nx*(K-1),nu), Bphat];
-                Ey = [zeros(1, nx-1), 1];
-                Hy = -[kron(speye(K-1),Ey), sparse((K-1),nx)] + [sparse((K-1),nx), kron(speye(K-1),Ey)];
-                Hy_ = [Hy, sparse((K-1), nu*K + 2*nx*(K-1))];
-                H = [Hx, Hu, speye(nx*(K-1)), -speye(nx*(K-1)); Hy_];
+                    if pipg_verbose == 1
+    
+                        fprintf("\nMaximum singular value (ground-truth)   : %8.8f\n", sig_svd);
+                        fprintf( "Maximum singular value (power-iteration): %8.8f\n", sig);
+                        fprintf("Error in the maximum singular value: %f\n", sig_rel_err);
 
-                sigs_svd = svd(full(H.'*H));
-                sig_svd = max(sigs_svd);
+                    end
+    
+                    [dx_pipg, du_pipg, phi_pipg, psi_pipg, w_pipg, v_pipg] = pipg_custom(sig, Ak_hat, Ek_hat, Bmk_hat, Bpk_hat, dx_prop_hat, prb.invSx*xbar, prb.invSu*ubar, prb, pipg_verbose);
+    
+                    % Warm start %
+    
+                    % prb.dx = dx_pipg;
+                    % prb.du = du_pipg;
+                    % prb.phi = phi_pipg;
+                    % prb.psi = psi_pipg;
+                    % prb.w = w_pipg;
+                    % prb.v = v_pipg;
+    
+                    % Objective function (PIPG) %
+    
+                    Jtr_pipg = 0;        
+                    for k = 1:K
+                        Jtr_pipg = Jtr_pipg + 0.5*([dx_pipg(:,k);du_pipg(:,k)])'*([dx_pipg(:,k);du_pipg(:,k)]);
+                    end
+    
+                    Jvc_pipg = 0;
+                    for k = 1:K-1
+                        Jvc_pipg = Jvc_pipg + sum(expnwt*(phi_pipg(:,k) + psi_pipg(:,k)));
+                    end
+    
+                    obj_val_pipg = Jtr_pipg + Jvc_pipg;
 
-                % Customized power iteration %
-
-                phibar = ones(nx, K-1);
-                psibar = ones(nx, K-1);
-
-                sig = power_iteration_custom(Ak_hat, -Ek_hat, Bmk_hat, Bpk_hat, prb.invSx*xbar, prb.invSu*ubar, phibar, psibar);
-
-                sig_rel_err = norm(sig - sig_svd) / sig_svd;
-
-                fprintf("\nMaximum singular value: %8.8f\n", sig);
-                fprintf("Error in the maximum singular value: %f\n", sig_rel_err);
-
-                [dx_pipg, du_pipg, phi_pipg, psi_pipg, w_pipg, v_pipg] = pipg_custom(sig, Ak_hat, -Ek_hat, Bmk_hat, Bpk_hat, dx_prop_hat, prb.invSx*xbar, prb.invSu*ubar, prb);
-
-                % Warm start %
-
-                % prb.dx = dx_pipg;
-                % prb.du = du_pipg;
-                % prb.phi = phi_pipg;
-                % prb.psi = psi_pipg;
-                % prb.w = w_pipg;
-                % prb.v = v_pipg;
+                end
 
                 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
                 for k = 1:K-1
                     cnstr = [cnstr;
-                             vc_minus(:,k) - vc_plus(:,k) == - Ek_hat(:,:,k)*dx(:,k+1) +...
-                                                               Ak_hat(:,:,k)*dx(:,k) +...
-                                                               Bmk_hat(:,:,k)*du(:,k) +...
-                                                               Bpk_hat(:,:,k)*du(:,k+1) +...
-                                                               dx_prop_hat(:,k+1)];
+                             vc_minus(:,k) - vc_plus(:,k) == Ek_hat(:,:,k)*dx(:,k+1) +...
+                                                             Ak_hat(:,:,k)*dx(:,k) +...
+                                                             Bmk_hat(:,:,k)*du(:,k) +...
+                                                             Bpk_hat(:,:,k)*du(:,k+1) +...
+                                                             dx_prop_hat(:,k+1)];
                 end                        
             elseif prb.disc == "ZOH"
                 % Propagation
@@ -241,8 +277,13 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
             vc_term = value(Jvc);
             vc_constr_term = value(vc_constr_term)/max(expnwt(:));
 
-            fprintf("Error in `dx`: %f\n", norm(dx_pipg - dx) / norm(dx));
-            fprintf("Error in `du`: %f\n\n", norm(du_pipg - du) / norm(dx));
+            if (pipg_flag == 1) && (pipg_verbose == 1)
+
+                fprintf("Error in `dx`: %f\n", norm(dx_pipg - dx) / norm(dx));
+                fprintf("Error in `du`: %f\n\n", norm(du_pipg - du) / norm(dx));
+                fprintf("Error in the objective function value: %f\n\n", (value(obj_fun) - obj_val_pipg) / value(obj_fun));
+
+            end
     
             % Ensure that the TR value is always displayed consistently with infinity norm
             % Note that this is for display and for evaluation of termination criteria 
@@ -253,11 +294,17 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
             tr_term = max(Jtr_post_solve);
     
             % Update reference trajectory
-            xbar = x_unscl;
-            ubar = u_unscl;     
+            if use_pipg_sol == 1
 
-            % xbar = prb.Sx * dx_pipg + xbar;
-            % ubar = prb.Su * du_pipg + ubar;
+                xbar = prb.Sx * dx_pipg + xbar;
+                ubar = prb.Su * du_pipg + ubar;
+
+            else
+
+                xbar = x_unscl;
+                ubar = u_unscl;     
+
+            end
     
             ToF = prb.time_of_maneuver(xbar,ubar);        
             

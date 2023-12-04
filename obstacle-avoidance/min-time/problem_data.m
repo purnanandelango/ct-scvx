@@ -24,7 +24,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.tau = grid.generate_grid(0,1,K,'uniform');
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
-    prb.h = (1/999)*min_dtau; % (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
+    prb.h = (1/199)*min_dtau; % (1/10)*min_dtau;                    % Step size for integration that computes FOH matrices
     prb.Kfine = 1+50*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
@@ -190,7 +190,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % prb.solver_settings = sdpsettings('solver','ecos','verbose',false);
     prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-10,'ecos.reltol',1e-10,'ecos.feastol',1e-10);
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false,'quadprog.OptimalityTolerance',1e-9);
-    % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7);
+    % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-10,'osqp.eps_rel',1e-10);
 
     % prb.tr_norm = 2;
     % prb.tr_norm = inf;   
@@ -201,7 +201,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-8;
-    prb.epstr = 1e-3;
+    prb.epstr = 5e-3;
 
     % Takes in unscaled data
     prb.time_of_maneuver = @(z,u) disc.time_of_maneuver(prb.disc,prb.tau,u(n+1,:));    
