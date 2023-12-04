@@ -110,21 +110,21 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
 
                 % Row-normalization %
     
-                % for k = 1:(K-1)
-                %     for l = 1:nx
-                %         row = [Ak_hat(l,:,k), -Ek_hat(l,:,k), Bmk_hat(l,:,k), Bpk_hat(l,:,k), dx_prop_hat(l,k+1)];
-                %         row_norm = norm(row, 'inf');
-                %         % fprintf("row_norm: %f\n", row_norm);
-                %         if row_norm > 1e-4
-                %             row_norm_inv = 1 / row_norm;
-                %             Ek_hat(l,:,k) = row_norm_inv*Ek_hat(l,:,k);
-                %             Ak_hat(l,:,k) = row_norm_inv*Ak_hat(l,:,k);
-                %             Bmk_hat(l,:,k) = row_norm_inv*Bmk_hat(l,:,k);
-                %             Bpk_hat(l,:,k) = row_norm_inv*Bpk_hat(l,:,k);
-                %             dx_prop_hat(l,k+1) = row_norm_inv*dx_prop_hat(l,k+1);
-                %         end
-                %     end
-                % end
+                for k = 1:(K-1)
+                    for l = 1:nx
+                        row = [Ak_hat(l,:,k), -Ek_hat(l,:,k), Bmk_hat(l,:,k), Bpk_hat(l,:,k), dx_prop_hat(l,k+1)];
+                        row_norm = norm(row, 'inf');
+                        % fprintf("row_norm: %f\n", row_norm);
+                        if row_norm > 1e-4
+                            row_norm_inv = 1 / row_norm;
+                            Ek_hat(l,:,k) = row_norm_inv*Ek_hat(l,:,k);
+                            Ak_hat(l,:,k) = row_norm_inv*Ak_hat(l,:,k);
+                            Bmk_hat(l,:,k) = row_norm_inv*Bmk_hat(l,:,k);
+                            Bpk_hat(l,:,k) = row_norm_inv*Bpk_hat(l,:,k);
+                            dx_prop_hat(l,k+1) = row_norm_inv*dx_prop_hat(l,k+1);
+                        end
+                    end
+                end
 
                 % %%%%%%%%%%%%%%%%%%%
 
@@ -166,7 +166,7 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
                 fprintf("\nMaximum singular value: %8.8f\n", sig);
                 fprintf("Error in the maximum singular value: %f\n", sig_rel_err);
 
-                [dx_pipg, du_pipg, phi_pipg, psi_pipg, w_pipg, v_pipg] = pipg_custom(j, sig, Ak_hat, -Ek_hat, Bmk_hat, Bpk_hat, dx_prop_hat, prb.invSx*xbar, prb.invSu*ubar, prb);
+                [dx_pipg, du_pipg, phi_pipg, psi_pipg, w_pipg, v_pipg] = pipg_custom(sig, Ak_hat, -Ek_hat, Bmk_hat, Bpk_hat, dx_prop_hat, prb.invSx*xbar, prb.invSu*ubar, prb);
 
                 % Warm start %
 

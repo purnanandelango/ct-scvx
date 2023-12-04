@@ -1,11 +1,11 @@
-function [dx, du, phi, psi, w, v, prb] = pipg_custom(scp_iter, sig, A1, A2, B1, B2, d, x, u, prb)
+function [dx, du, phi, psi, w, v, prb] = pipg_custom(sig, A1, A2, B1, B2, d, x, u, prb)
 
-j_max = 100000;
-j_min = 10000;
-j_check = 10000;
+j_max = 10000;
+j_min = 1000;
+j_check = 1000;
 eps_abs = 1e-12;
 eps_rel = 1e-12;
-omg = 1;
+omg = 0.5;
 rho = 1.85;
 
 epsilon = (1 / prb.Py)*1e-6;
@@ -20,53 +20,26 @@ qu = zeros(nu, N);
 qphi = prb.wvc*ones(nx, N-1);
 qpsi = prb.wvc*ones(nx, N-1);
 
-if scp_iter == 1
+dx = prb.dx;
+du = prb.du;
+phi = prb.phi;
+psi = prb.psi;
+w = prb.w;
+v = prb.v;
 
-    dx = zeros(nx, N);
-    du = zeros(nu, N);
-    phi = zeros(nx, N-1);
-    psi = zeros(nx, N-1);
-    w = zeros(nx, N-1);
-    v = zeros(1, N-1);
-    
-    dx_ = zeros(nx, N);
-    du_ = zeros(nu, N);
-    phi_ = zeros(nx, N-1);
-    psi_ = zeros(nx, N-1);
-    w_ = zeros(nx, N-1);
-    v_ = zeros(nx, N-1);
-    
-    zdx = zeros(nx, N);
-    zdu = zeros(nu, N);
-    zphi = zeros(nx, N-1);
-    zpsi = zeros(nx, N-1);
-    eta = zeros(nx, N-1);
-    gam = zeros(1, N-1);
+dx_ = prb.dx;
+du_ = prb.du;
+phi_ = prb.phi;
+psi_ = prb.psi;
+w_ = prb.w;
+v_ = prb.v;
 
-else
-
-    dx = prb.dx;
-    du = prb.du;
-    phi = prb.phi;
-    psi = prb.psi;
-    w = prb.w;
-    v = prb.v;
-
-    dx_ = prb.dx;
-    du_ = prb.du;
-    phi_ = prb.phi;
-    psi_ = prb.psi;
-    w_ = prb.w;
-    v_ = prb.v;
-
-    zdx = prb.dx;
-    zdu = prb.du;
-    zphi = prb.phi;
-    zpsi = prb.psi;
-    eta = prb.w;
-    gam = prb.v;
-
-end
+zdx = prb.dx;
+zdu = prb.du;
+zphi = prb.phi;
+zpsi = prb.psi;
+eta = prb.w;
+gam = prb.v;
 
 zeros_nx_1 = zeros(nx-1, 1);
 
@@ -124,7 +97,7 @@ for j = 1:j_max
                   bet*( ...
                           A1(:, :, k)*(2*dx(:, k) - zdx(:, k)) + A2(:, :, k)*(2*dx(:, k+1) - zdx(:, k+1)) + ...
                           B1(:, :, k)*(2*du(:, k) - zdu(:, k)) + B2(:, :, k)*(2*du(:, k+1) - zdu(:, k+1)) + ...
-                          (2*phi(:, k) - zphi(:, k)) + (2*psi(:, k) - zpsi(:, k)) + d(:, k+1) ...
+                          (2*phi(:, k) - zphi(:, k)) - (2*psi(:, k) - zpsi(:, k)) + d(:, k+1) ...
                       );
 
         v(:, k) = max(0, gam(:, k) + ...
@@ -152,7 +125,23 @@ for j = 1:j_max
         r_inf_del_j = max([norm(w(:) - w_(:), 'inf'), norm(v(:) - v_(:), 'inf')]);
 
         if z_inf_del_j <= eps_abs + eps_rel*max(z_inf_jp1, z_inf_j) && r_inf_del_j <= eps_abs + eps_rel*max(r_inf_jp1, r_inf_j)
+
+            if j == j_min
+
+                fprintf("\n");
+                fprintf("+-----------------------------------------------------------------------+\n");
+                fprintf("|                             ..:: PIPG ::..                            |\n");
+                fprintf("+-----------+-----------+------------------+--------------+-------------+\n");
+                fprintf("| Iteration | Objective | Constraint Viol. | Primal Diff. |  Dual Diff. |\n");
+                fprintf("+-----------+-----------+------------------+--------------+-------------+\n");
+    
+            end
+
+            fprintf("| %9.2e | %9.2e |     %9.2e    |   %9.2e  |  %9.2e  |\n", ...
+            j,NaN,NaN,z_inf_del_j,r_inf_del_j);
+
             break
+
         end
 
         if j == j_min
