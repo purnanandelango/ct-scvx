@@ -3,12 +3,12 @@ clearvars
 
 prb = problem_data(07,  ...         % K
                    100,  ...        % scp_iters
-                   6e1, ...         % wvc
-                   0.01, ...        % wtr
+                   5e1, ...         % wvc
+                   1.00, ...        % wtr
                    0.01);           % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
-[xbar,ubar] = misc.create_initialization(prb,1, ...
+[xbar,ubar] = misc.create_initialization(prb,2, ...
                                          xbar,ubar,taubar);
 
 [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);

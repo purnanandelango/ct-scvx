@@ -2,17 +2,16 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.K = K;
 
-    prb.ny = 1;
+    prb.ny = 2;
     prb.nx = 14+prb.ny;
     prb.nu = 4;
-    prb.np = 0;
     
     prb.tau = grid.generate_grid(0,1,K,'uniform'); % Generate grid in [0,1]
 
     prb.dtau = diff(prb.tau);
     
     prb.h = (1/19)*prb.dtau;                 % Step size for integration that computes discretization matrices
-    prb.Kfine = 1+round(20/min(prb.dtau));   % Size of grid on which SCP solution is simulated
+    prb.Kfine = 1+round(50/min(prb.dtau));   % Size of grid on which SCP solution is simulated
     
     % System parameters
 
@@ -50,12 +49,12 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.vmax     = 3;
     
-    prb.vmax_STC      = 1.5;
-    prb.vmax_STC_aug  = 1.5-0.3;     % Trigger conservatively for better numerics
+    prb.vmax_stc      = 1.5;
+    prb.vmax_stc_aug  = 1.5-0.3;     % Trigger conservatively for better numerics
     prb.cosaoamax     = cosd( 10 ); 
     prb.cosaoamax_aug = cosd( 7 );
-    prb.STC_flag      = "v1";
-    prb.trig_scl      = 0.5;
+    prb.stc_flag      = "v1";
+    prb.trig_scl      = 0.1;
 
     prb.mdry    = 1;
     prb.mwet    = 2;
@@ -172,7 +171,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                                                     TB'/norm(TB);
                                                    -TB'/norm(TB)];
 
-    prb.stc_fun = @(xi,TB) plant.rocket6DoF.q_aoa_cnstr(xi(5:7),xi(8:11),prb.vmax_STC_aug,prb.cosaoamax_aug,prb.STC_flag);
+    prb.stc_fun = @(xi,TB) plant.rocket6DoF.q_aoa_cnstr(xi(5:7),xi(8:11),prb.vmax_stc_aug,prb.cosaoamax_aug,prb.stc_flag);
 
     % SCP parameters
 
@@ -188,13 +187,13 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-8,'osqp.eps_rel',1e-8,'osqp.max_iter',5e4);        
    
     % prb.solver = struct('name',"quadprog",'ConstraintTolerance',1e-9,'OptimalityTolerance',1e-9,'Display','none');
-    % prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
+    prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
     % prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-8,'reltol',1e-8);
     % prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
     % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
     % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
     % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
-    prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.5,'lambda',0.05,'omega',20,'test_termination',500);
+    % prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',1,'max_iter',5e4,'rho',1.5,'lambda',0.05,'omega',100,'test_termination',500);
 
     % prb.tr_norm = 2;
     % prb.tr_norm = inf;

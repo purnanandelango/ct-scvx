@@ -24,7 +24,7 @@ hold on
 plot(tvecbar,nrm_Tbar,'ob');
 
 nrm_vI = misc.compute_vec_norm(vI);
-[~,idx] = min(abs(nrm_vI-prb.vmax_STC));
+[~,idx] = min(abs(nrm_vI-prb.vmax_stc));
 t_trig = tvec(min(idx));    % Trigger time
 
 % Speed
@@ -36,7 +36,7 @@ legend('AutoUpdate','on');
 plot(tvecbar,nrm_vIbar,'ob','DisplayName','SCP');
 legend('AutoUpdate','off','Position',[0.773,0.507,0.122,0.075]);
 plot(t_trig*ones(1,100),linspace(0,prb.vmax),'-k');
-plot(tvec,prb.vmax_STC*ones(1,prb.Kfine),'-k');
+plot(tvec,prb.vmax_stc*ones(1,prb.Kfine),'-k');
 ylabel('[L T$^{-1}$]','FontSize',18)
 
 % Dilation factors
@@ -71,7 +71,7 @@ cnstr_viol(8,prb.Kfine) = 0;
 stc_viol(2,prb.Kfine) = 0;
 for k = 1:prb.Kfine
     cnstr_viol(:,k) = arrayfun(@(y) max(0,y), prb.cnstr_fun(x(:,k),u(1:3,k)));
-    [~,~,g,dg,c,cd] = plant.rocket6DoF.q_aoa_cnstr(x(5:7,k),x(8:11,k),prb.vmax_STC,prb.cosaoamax,"v1");
+    [~,~,g,dg,c,cd] = plant.rocket6DoF.q_aoa_cnstr(x(5:7,k),x(8:11,k),prb.vmax_stc,prb.cosaoamax,"v1");
     stc_viol(:,k) = [min(0,g)^2; max(0,c)^2];
 end
 figure
@@ -81,7 +81,7 @@ semilogy(tvec,cnstr_viol(2,:),'DisplayName','Glide-slope','Color',[0,0,0.5]);
 semilogy(tvec,cnstr_viol(3,:),'DisplayName','Speed','Color',[0,0.5,0]);
 semilogy(tvec,cnstr_viol(4,:),'DisplayName','Tilt','Color',[0.5,0.5,0]);
 semilogy(tvec,cnstr_viol(5,:),'DisplayName','Angular Vel.','Color',[0.5,0,0.5]);
-semilogy(tvec,cnstr_viol(6,:),'DisplayName','Gimbal','Color',[0,0.5,0.5]);
+semilogy(tvec,cnstr_viol(6,:),'DisplayName','Thrust gimbal','Color',[0,0.5,0.5]);
 semilogy(tvec,cnstr_viol(7,:),'DisplayName','Thrust upper','Color',[0.5,0.7,0.5]);
 semilogy(tvec,cnstr_viol(8,:),'DisplayName','Thrust lower','Color',[0.7,0.5,0.5]);
 title("Constraint Violation")

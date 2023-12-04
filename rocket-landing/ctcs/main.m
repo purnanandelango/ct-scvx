@@ -5,19 +5,19 @@ prb = problem_data(05,  ...         % K
                    010,  ...        % scp_iters
                    4e1, ...         % wvc
                    1.00, ...        % wtr
-                   0.10);           % cost_factor
+                   0.01);           % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
-[xbar1,ubar1] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-[xbar2,ubar2] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
-norm([xbar1(:);ubar1(:)]-[xbar2(:);ubar2(:)])/norm([xbar1(:);ubar1(:)])
+% [xbar1,ubar1] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar2,ubar2] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+% norm([xbar1(:);ubar1(:)]-[xbar2(:);ubar2(:)])/norm([xbar1(:);ubar1(:)])
 
-% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+[xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 
-% [xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+[xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
 
 taubar = prb.tau;
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);

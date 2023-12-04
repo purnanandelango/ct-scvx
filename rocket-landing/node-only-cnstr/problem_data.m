@@ -10,7 +10,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.dtau = diff(prb.tau);
     
     prb.h = (1/19)*prb.dtau;                    % Step size for integration that computes discretization matrices
-    prb.Kfine = 1+round(20/min(prb.dtau));      % Size of grid on which SCP solution is simulated
+    prb.Kfine = 1+round(50/min(prb.dtau));      % Size of grid on which SCP solution is simulated
     
     % System parameters
 
@@ -49,9 +49,9 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.vmax     = 3;
     
-    prb.vmax_STC    = 1.5;
+    prb.vmax_stc    = 1.5;
     prb.cosaoamax   = cosd( 10 ); 
-    prb.STC_flag    = "v1";
+    prb.stc_flag    = "v1";
 
     prb.mdry    = 1;
     prb.mwet    = 2;
@@ -99,27 +99,35 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     % Constraint parameters
 
-    prb.cnstr_fun       = @(x,u) [prb.mdry - x(1);
-                                  norm(prb.Hgam*x(2:4)) - x(2)/prb.cotgamgs;
-                                  norm(x(5:7))^2 - prb.vmax^2;
-                                  norm(prb.Hthet*x(8:11))^2 - prb.sinthetmaxby2^2;
-                                  norm(x(12:14))^2 - prb.omgmax^2;
-                                  prb.TBmin - norm(u(1:3))];
 
-    prb.cnstr_fun_jac_x = @(x,u) [-1, zeros(1,13);
-                                   0, (prb.Hgam'*prb.Hgam*x(2:4))'/norm(prb.Hgam*x(2:4)), zeros(1,10);
-                                   0, zeros(1,3), 2*x(5:7)', zeros(1,7);
-                                   0, zeros(1,6), 2*(prb.Hthet'*prb.Hthet*x(8:11))', zeros(1,3);
-                                   0, zeros(1,10), 2*x(12:14)';
-                                   zeros(1,14)];
-    prb.cnstr_fun_jac_u = @(x,u) [zeros(1,3);
-                                  zeros(1,3);
-                                  zeros(1,3);
-                                  zeros(1,3);
-                                  zeros(1,3);
-                                 -u(1:3)'/norm(u(1:3))];
+    prb.cnstr_fun       = @(xi,TB)               [prb.mdry - xi(1);
+                                                  norm(prb.Hgam*xi(2:4)) - xi(2)/prb.cotgamgs;
+                                                  norm(xi(5:7))^2 - prb.vmax^2;
+                                                  norm(prb.Hthet*xi(8:11))^2 - prb.sinthetmaxby2^2;
+                                                  norm(xi(12:14))^2 - prb.omgmax^2;
+                                                  norm(TB) - TB(1)/prb.cosdelmax;
+                                                  norm(TB) - prb.TBmax;
+                                                  prb.TBmin - norm(TB)];
+    
+    prb.cnstr_fun_jac_xi = @(xi,TB)               [-1, zeros(1,13);
+                                                    0, (prb.Hgam'*prb.Hgam*xi(2:4))'/norm(prb.Hgam*xi(2:4))+[-1/prb.cotgamgs 0 0], zeros(1,10);
+                                                    0, zeros(1,3), 2*xi(5:7)', zeros(1,7);
+                                                    0, zeros(1,6), 2*(prb.Hthet'*prb.Hthet*xi(8:11))', zeros(1,3);
+                                                    0, zeros(1,10), 2*xi(12:14)';
+                                                    zeros(1,14);
+                                                    zeros(1,14);
+                                                    zeros(1,14)];
+    
+    prb.cnstr_fun_jac_TB = @(xi,TB)               [ zeros(1,3);
+                                                    zeros(1,3);
+                                                    zeros(1,3);
+                                                    zeros(1,3);
+                                                    zeros(1,3);
+                                                    TB'/norm(TB)+[-1/prb.cosdelmax 0 0];
+                                                    TB'/norm(TB);
+                                                   -TB'/norm(TB)];
 
-    prb.stc_fun = @(x,u) plant.rocket6DoF.q_aoa_cnstr(x(5:7),x(8:11),prb.vmax_STC,prb.cosaoamax,prb.STC_flag);    
+    prb.stc_fun = @(x,u) plant.rocket6DoF.q_aoa_cnstr(x(5:7),x(8:11),prb.vmax_stc,prb.cosaoamax,prb.stc_flag);    
 
     % SCP parameters
 
