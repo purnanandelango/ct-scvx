@@ -2,6 +2,8 @@
 *.DS_Store
 *.log
 *.fls
+*.aux
 *.synctex.gz
 *.fdb_latexmk
+*.out
 codegen/
