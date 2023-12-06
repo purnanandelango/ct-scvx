@@ -1,2 +1,6 @@
 *.asv
 *.DS_Store
+*.log
+*.fls
+*.synctex.gz
+codegen/
