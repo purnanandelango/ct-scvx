@@ -3,4 +3,5 @@
 *.log
 *.fls
 *.synctex.gz
+*.fdb_latexmk
 codegen/
