@@ -1,0 +1,521 @@
+\documentclass[11pt,a4paper]{article}
+
+\input preamble
+
+\title{{\Large Trajectory Optimization with Continuous-Time Constraint Satisfaction\\via Penalized Trust Region Sequential Convex Programming}\\[0.5cm]{\Large\texttt{ctcs-scp}}}
+\author{{\normalsize Purnanand Elango}\\[0.5cm]{\normalsize Autonomous Controls Laboratory}\\{\normalsize University of Washington, Seattle}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Notation}
+
+\begin{tabular}{ll}
+$\bR{n}\!=\!\bR{n\times 1}$ & Vectors are matrices with one column\\
+$1_n,0_n$   & Vector of ones and zeros, respectively, in $\bR{n}$ (subscript inferred whenever omitted)\\
+$0_{n\times m}$ & Matrix of zeros in $\bR{n\times m}$\\
+$I_n$   & Identity matrix in $\bR{n\times n}$\\
+$|v|_+$ & $\square \mapsto \max\{0,\square\}$ applied element-wise for vector $v$\\
+$v^2$   & $\square \mapsto \square^2$ applied element-wise for vector $v$\\
+$(u,v)$ & Concatenation of vectors $u\in\bR{n}$ and $v\in\bR{m}$ to form a vector in $\bR{n+m}$\\
+$[A\,B]$ & Concatenation of matrices $A$ and $B$ with same number of rows\\
+$\bigg[\!\!\!\begin{array}{c}A\\[-0.1cm]B\end{array}\!\!\bigg]$ & Concatenation of matrices $A$ and $B$ with same number of columns\\
+\end{tabular}
+
+\section{Problem Formulation}
+
+\btx{Dynamical system:}
+\begin{align}
+    \frac{\mr{d}\xi(t)}{\mr{d}t} = \dot{\xi}(t) = F(\xi(t),\nu(t))\label{sys-dyn}
+\end{align}
+for $t\in[t_\mr{i},t_{\mr{f}}]$, with state $\xi$ and control input $\nu$.
+
+\btx{Path constraints:}
+\begin{align*}
+    & g(\xi(t),\nu(t)) \le 0\\
+    & h(\xi(t),\nu(t)) = 0
+\end{align*}
+where $g$ and $h$ are vector-valued functions. Operators ``$\le$'' and ``$=$'' are interpreted element-wise.
+
+\subsection{Time-Dilation and Constraint Reformulation}
+\btx{Time-dilation:}
+\begin{align}
+     \frac{\mr{d}\xi(t(\tau))}{\mr{d}\tau} = \derv{\xi}(\tau) = \frac{\mr{d}\xi(\tau)}{\mr{d}t}s(\tau) = s(\tau)F(\xi(\tau),\nu(\tau))\label{sys-dyn-dil}
+\end{align}
+for $\tau\in[0,1]$, where $t(\tau)$ is a strictly increasing function with domain $[0,1]$. Note that $\xi$ and $\nu$ are re-defined to be functions of $\tau\in[0,1]$ instead of $t$. 
+
+Free-final-time problems are converted to fixed-final-time problems via time-dilation. The dilation factor:
+$$
+    s(\tau) = \frac{\mr{d}t(\tau)}{\mr{d}\tau}
+$$ 
+is treated as an additional control input and is required to be positive.
+
+The control input is re-defined to be $u = (\nu,s)$, and the final time is given by:
+$$
+    t_{\mr{f}} = t_{\mr{i}} + \int_0^1s(\tau)\mr{d}\tau
+$$
+
+\btx{Constraint reformulation} augments path constraints to the time-dilated system  dynamics \eqref{sys-dyn-dil} as follows:
+\begin{align}
+    & \derv{x}(\tau) = \begin{bmatrix}
+                           \derv{\xi}(\tau) \\
+                           \derv{y}(\tau) 
+                       \end{bmatrix} = s(\tau)\begin{bmatrix}
+                                           F(\xi(\tau),\nu(\tau)) \\[0.15cm]
+                                           1^\top |g(\xi(\tau),\nu(\tau))|^2_+ + 1^\top h(\xi(\tau),\nu(\tau))^2
+                                       \end{bmatrix} = f(x(\tau),u(\tau))\label{sys-dyn-dil-aug}
+\end{align}
+for $\tau\in[0,1]$, where $x=(\xi,y)$ is the re-defined state. 
+
+Boundary condition on the constraint violation integrator:
+\begin{align}
+    y(0) = y(1) \label{cnstr-integrator-bc}
+\end{align}
+ensures that the path constraints are satisfied for all $\tau\in[0,1]$. Note that we can also have an exclusive state for each constraint.
+
+In the subsequent development, we treat
+\begin{align}
+    \derv{x}(\tau) = f(x(\tau),u(\tau))\label{sys-dyn-template}
+\end{align}
+with $x(\tau)\in\mathbb{R}^{n_x}$ and $u(\tau)\in\mathbb{R}^{n_u}$, for $\tau\in[\tau_{\mr{i}},\tau_{\mr{f}}]$, as the template for describing a dynamical system irrespective of whether the time-dilation and constraint reformulation operations have occurred.  The domain of the independent variable $\tau$ is defined accordingly to handle problems that originally have fixed-final-time. State $x$ and control input $u$ are appropriately defined for problems that are subjected time-dilation and constraint reformulation.
+
+\subsection{Discretization}
+\btx{Discretization} of interval $[\tau_{\mr{i}},\tau_{\mr{f}}]$ into a grid with $K$ nodes:
+\begin{align}
+    \tau_{\mr{i}} = \tau_1 < \ldots < \tau_K = \tau_{\mr{f}}\label{disc-grid}
+\end{align}
+
+If time-dilation is performed, then time duration over sub-interval $[\tau_k,\tau_{k+1}]$ is given by:
+\begin{align*}
+\Delta t_k = \int_{\tau_k}^{\tau_{k+1}} s(\tau)\mr{d}\tau
+\end{align*}
+for $k=1,\ldots,K-1$.
+
+Constraints on dilation factor and time duration:
+\begin{align*}
+    s_{\min} \le s(\tau) \le{} & s_{\max} \\
+    t_{\mr{f}} = \sum_{k=1}^{K-1}\Delta t_k \le{} & t_{\mr{f},\max}\\    
+    \Delta t _{\min} \le \Delta t_k \le{} & \Delta t_{\max}
+\end{align*}
+The constraints above are defined in \href{https://github.com/purnanandelango/trajopt-util/blob/65a9e09777622584c0c5260fb944758089cbb795/mutil/%2Bmisc/time_cnstr.m}{\path{misc.time_cnstr}}
+
+\btx{Parameterization} of control input: 
+
+Zero-order-hold (ZOH):
+$$
+    u(\tau) = u_k
+$$
+for $\tau\in[\tau_{k},\tau_{k+1})$ and $k=1,\ldots,K-1$. Define $u_K = u_{K-1}$ for convenience.
+
+First-order-hold (FOH):
+$$
+    u(\tau) = \left(\frac{\tau_{k+1}-\tau}{\tau_{k+1}-\tau_k}\right)u_k + \left(\frac{\tau-\tau_{k+1}}{\tau_{k+1}-\tau_k}\right)u_{k+1}
+$$
+for $\tau\in[\tau_{k},\tau_{k+1}]$ and $k=1,\ldots,K-1$.
+
+Note that $u(\tau_k) = u_{k}$ holds for both ZOH and FOH. The node points values of the state and control input: $x_k$ and $u_k$, respectively, are treated as decision variables.
+
+Convex constraints on the control input need not be subjected to constraint reformulation when ZOH or FOH parameterization is chosen. It is sufficient to impose the convex constraints only at the node points. 
+
+We will use the term ``discretization'' to refer to the combined discretization and control input parameterization operations. This is because the form of ZOH and FOH parameterizations that we adopt are dependent on the choice of discretization grid \eqref{disc-grid}. 
+
+\btx{Discretized dynamics:}
+\begin{align}
+    x_{k+1} = x_{k} + \int_{\tau_k}^{\tau_{k+1}}f(x(\tau),u(\tau))\mr{d}\tau\label{disc-dyn}
+\end{align}
+for $k=1,\ldots,K-1$, where $x(\tau)$ is the solution to \eqref{sys-dyn-template} over $[\tau_k,\tau_{k+1}]$ with initial condition $x_k$ and $u(\tau)$ is ZOH- parameterized using $u_k$ or FOH-parameterized using $u_k$ and $u_{k+1}$.  
+
+If constraint reformulation is performed, then the boundary condition \eqref{cnstr-integrator-bc} is relaxed to 
+$$
+    y_{k+1} - y_{k} \le \epsilon
+$$
+for $k=1,\ldots,K-1$, so that all feasible solutions do not violate LICQ. Note that $y_k$ is value of the state $y$ in \eqref{sys-dyn-dil-aug} at node $\tau_k$.
+
+\begin{center}
+\begin{tabular}{c|c|c}
+\hline
+Parameter & Code variable(s) & Meaning \\
+\hline
+$g$   & \verb|cnstr_fun| & Inequality constraint function \\
+$h$   & \verb|cnstr_eq_fun| & Equality constraint function \\
+$s_{\min}$, $s_{\max}$ & \verb|smin|, \verb|smax| & Upper- and lower-bounds on dilation factor \\
+$\Delta t_{\min}$, $\Delta t_{\max}$ & \verb|dtmin|, \verb|dtmax| & Upper- and lower-bound on sub-interval time duration \\
+$t_{\mr{f},\max}$ & \verb|ToFmax| & Upper bound on final time \\
+$x_k$ & \verb|x(:,k)| & State at node $\tau_k$ \\
+$u_k$ & \verb|u(:,k)| & Control input at node $\tau_k$ \\
+$y_k$ & \verb|y(:,k)| & Constraint violation integrator at node $\tau_k$ \\
+$\epsilon$ & \verb|eps_cnstr| & Constraint relaxation tolerance
+\end{tabular}
+\end{center}
+
+\subsubsection{Linearization}
+
+At each iteration of SCP, the discretized dynamics \eqref{disc-dyn} is linearized with respect to the previous iterate, denoted by $\bar{x}_k,\,\bar{u}_k$, for $k=1,\ldots,K$. 
+
+For each $k=1,\ldots,K-1$, let $\bar{x}^k(\tau)$ denote the solution to \eqref{sys-dyn-template} over $[\tau_k,\tau_{k+1}]$ generated with initial condition $\bar{x}_k$ and control input $\bar{u}(\tau)$, which is parameterized using $\bar{u}_k$, for $k=1,\ldots,K$. Note that, in general, $\bar{x}^k(\tau_{k+1})\ne \bar{x}_{k+1}$ before SCP converges.
+
+The Jacobian of $f$ in \eqref{sys-dyn-template} evaluated on $\bar{x}^k(\tau),\,\bar{u}(\tau)$ are denoted by:
+\begin{align*}
+    A^k(\tau) ={} & \frac{\partial f(\bar{x}^k(\tau),\bar{u}(\tau))}{\partial x}\\
+    B^k(\tau) ={} & \frac{\partial f(\bar{x}^k(\tau),\bar{u}(\tau))}{\partial u}
+\end{align*}
+for $\tau\in[\tau_k,\tau_{k+1}]$.
+
+The discretized dynamics \eqref{disc-dyn} is linearized as follows.
+
+ZOH:
+\begin{align}
+    x_{k+1} = A_kx_{k} + B_ku_k + w_k     
+\end{align}
+for $k=1,\ldots,K-1$, where $A_k,B_k,w_k$ result from the solution to the following initial value problem over $\tau\in[\tau_k,\tau_{k+1}]$:
+\begin{align*}
+    & \derv{\Phi}_x(\tau,\tau_k) = A^k(\tau)\Phi_x(\tau,\tau_k)\\ 
+    & \derv{\Phi}_u(\tau,\tau_k) = A^k(\tau)\Phi_u(\tau,\tau_k) + B^k(\tau)\left(\frac{\tau_{k+1}-\tau}{\tau_{k+1}-\tau_k}\right)\\
+    & \Phi_x(\tau_k,\tau_k) = I_{n_x}\\
+    & \Phi_u(\tau_k,\tau_k) = 0_{n_x\times n_u}\\[0.5cm]
+    & A_k = \Phi_x(\tau_{k+1},\tau_k)\\
+    & B_k = \Phi_u(\tau_{k+1},\tau_k)\\
+    & w_k = \bar{x}^k(\tau_{k+1}) - A_k\bar{x}_k - B_k\bar{u}_{k} 
+\end{align*}
+
+FOH:
+\begin{align}
+    x_{k+1} = A_kx_{k} + B^-_ku_k + B^+_ku_{k+1} + w_k     
+\end{align}
+for $k=1,\ldots,K-1$, where $A_k,B^-_k,B^+_k,w_k$ result from the solution to the following initial value problem over $\tau\in[\tau_k,\tau_{k+1}]$:
+\begin{align*}
+    & \derv{\Phi}_x(\tau,\tau_k) = A^k(\tau)\Phi_x(\tau,\tau_k)\\ 
+    & \derv{\Phi}{}^-_u(\tau,\tau_k) = A^k(\tau)\Phi{}^-_u(\tau,\tau_k) + B^k(\tau)\left(\frac{\tau_{k+1}-\tau}{\tau_{k+1}-\tau_k}\right)\\
+    & \derv{\Phi}{}^+_u(\tau,\tau_k) = A^k(\tau)\Phi{}^+_u(\tau,\tau_k) + B^k(\tau)\left(\frac{\tau-\tau_k}{\tau_{k+1}-\tau_k}\right)\\
+    & \Phi_x(\tau_k,\tau_k) = I_{n_x}\\
+    & \Phi{}^-_u(\tau_k,\tau_k) = 0_{n_x\times n_u}\\
+    & \Phi{}^+_u(\tau_k,\tau_k) = 0_{n_x\times n_u}\\[0.5cm]
+    & A_k = \Phi_x(\tau_{k+1},\tau_k)\\
+    & B_k^- = \Phi{}^-_u(\tau_{k+1},\tau_k)\\
+    & B_k^+ = \Phi{}^+_u(\tau_{k+1},\tau_k)\\
+    & w_k = \bar{x}^k(\tau_{k+1}) - A_k\bar{x}_k - B_k^-\bar{u}_{k} - B_{k}^+\bar{u}_{k+1} 
+\end{align*}
+
+\section{Miscellaneous}
+\clearpage
+\subsection{Parsing to Canonical Form}
+%
+Template discretized problem:
+\begin{subequations}
+\begin{align}
+    \mr{minimize}~~&~w_{\mr{cost}}e_x^\top\hat{x}_K + \frac{1}{2}w_{\mr{tr}}\sum_{k=1}^K \|\hat{x}_k - \hat{\bar{x}}_k\|_2^2 + \|\hat{u}_k - \hat{\bar{u}}_k\|_2^2 + w_{\mr{vc}}\sum_{k=1}^{K-1}1_{n_x}^\top(\mu^+_k+\mu_k^-) & &  \\
+    \mr{subject~to}~&~-\hat{x}_{k+1} + \hat{A}_k\hat{x}_k + \hat{B}^-_k\hat{u}_k + \hat{B}^+_k\hat{u}_{k+1} + \mu_k^+ - \mu_k^- + \hat{w}_k = 0 & & \hspace{-1cm}1 \le k \le K-1\\
+     &~E_{y}(\hat{x}_{k+1}-\hat{x}_{k}) \le \epsilon & & \hspace{-1cm}1 \le k \le K-1\\
+     &~\mu_k^+\ge 0,~\mu^-_k\ge 0 & &  \hspace{-1cm}1 \le k \le K-1 \\
+     &~\hat{u}_{\min} \le \hat{u}_k \le \hat{u}_{\max} & &  \hspace{-1cm}1 \le k \le K\\
+     &~E_{\mr{i}}\hat{x}_1 = \hat{z}_{\mr{i}},~E_{\mr{f}}\hat{x}_K = \hat{z}_{\mr{f}} 
+\end{align}
+\end{subequations}
+%
+\begin{align*}
+    % & x_k = S_x \hat{x}_k + c_x\\
+    & \hat{x}_k = S_x^{-1}(x_k-c_x)\\
+    & \hat{\bar{x}}_k = S_x^{-1}(\bar{x}_k-c_x)\\
+    & \hat{A}_k = S_x^{-1}A_kS_x\\
+    & \hat{B}^-_k = S_x^{-1}B^-_kS_u\\
+    & \hat{B}^+_k = S_x^{-1}B^+_kS_u\\
+    & \hat{w}_k = S_x^{-1}(w_k+A_kc_x+B_k^{-}c_u + B_k^{+}c_u - c_x)
+\end{align*}
+%
+Canonical QP:
+\begin{subequations}
+\begin{align}
+    \mr{minimize}~~&~\frac{1}{2}z^\top\hat{P} z + \hat{p}^\top z\\
+    \mr{subject~to}~&~\hat{G}z = \hat{g}\\
+    &~\hat{H}z\le \hat{h} 
+\end{align}
+\end{subequations}
+%
+\begin{align*}
+    & z = \big(\hat{x}_1,\ldots,\hat{x}_K,\,\hat{u}_1,\ldots,\hat{u}_K,\,\mu^-_1,\ldots,\mu^-_{K-1},\,\mu^+_1,\ldots,\mu^+_{K-1}\big)\in\bR{(n_x+n_u)K+2n_x(K-1)}\\
+    & \hat{P} = \mr{blkdiag}(w_{\mr{tr}}I_{(n_x+n_u)K},\,0_{2n_x(K-1)\times 2n_x(K-1)})\\
+    & \hat{p} = w_{\mr{cost}}\big(0_{n_x(K-1)},\,e_x,\,0_{n_uK+2n_x(K-1)}\big)\\
+    & ~~~~~-w_{\mr{tr}}\big(\hat{\bar{x}}_1,\ldots,\hat{\bar{x}}_K,\,\hat{\bar{u}}_1,\ldots,\hat{\bar{u}}_K,\,0_{2n_x(K-1)}\big)\\
+    & ~~~~~+w_{\mr{vc}}\big(0_{(n_x+n_u)K},\,1_{2n_x(K-1)}\big)\\
+    & \hat{G} = \left[\begin{array}{ccc}\hat{G}_{\mr{i},\mr{f}} & 0_{(n_{\mr{i}}+n_{\mr{f}})\times n_uK} & 0_{(n_{\mr{i}}+n_{\mr{f}})\times2n_x(K-1)}\\[0.2cm]\hat{G}_x & \hat{G}_u & \hat{G}_\mu\end{array}\right]\\
+    & \hat{G}_{\mr{i},\mr{f}} = \left[ \begin{array}{c} E_{\mr{i}}~0_{n_{\mathrm{i}}\times n_x(K-1)}\\0_{n_{\mathrm{f}}\times n_x(K-1)}~E_{\mr{f}}\end{array} \right]\\
+    & \hat{G}_x = \left[\hat{A}~0_{n_x(K-1)\times n_x}\right]-\left[0_{n_x(K-1)\times n_x}~I_{n_x(K-1)}\right]\\
+    & \hat{G}_u = \left[\hat{B}^-~0_{n_x(K-1)\times n_u}\right]+\left[0_{n_x(K-1)\times n_u}~\hat{B}^+\right]\\
+    & \hat{G}_\mu = \left[I_{n_x(K-1)}~-I_{n_x(K-1)}\right]\\
+    & \hat{A} = \mr{blkdiag}(\hat{A}_1,\ldots,\hat{A}_{K-1})\\
+    & \hat{B}^- = \mr{blkdiag}(\hat{B}^-_1,\ldots,\hat{B}^-_{K-1})\\
+    & \hat{B}^+ = \mr{blkdiag}(\hat{B}^+_1,\ldots,\hat{B}^+_{K-1})\\
+    & \hat{g} = \big(\hat{z}_{\mr{i}},\hat{z}_{\mr{f}},-\hat{w}_1,\ldots,-\hat{w}_{K-1}\big)\\
+    & \hat{H}_{u,\mu} = \left[\begin{array}{ccc}0_{2n_uK\times n_xK} & \begin{array}{c}I_{n_uK}\\-I_{n_uK}\end{array} & 0_{2n_uK\times 2n_x(K-1)}\\ 
+                      0_{2n_x(K-1)\times n_xK} & 0_{2n_x(K-1)\times n_uK} & -I_{2n_x(K-1)}\end{array}\right]\\
+    & \hat{H}_y = -\left[I_{K-1}\otimes E_y~0_{n_y(K-1)\times n_x}\right] + \left[0_{n_y(K-1)\times n_x}~I_{K-1}\otimes E_y\right]\\
+    & \hat{H} = \left[ \begin{array}{c} \hat{H}_{u,\mu} \\ \hat{H}_y~~0_{n_y(K-1)\times n_uK+2n_x(K-1)} \end{array}\right]\\
+    & \hat{h} = \big( \hat{u}_{\max}1_{n_uK},-\hat{u}_{\min}1_{n_uK},\,0_{2n_x(K-1)},\,\epsilon 1_{n_y(K-1)}\big)
+\end{align*}
+
+\subsection{Extrapolated PIPG} 
+
+\begin{algorithm}[!htpb]
+\caption{xPIPG implementation with FOH}
+\begin{algorithmic}[1]
+\Require $j_{\max},\,\alpha,\,\beta,\,\rho$
+\Statex \hspace{-0.65cm}\textbf{Initialize:} $\zeta^1,\,\eta^1,\,\chi^1$
+\For{$j = 1,\ldots,j_{\max}$}
+\State $z^{j+1} \gets \zeta^{j} - \alpha(\hat{P}\zeta^j+\hat{p}+\tilde{G}^\top\eta^j + \tilde{H}^\top\chi^j)$
+\State \btx{$E_{\mr{i}}\hat{x}_{1}^{j+1} \gets z_{\mr{i}}$}
+\State \btx{$E_{\mr{f}}\hat{x}_{K}^{j+1} \gets z_{\mr{f}}$}
+\State \btx{$\hat{u}_k^{j+1} \gets \max\{\hat{u}_{\min},\min\{\hat{u}_{\max},\hat{u}_k^{j+1}\}\}~\qquad k=1,\ldots,K$}
+\State \btx{$(\mu^{+}_k)^{j+1}\gets\max\{0,(\mu^{+}_k)^{j+1}\}\qquad\qquad\qquad k=1,\ldots,K-1$}
+\State \btx{$(\mu^{-}_k)^{j+1}\gets\max\{0,(\mu^{-}_k)^{j+1}\}\qquad\qquad\qquad k=1,\ldots,K-1$}
+\State $w^{j+1} \gets \eta^j + \beta(\tilde{G}(2z^{j+1}-\zeta^j)-\tilde{g})$
+\State $v^{j+1} \gets \max\{0,\chi^j + \beta(\tilde{H}(2z^{j+1}-\zeta^j)-\tilde{h})\}$
+\State $\zeta^{j+1} \gets (1-\rho)\zeta^j + \rho z^{j+1}$
+\State $\eta^{j+1} \gets (1-\rho)\eta^j + \rho w^{j+1}$
+\State $\chi^{j+1} \gets (1-\rho)\chi^j + \rho v^{j+1}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{align}
+    & z^j = \big(\hat{x}^j_1,\ldots,\hat{x}^j_K,\hat{u}_1^j,\ldots,\hat{u}_K^j,(\mu^+_1)^j,\ldots,(\mu^+_{K-1})^j,(\mu^-_1)^j,\ldots,(\mu^-_{K-1})^j\big)\\
+    & \tilde{G} = \left[\hat{G}_{x}~\hat{G}_{u}~\hat{G}_{\mu} \right]\\
+    & \tilde{g} = -\big(\hat{w}_1,\ldots,\hat{w}_{K-1}\big)\\
+    & \tilde{H} = \left[\hat{H}_y~0_{n_y(K-1)\times n_uK+2n_x(K-1)}\right]\\
+    & \tilde{h} = \epsilon1_{n_y(K-1)}
+\end{align}
+
+\subsubsection{Customization}
+
+\btx{WIP}
+
+\subsection{Signed Distance}
+
+The signed-distance of $z$ to set $\mc{Y}$ is defined as
+\begin{align}
+    \mr{sd}(z,\mc{Y}) = \underset{y\in\mc{Y}}{\mr{min}}\|z-y\|_2 - \underset{y\in\mc{Y}^c}{\mr{min}}\|z-y\|_2\label{sgn-dist}
+\end{align}
+and its gradient with respect to $z$ is defined as 
+\begin{align}
+    \partial\mr{sd}(z,\mc{Y}) = \begin{cases}\displaystyle\frac{z-\underset{y\in\partial\mc{Y}}{\mr{argmin}}\,\|z-y\|_2}{\mr{sd}(z,\mc{Y})} &\text{if }z\notin\partial\mc{Y}\\\hat{n}(z,\mc{Y}) &\text{otherwise}\end{cases}\label{sgn-dist-jac}
+\end{align}
+where $\partial \mc{Y}$ is the boundary of set $\mc{Y}$, and $\hat{n}(z,\mc{Y})$ is an outward unit-normal at a point $z\in\partial\mc{Y}$.
+
+\subsection{Passive Safety}
+
+\newcommand{\deriv}[1]{\overset{\diamond}{#1}}
+
+Given a trajectory $x(\tau)\in\bR{n_x}$, for $\tau\in[\tau_{\mr{i}},\tau_{\mr{f}}]$, passive safety with respect to set $\mc{A}\subset\bR{n_x}$ requires that the free-drift starting from the trajectory does not intersect with $\mc{A}$ for a finite duration, say $\tau_\mr{s}$. In other words:
+\begin{align}
+    x^\tau(\gamma) \notin \mc{A} \label{passive-safe}
+\end{align}
+for $\gamma\in[0,\tau_\mr{s}]$, where $x^\tau(\gamma)$ solve the following initial value problem over $[0,\gamma]$:
+\begin{align}
+    \frac{\mr{d}x(\gamma)}{\mr{d}\gamma} = \deriv{x}(\gamma) = f(x(\gamma),0_{n_u})\label{free-drift}
+\end{align}
+with initial condition $x^\tau(0) = x(\tau)$. For simplicity, we assume that $\mc{A}$ is a polytope defined by:
+$$
+    \mc{A} = \big\{\,z\in\bR{n_x}\,\big|\,H_{\mc{A}}z \le h_{\mc{A}}\,\big\}
+$$
+Since \eqref{passive-safe} is a nonconvex constraint, we will linearize \eqref{passive-safe} with respect to an arbitrary trajectory $\bar{x}(\tau)\in\bR{n_x}$, for $\tau\in[\tau_{\mr{i}},\tau_{\mr{f}}]$.
+
+For each $\tau\in[\tau_{\mr{i}},\tau_{\mr{f}}]$, let $\bar{x}^\tau(\gamma)$ denote the solution to \eqref{free-drift} over $[0,\tau_{\mr{s}}]$ with initial condition $\bar{x}(\tau)$. The Jacobian of $f$ in \eqref{free-drift} evaluated on $\bar{x}^\tau(\gamma)$ is denoted by:
+\begin{align*}
+    A^\tau(\gamma) = \frac{\partial f(\bar{x}^\tau(\gamma),0_{n_u})}{\partial x}
+\end{align*}
+Then, the free-drift $x^\tau(\gamma)$, for $\gamma\in[0,\tau_{\mr{s}}]$, starting from $x(\tau)$ can be approximated as:
+\begin{align*}
+    x^\tau(\gamma) \approx{} & \bar{x}^\tau(\gamma) + \Phi^\tau(\gamma,0)(x(\tau) - \bar{x}(\tau))\\
+    ={} & \Phi^\tau(\gamma,0)x(\tau) + \phi^\tau(\gamma,0)
+\end{align*}
+where $\Phi^\tau(\gamma,0)$ solves the following initial value problem over $[0,\gamma]$:
+\begin{subequations}
+\begin{align}
+    & \deriv{\Phi}{}^{\tau}(\gamma,0) = A^\tau(\gamma)\Phi^\tau(\gamma,0)\\
+    & \Phi^\tau(0,0) = I_{n_x}
+\end{align}\label{free-drift-STM}%
+\end{subequations}
+and $\phi^\tau(\gamma,0) = \bar{x}^\tau(\gamma) - \Phi^\tau(\gamma,0)\bar{x}(\tau)$.
+
+The passive safety constraint on $x(\tau)$ can be approximated as
+\begin{align*}
+     & \Phi^\tau(\gamma,0)x(\tau) + \phi^\tau(\gamma,0) \notin \mc{A}\\
+\iff & x(\tau) \notin \mc{B}^\tau_\gamma = \big\{\,z\,\big|\,H_{\mc{A}}\Phi^\tau(\gamma,0)\le h_{\mc{A}}-H_{\mc{A}}\phi^\tau(\gamma,0)\,\big\}\\
+\iff & \mr{sd}(x(\tau),\mc{B}^\tau_\gamma) > 0\\
+\impliedby & \mr{sd}(\bar{x}(\tau),\mc{B}^\tau_\gamma) + \partial\mr{sd}(\bar{x}(\tau),\mc{B}^\tau_\gamma)(x(\tau)-\bar{x}(\tau)) > 0
+\end{align*}
+for $\gamma\in[0,\tau_{\mr{s}}]$, where $\Phi^\tau(\gamma,0)$ is invertible. The final implication holds because of the convexity of $\mc{B}^\tau_\gamma$.
+
+The sets $\mc{B}^\tau_\gamma$ are the backward reachable sets (BRS) associated with the polytope $\mc{A}$ for the affine system:
+\begin{align}
+    \deriv{x}(\gamma) = A^\tau(\gamma)x(\gamma) + f(\bar{x}^\tau(\gamma),0_{n_u})-A^\tau(\gamma)\bar{x}^\tau(\gamma)\label{free-drift-affine}
+\end{align}
+Suppose that $\hat{x}^\tau(\gamma)$, for $\gamma\in[0,\tau_{\mr{s}}]$, is a solution to \eqref{free-drift-affine}, and let $\hat{x}^\tau(0)\in\mc{B}^\tau_{\tilde{\gamma}}$, for some $\tilde{\gamma}\in[0,\tau_{\mr{s}}]$. Then, $\hat{x}^\tau(\tilde{\gamma}) \in \mc{A}$.
+
+\subsubsection{\texttt{node-only-cnstr}}
+
+Impose \eqref{passive-safe} at the nodes of a 2D grid defined in $[\tau_{\mr{i}},\tau_{\mr{f}}]\times[0,\tau_{\mr{s}}]$.
+
+Similar to \eqref{disc-grid}, define a grid with $K_{\mr{s}}$ nodes in $[0,\tau_{\mr{s}}]$:
+\begin{align*}
+    0 = \gamma_1 < \ldots < \gamma_{K_{\mr{s}}} = \tau_{\mr{s}} 
+\end{align*}
+Given a arbitrary sequence of state $\bar{x}_k$ at nodes $\tau_k$, for $k=1,\ldots,K$, compute $\Phi^{\tau_k}(\gamma_j,0)$ by solving \eqref{free-drift-STM} with $A^{\tau_k}(\gamma)$ evaluated on the free drift starting from $\bar{x}_k$. Then, compute the backward reachable set $\mc{B}_{\gamma_j}^{\tau_k}$
+\begin{align*}
+    & \mr{sd}(\bar{x}_k,\mc{B}^{\tau_k}_{\gamma_j}) + \partial\mr{sd}(\bar{x}_k,\mc{B}^{\tau_k}_{\gamma_j})(x_k - \bar{x}_k) > 0\\
+    \implies & \Phi^{\tau_k}(\gamma_j,0)x_k + \phi^{\tau_k}(\gamma_j,0) \notin \mc{A}\\
+\end{align*}
+for $k=1,\ldots,K$ and $j=1,\ldots,K_{\mr{s}}$.
+
+\section{Examples}
+
+\subsection{\texttt{doubleint-circle-obs}}
+
+\subsubsection{\texttt{node-only-cnstr}}
+%
+Solve free-final-time problem with time-dilation and constraints imposed at nodes $\tau_k$.
+
+\btx{Dynamical system:}
+\begin{align}
+    \derv{x}(\tau) = \begin{bmatrix}
+                        \derv{r}(\tau)\\
+                        \derv{v}(\tau)
+                     \end{bmatrix} = s(\tau)\begin{bmatrix}
+                                        v(\tau)\\
+                                        T(\tau)+a-c_{\mr{d}}\|v(\tau)\|_2v(\tau)
+                                     \end{bmatrix} =  f(x(\tau),u(\tau))\label{dbl-intg-sys-dil}
+\end{align}
+for $\tau\in[0,1]$, where $x = (r,v)$ and $u=(T,s)$.
+
+\begin{center}
+    \begin{tabular}[c]{cccc}
+    \hline
+    Quantity & Code variable & Meaning          & Membership \\
+             &               & (non-dimensional) & \\ 
+    \hline 
+    $r$ & \verb|r| & Position & $\bR{2}$ \\
+    $v$ & \verb|v| & Velocity & $\bR{2}$ \\
+    $T$ & \verb|T| & Acceleration input & $\bR{2}$ \\
+    $a$ & \verb|accl| & External acceleration & $\bR{2}$ \\
+    $c_{\mr{d}}$ & \verb|c_d| & Drag coefficient & $\bR{}_+$ 
+    \end{tabular}   
+\end{center}
+This system model is provided in \href{https://github.com/purnanandelango/trajopt-util/blob/65a9e09777622584c0c5260fb944758089cbb795/mutil/%2Bplant/%2Bdoubleint/dyn_func.m}{\path{plant.doubleint.dyn_func}}.
+
+\btx{Constraints:}
+\begin{align*}
+    \|r(\tau) - r_{\mr{obs}}^i\|_2 \ge{} & q_{\mr{obs}}^i \qquad i=1,2 & & \text{(nonconvex)}\\
+    \|v(\tau)\|_2 \le{} & v_{\max} & & \\
+    \|T(\tau)\|_2 \le{} & T_{\max} & & \\
+    T_{\min} \le \|T(\tau)\|_2 ~~~~ &  & & \text{(nonconvex)}
+\end{align*}
+
+\begin{center}
+\begin{tabular}{c|c|c|c}
+\hline
+Quantity & Code variable(s) & Meaning & Membership \\
+\hline
+$r^i_{\mr{obs}}$, $q^i_{\mr{obs}}$ & \verb|robs(:,i)|, \verb|qobs(i)| & Center and radius of $i$th circular obstacle & $\bR{2}$, $\bR{}_+$\\
+$v_{\max}$ & \verb|vmax| & Speed upper-bound & $\bR{}_+$\\
+$T_{\min}$, $T_{\max}$ & \verb|Tmin|, \verb|Tmax| & Upper- and lower-bounds on input magnitude & $\bR{}_+$
+\end{tabular}
+\end{center}
+
+\subsubsection{\texttt{ctcs}}
+
+Solve free-final-time problem with time-dilation and constraints augmented to the system dynamics \eqref{dbl-intg-sys-dil}.
+
+\btx{Inequality constraints function}:
+\begin{align*}
+    g(r,v,T) = \begin{bmatrix}
+                  -\|r - r^1_{\mr{obs}}\|_2 + q^1_{\mr{obs}} \\
+                  -\|r - r^2_{\mr{obs}}\|_2 + q^2_{\mr{obs}} \\
+                   \|v\|_2^2 - v_{\max}^2 \\
+                  -\|T\|_2 + T_{\min}
+               \end{bmatrix}
+\end{align*}
+
+\btx{Dynamical system:}
+
+\textbf{\texttt{exclusive-integrator-states}}
+\begin{align}
+    \derv{x}(\tau) = \begin{bmatrix}
+                        \derv{r}(\tau) \\
+                        \derv{v}(\tau) \\
+                        \derv{y}(\tau) 
+                     \end{bmatrix} = s(\tau)\begin{bmatrix}
+                                        v(\tau) \\
+                                        T(\tau) + a - c_\mr{d}\|v(\tau)\|_2v(\tau) \\
+                                        |g(r,v,T)|_+^2
+                                     \end{bmatrix}\label{dbl-intg-dilaugsys-exclu}
+\end{align}
+for $\tau\in[0,1]$, where $y(\tau)\in\bR{4}$.
+
+\textbf{\texttt{single-integrator-state}}
+\begin{align}
+    \derv{x}(\tau) = \begin{bmatrix}
+                        \derv{r}(\tau) \\
+                        \derv{v}(\tau) \\
+                        \derv{y}(\tau) 
+                     \end{bmatrix} = s(\tau)\begin{bmatrix}
+                                        v(\tau) \\
+                                        T(\tau) + a - c_\mr{d}\|v(\tau)\|_2v(\tau) \\
+                                        1_4^\top|g(r,v,T)|_+^2
+                                     \end{bmatrix}\label{dbl-intg-dilaugsys-single}
+\end{align}
+for $\tau\in[0,1]$, where $y(\tau)\in\bR{}$.
+
+\subsection{\texttt{doubleint-ellip-obs}}
+
+\subsubsection{\texttt{node-only-cnstr}}
+
+\subsubsection{\texttt{ctcs}}
+
+\subsection{\texttt{doubleint-polytope-obs}}
+
+\subsubsection{\texttt{ctcs}}
+
+Solve free-final-time problem with time-dilation and constraints augmented to the system dynamics \eqref{dbl-intg-sys-dil}.
+
+\btx{Inequality constraints functions:}
+\begin{align*}
+    g(r,v,T) = \begin{bmatrix}
+                  -\mr{sd}(r,\mc{P}^1_{\mr{obs}})\\
+                  -\mr{sd}(r,\mc{P}^2_{\mr{obs}})\\
+                  \|v\|_2^2 - v_{\max}^2\\
+                  -\|T\|_2 + T_{\min}
+               \end{bmatrix}
+\end{align*}
+
+The obstacle $\mc{P}^i_{\mr{obs}}$, for $i=1,2$, is a polytope define by
+\begin{align*}
+    \mc{P}^i_{\mr{obs}} = \{z\,|\,H^i_{\mr{obs}}z \le h^i_{\text{obs}}\}
+\end{align*}
+The code variables for the $i$th polytope parameters are \verb|Hobs{i}| and \verb|hobs{i}|.
+
+\btx{Dynamical system} is the same as \eqref{dbl-intg-dilaugsys-exclu}.
+
+\subsection{\texttt{doubleint-passive-safety}}
+
+\subsubsection{\texttt{node-only-cnstr}}
+
+\textbf{Notes:}
+\begin{itemize}
+    \item Obtain solution on a coarse grid, which inevitably exhibit inter-sample violation.
+    \item Use coarse-grid solution to warm-start SCP for a finer grid. Such a successive warm-start process is very effective and reliable for obtaining high-quality (low-cost) solutions.
+\end{itemize}
+
+\subsubsection{\texttt{ctcs-fixed-step-integrate}}
+
+\subsection{\texttt{rocket-landing}}
+
+\subsubsection{\texttt{node-only-cnstr}}
+
+\subsubsection{\texttt{ctcs}}
+
+\subsection{\texttt{nrho-passive-safety}}
+
+\end{document}

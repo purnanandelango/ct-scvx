@@ -1,0 +1,28 @@
+\contentsline {section}{\numberline {1}Notation}{2}{section.1}%
+\contentsline {section}{\numberline {2}Problem Formulation}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Time-Dilation and Constraint Reformulation}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Discretization}{3}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Linearization}{4}{subsubsection.2.2.1}%
+\contentsline {section}{\numberline {3}Miscellaneous}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Parsing to Canonical Form}{6}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Extrapolated PIPG}{7}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Customization}{7}{subsubsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.3}Signed Distance}{7}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Passive Safety}{8}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}\texttt {node-only-cnstr}}{9}{subsubsection.3.4.1}%
+\contentsline {section}{\numberline {4}Examples}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}\texttt {doubleint-circle-obs}}{9}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}\texttt {node-only-cnstr}}{9}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}\texttt {ctcs}}{10}{subsubsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.2}\texttt {doubleint-ellip-obs}}{10}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}\texttt {node-only-cnstr}}{10}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}\texttt {ctcs}}{10}{subsubsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.3}\texttt {doubleint-polytope-obs}}{10}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}\texttt {ctcs}}{10}{subsubsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.4}\texttt {doubleint-passive-safety}}{11}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}\texttt {node-only-cnstr}}{11}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}\texttt {ctcs-fixed-step-integrate}}{11}{subsubsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.5}\texttt {rocket-landing}}{11}{subsection.4.5}%
+\contentsline {subsubsection}{\numberline {4.5.1}\texttt {node-only-cnstr}}{11}{subsubsection.4.5.1}%
+\contentsline {subsubsection}{\numberline {4.5.2}\texttt {ctcs}}{11}{subsubsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.6}\texttt {nrho-passive-safety}}{11}{subsection.4.6}%

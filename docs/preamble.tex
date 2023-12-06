@@ -1,0 +1,31 @@
+% Packages
+\usepackage[margin=0.7in]{geometry}
+\usepackage{verbatim}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=red!50!gray!70,
+    urlcolor=green!20!gray!80 
+}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{setspace}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\let\Algorithm\algorithm
+\renewcommand\algorithm[1][]{\Algorithm[#1]\setstretch{1.3}}
+
+% Change defaults
+\renewcommand*{\arraystretch}{1.1}
+\setlength\parskip{2ex}
+\setlength\parindent{0pt}
+\allowdisplaybreaks
+
+% Commands
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\mr}[1]{\mathrm{#1}}
+\newcommand{\bR}[1]{\mathbb{R}^{#1}}
+\newcommand{\derv}[1]{\overset{\circ}{#1}}
+\newcommand{\btx}[1]{\textcolor{blue!50!gray!70}{#1}}
