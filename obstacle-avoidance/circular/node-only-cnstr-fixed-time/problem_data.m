@@ -1,4 +1,4 @@
-function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
+function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor)
     
     prb.K = K;
 
@@ -6,14 +6,14 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.n = 2;
 
     prb.nx = 2*prb.n;
-    prb.nu = prb.n+1;
+    prb.nu = prb.n;
     
-    prb.tau = grid.generate_grid(0,1,K,'uniform'); % Generate grid in [0,1]
+    prb.tau = grid.generate_grid(0,tau_f,K,'uniform'); % Generate grid in [0,1]
 
     prb.dtau = diff(prb.tau);
     
     prb.h = (1/19)*min(prb.dtau);               % Step size for integration that computes discretization matrices
-    prb.Kfine = 1+20*round(1/min(prb.dtau));    % Size of grid on which SCP solution is simulated
+    prb.Kfine = 1+100*round(1/min(prb.dtau));    % Size of grid on which SCP solution is simulated
     
     % System parameters
 
@@ -25,15 +25,8 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.rmax = 40;  
     prb.vmax = 6;
-    prb.Tmax = 6;
-    prb.Tmin = 2;
-
-    prb.smin = 1;
-    prb.smax = 15;
-    prb.dtmin = 1;
-    prb.dtmax = 3;
-    prb.ToFmax = 20;
-    prb.ToFguess = 15;
+    prb.Tmax = 7;
+    prb.Tmin = 0.5;
 
     % Obstacle avoidance
     prb.nobs = 2;
@@ -54,16 +47,16 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.x1 = [prb.r1;prb.v1];
     prb.xK = [prb.rK;prb.vK];    
-    prb.u1 = [ones(prb.n,1);prb.ToFguess];
-    prb.uK = [ones(prb.n,1);prb.ToFguess];
+    prb.u1 = ones(prb.n,1);
+    prb.uK = ones(prb.n,1);
 
     % Scaling parameters
 
     xmin = [-0.5*prb.rmax*ones(prb.n,1); -0.5*prb.vmax*ones(prb.n,1)];
     xmax = [ 0.5*prb.rmax*ones(prb.n,1);  0.5*prb.vmax*ones(prb.n,1)];
     
-    umin = [zeros(prb.n,1); 1];
-    umax = [prb.Tmax*ones(prb.n,1); prb.ToFguess];
+    umin = prb.Tmin*ones(prb.n,1);
+    umax = prb.Tmax*ones(prb.n,1);
 
     [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
 
@@ -74,8 +67,12 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     % SCP parameters
 
-    prb.disc = "FOH";
-    prb.foh_type = "v3";
+    % prb.disc = "FOH";
+    % prb.foh_type = "v3";
+
+    prb.disc = "Impulse";
+    prb.Eu2x = [zeros(prb.n);
+                eye(prb.n)];
 
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
@@ -94,15 +91,16 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.epstr = 1e-3;
 
     % Time grid and time of manuever
-    prb.time_of_maneuver = @(x,u)     disc.time_of_maneuver(prb.disc,prb.tau,u(prb.n+1,:));    
-    prb.time_grid        = @(tau,x,u)        disc.time_grid(prb.disc,    tau,u(prb.n+1,:));    
+    prb.time_of_maneuver = @(x,u)      tau_f;    
+    prb.time_grid        = @(tau,x,u)  linspace(0,tau_f,length(tau));    
     
     % Convenient functions for accessing RHS of nonlinear and linearized ODE
-    prb.dyn_func           = @(tau,x,u) plant.doubleint.dyn_func(x,u(1:prb.n),u(prb.n+1),prb.n,prb.c_d,prb.accl);
+    prb.dyn_func           = @(tau,x,u) plant.doubleint.dyn_func(x,u,1.0,prb.n,prb.c_d,prb.accl);
     prb.dyn_func_linearize = @(tau,x,u)   evaluate_linearization(x,u,prb.n,prb.c_d,prb.accl);
 
 end
 function [A,B,w] = evaluate_linearization(x,u,n,c_d,accl)
-    [A,B,S,w] = plant.doubleint.compute_linearization(x,u(1:n),u(n+1),n,c_d,accl);
-    B = [B,S];
+    [A,B,~,~] = plant.doubleint.compute_linearization(x,u,1.0,n,c_d,accl);
+    f = plant.doubleint.dyn_func(x,u,1.0,n,c_d,accl);
+    w = f - A*x - B*u;
 end

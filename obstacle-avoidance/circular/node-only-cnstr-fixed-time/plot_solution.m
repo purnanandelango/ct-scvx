@@ -31,11 +31,14 @@ ax.DataAspectRatio = [1,1,1];
 ax.PlotBoxAspectRatio = [1,1,1];
 
 Kfine = length(tau);
-
-nrm_T(Kfine) = 0;
+if ~isequal(prb.disc,"Impulse")
+    nrm_T(Kfine) = 0;
+    for j = 1:Kfine
+        nrm_T(j) = norm(u(1:prb.n,j));
+    end
+end
 nrm_v(Kfine) = 0;
 for j = 1:Kfine
-    nrm_T(j) = norm(u(1:prb.n,j));
     nrm_v(j) = norm(v(1:prb.n,j));
 end
 nrm_Tbar(prb.K) = 0;
@@ -56,7 +59,9 @@ xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax])
 
 subplot(2,2,3)
-plot(tvec,nrm_T,'-b');
+if ~isequal(prb.disc,"Impulse")
+    plot(tvec,nrm_T,'-b');
+end
 hold on 
 plot(tvecbar,nrm_Tbar,'ob');
 plot(tvecbar,prb.Tmin*ones(1,prb.K),'-r');
@@ -65,15 +70,3 @@ title('Thrust');
 xlabel('$t$');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.Tmax])
-
-subplot(2,2,4)
-hold on
-plot(prb.tau,tvecbar,'ok');
-p1 = plot(tau,tvec,'-k');
-plot(prb.tau,ubar(prb.n+1,:),'og');
-p2 = plot(tau,u(prb.n+1,:),'-g');
-plot(prb.tau,prb.smin*ones(1,prb.K),'-r');
-plot(prb.tau,prb.smax*ones(1,prb.K),'-r');
-legend([p1,p2],{'$t(\tau)$','$s(\tau)$'})
-xlabel('$\tau$');
-title('Time \& Dilation')
