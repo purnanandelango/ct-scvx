@@ -1,8 +1,8 @@
 function [dx, du, phi, psi, w, v, prb] = pipg_custom(sig, A1, A2, B1, B2, d, x, u, prb, verbose)
 
-j_max = 100000;
-j_min = 100000;
-j_check = 100000;
+j_max = 10000;
+j_min = 1000;
+j_check = 1000;
 eps_abs = 1e-12;
 eps_rel = 1e-12;
 omg = 0.5;
@@ -72,7 +72,7 @@ for j = 1:j_max
     for k = 2:N-1
 
         dx(:, k) = zdx(:, k) - alf*(lam*zdx(:, k) + qx(:, k) + A1(:, :, k).'*eta(:, k) + A2(:, :, k-1).'*eta(:, k-1) - [zeros_nx_1; gam(:, k)] + [zeros_nx_1; gam(:, k-1)]);
-        dx(:, k) = proj_Dxk(dx(:, k) + x(:, k), prb) - x(:, k); % shifted
+        % dx(:, k) = proj_Dxk(dx(:, k) + x(:, k), prb) - x(:, k); % shifted
     
         du(:, k) = zdu(:, k) - alf*(lam*zdu(:, k) + qu(:, k) + B1(:, :, k).'*eta(:, k) + B2(:, :, k-1).'*eta(:, k-1));
         du(:, k) = proj_Du(du(:, k) + u(:, k), prb) - u(:, k); % shifted

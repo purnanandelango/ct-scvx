@@ -5,13 +5,16 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
     % Exact penalty weight can be matrix-valued
 
     % Row-normalization flags %
-    row_normalization_flag = 1; % 0, 1
+    row_normalization_flag = 0; % 0, 1
     row_normalization_type = 'inf'; % 2, 'inf'
     
     % PIPG flags %
     pipg_flag = 1;    % 0, 1
-    use_pipg_sol = 0; % 0, 1
+    use_pipg_sol = 1; % 0, 1
     pipg_verbose = 1; % 0, 1
+
+    % Warm-start flag %
+    warm_start = 0; % 0, 1
     
         converged = false;
         K = prb.K;
@@ -181,21 +184,25 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
                     if pipg_verbose == 1
     
                         fprintf("\nMaximum singular value (ground-truth)   : %8.8f\n", sig_svd);
-                        fprintf( "Maximum singular value (power-iteration): %8.8f\n", sig);
-                        fprintf("Error in the maximum singular value: %f\n", sig_rel_err);
+                        fprintf("Maximum singular value (power-iteration): %8.8f\n", sig);
+                        fprintf("Error in the maximum singular value     : %f\n", sig_rel_err);
 
                     end
     
                     [dx_pipg, du_pipg, phi_pipg, psi_pipg, w_pipg, v_pipg] = pipg_custom(sig, Ak_hat, Ek_hat, Bmk_hat, Bpk_hat, dx_prop_hat, prb.invSx*xbar, prb.invSu*ubar, prb, pipg_verbose);
     
                     % Warm start %
+
+                    if warm_start == 1
     
-                    % prb.dx = dx_pipg;
-                    % prb.du = du_pipg;
-                    % prb.phi = phi_pipg;
-                    % prb.psi = psi_pipg;
-                    % prb.w = w_pipg;
-                    % prb.v = v_pipg;
+                        prb.dx = dx_pipg;
+                        prb.du = du_pipg;
+                        prb.phi = phi_pipg;
+                        prb.psi = psi_pipg;
+                        prb.w = w_pipg;
+                        prb.v = v_pipg;
+
+                    end
     
                     % Objective function (PIPG) %
     

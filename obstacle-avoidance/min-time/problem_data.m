@@ -37,7 +37,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.vmax        = 7;
 
     prb.ymin        = 0;
-    prb.ymax        = 0.1;
+    prb.ymax        = 1;
 
     prb.umax        = 7;
     prb.umin        = 1;
