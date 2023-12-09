@@ -201,32 +201,10 @@ for $k=1,\ldots,K-1$, where $A_k,B^-_k,B^+_k,w_k$ result from the solution to th
 \end{align*}
 
 \section{Miscellaneous}
-\clearpage
-\subsection{Parsing to Canonical Form}
 %
-Template discretized problem:
-\begin{subequations}
-\begin{align}
-    \mr{minimize}~~&~w_{\mr{cost}}e_x^\top\hat{x}_K + \frac{1}{2}w_{\mr{tr}}\sum_{k=1}^K \|\hat{x}_k - \hat{\bar{x}}_k\|_2^2 + \|\hat{u}_k - \hat{\bar{u}}_k\|_2^2 + w_{\mr{vc}}\sum_{k=1}^{K-1}1_{n_x}^\top(\mu^+_k+\mu_k^-) & &  \\
-    \mr{subject~to}~&~-\hat{x}_{k+1} + \hat{A}_k\hat{x}_k + \hat{B}^-_k\hat{u}_k + \hat{B}^+_k\hat{u}_{k+1} + \mu_k^+ - \mu_k^- + \hat{w}_k = 0 & & \hspace{-1cm}1 \le k \le K-1\\
-     &~E_{y}(\hat{x}_{k+1}-\hat{x}_{k}) \le \epsilon & & \hspace{-1cm}1 \le k \le K-1\\
-     &~\mu_k^+\ge 0,~\mu^-_k\ge 0 & &  \hspace{-1cm}1 \le k \le K-1 \\
-     &~\hat{u}_{\min} \le \hat{u}_k \le \hat{u}_{\max} & &  \hspace{-1cm}1 \le k \le K\\
-     &~E_{\mr{i}}\hat{x}_1 = \hat{z}_{\mr{i}},~E_{\mr{f}}\hat{x}_K = \hat{z}_{\mr{f}} 
-\end{align}
-\end{subequations}
+\subsection{Parsing to Canonical QP}
 %
-\begin{align*}
-    % & x_k = S_x \hat{x}_k + c_x\\
-    & \hat{x}_k = S_x^{-1}(x_k-c_x)\\
-    & \hat{\bar{x}}_k = S_x^{-1}(\bar{x}_k-c_x)\\
-    & \hat{A}_k = S_x^{-1}A_kS_x\\
-    & \hat{B}^-_k = S_x^{-1}B^-_kS_u\\
-    & \hat{B}^+_k = S_x^{-1}B^+_kS_u\\
-    & \hat{w}_k = S_x^{-1}(w_k+A_kc_x+B_k^{-}c_u + B_k^{+}c_u - c_x)
-\end{align*}
-%
-Canonical QP:
+\btx{Canonical QP:}
 \begin{subequations}
 \begin{align}
     \mr{minimize}~~&~\frac{1}{2}z^\top\hat{P} z + \hat{p}^\top z\\
@@ -234,6 +212,55 @@ Canonical QP:
     &~\hat{H}z\le \hat{h} 
 \end{align}
 \end{subequations}
+%
+\subsubsection{Convex Subproblem with Scaled Variables}
+
+\begin{subequations}
+\begin{align}
+    \mr{minimize}~~&~w_{\mr{cost}}e_x^\top\hat{x}_K + \frac{1}{2}w_{\mr{tr}}\sum_{k=1}^K \|\hat{x}_k - \hat{\bar{x}}_k\|_2^2 + \|\hat{u}_k - \hat{\bar{u}}_k\|_2^2 + w_{\mr{vc}}\sum_{k=1}^{K-1}1_{n_x}^\top(\mu^+_k+\mu_k^-) & &  \\
+    \mr{subject~to}~&~-\hat{x}_{k+1} + \hat{A}_k\hat{x}_k + \hat{B}^-_k\hat{u}_k + \hat{B}^+_k\hat{u}_{k+1} + \mu_k^+ - \mu_k^- + \hat{w}_k = 0 & & \hspace{-1cm}1 \le k \le K-1\\
+     &~E_{y}(\hat{x}_{k+1}-\hat{x}_{k}) \le \hat{\varepsilon}_k & & \hspace{-1cm}1 \le k \le K-1\\
+     &~\mu_k^+\ge 0,~\mu^-_k\ge 0 & &  \hspace{-1cm}1 \le k \le K-1 \\
+     &~\hat{u}_{k,\min} \le \hat{u}_k \le \hat{u}_{k,\max} & &  \hspace{-1cm}1 \le k \le K\\
+     &~E_{\mr{i}}\hat{x}_1 = \hat{z}_{\mr{i}},~E_{\mr{f}}\hat{x}_K = \hat{z}_{\mr{f}} 
+\end{align}
+\end{subequations}
+%
+\begin{minipage}[t]{0.48\linewidth}
+\btx{Affinely-scaled absolute variables:}
+    \begin{align*}
+        & x_k = S_x \hat{x}_k + c_x\\
+        & \hat{x}_k = S_x^{-1}(x_k-c_x)\\
+        & \hat{\bar{x}}_k = S_x^{-1}(\bar{x}_k-c_x)\\
+        & \hat{A}_k = S_x^{-1}A_kS_x\\
+        & \hat{B}^-_k = S_x^{-1}B^-_kS_u\\
+        & \hat{B}^+_k = S_x^{-1}B^+_kS_u\\
+        & \hat{w}_k = S_x^{-1}(w_k+A_kc_x+B_k^{-}c_u + B_k^{+}c_u - c_x)\\
+        & \phantom{\hat{w}_k = S_x^{-1}(\bar{x}^{k}(\tau_{k+1})-\bar{x}_{k+1})}\\        
+        & \hat{\varepsilon}_k = \epsilon E_y S_x^{-1}E_y^\top 1_{n_y}\\
+        & \hat{u}_{k,\min\!/\!\max} = S_u^{-1}(u_{\min\!/\!\max}-c_u)\\
+        & \hat{z}_{\mr{i}/\mr{f}} = E_{\mr{i}/\mr{f}}S_x^{-1}E_{\mr{i}/\mr{f}}^\top(z_{\mr{i}/\mr{f}} - E_{\mr{i}/\mr{f}}c_x)
+    \end{align*}
+\end{minipage}
+\begin{minipage}[t]{0.48\linewidth}
+\btx{Linearly-scaled deviation variables:}
+    \begin{align*}
+        & x_k = S_x \hat{x}_k + \bar{x}_k\\
+        & \hat{x}_k = S_x^{-1}(x_k-\bar{x}_k)\\
+        & \hat{\bar{x}}_k = S_x^{-1}(\bar{x}_k-\bar{x}_k) = 0_{n_x}\\
+        & \hat{A}_k = S_x^{-1}A_kS_x\\
+        & \hat{B}^-_k = S_x^{-1}B^-_kS_u\\
+        & \hat{B}^+_k = S_x^{-1}B^+_kS_u\\
+        & \hat{w}_k = S_x^{-1}(w_k+A_k\bar{x}_k+B_k^{-}\bar{u}_k + B_k^{+}\bar{u}_{k+1} - \bar{x}_{k+1})\\
+        &\phantom{\hat{w}_k} =S_x^{-1}(\bar{x}^{k}(\tau_{k+1})-\bar{x}_{k+1})\\
+        & \hat{\varepsilon}_k = \epsilon E_yS_x^{-1}E_y^\top 1_{n_y} - E_yS_x^{-1}(\bar{x}_{k+1}-\bar{x}_k)\\
+        & \hat{u}_{k,\min\!/\!\max} = S_u^{-1}(u_{\min\!/\!\max}-\bar{u}_k)\\
+        & \hat{z}_{\mr{i}} = E_{\mr{i}}S_x^{-1}E_{\mr{i}}^\top(z_{\mr{i}} - E_{\mr{i}}\bar{x}_1)\\
+        & \hat{z}_{\mr{f}} = E_{\mr{f}}S_x^{-1}E_{\mr{f}}^\top(z_{\mr{f}} - E_{\mr{f}}\bar{x}_K)
+    \end{align*}
+\end{minipage}
+%
+\subsubsection{Parsed Quantites}
 %
 \begin{align*}
     & z = \big(\hat{x}_1,\ldots,\hat{x}_K,\,\hat{u}_1,\ldots,\hat{u}_K,\,\mu^-_1,\ldots,\mu^-_{K-1},\,\mu^+_1,\ldots,\mu^+_{K-1}\big)\in\bR{(n_x+n_u)K+2n_x(K-1)}\\
@@ -254,11 +281,11 @@ Canonical QP:
                       0_{2n_x(K-1)\times n_xK} & 0_{2n_x(K-1)\times n_uK} & -I_{2n_x(K-1)}\end{array}\right]\\
     & \hat{H}_y = -\left[I_{K-1}\otimes E_y~0_{n_y(K-1)\times n_x}\right] + \left[0_{n_y(K-1)\times n_x}~I_{K-1}\otimes E_y\right]\\
     & \hat{H} = \left[ \begin{array}{c} \hat{H}_{u,\mu} \\ \hat{H}_y~~0_{n_y(K-1)\times n_uK+2n_x(K-1)} \end{array}\right]\\
-    & \hat{h} = \big( \hat{u}_{\max}1_{n_uK},-\hat{u}_{\min}1_{n_uK},\,0_{2n_x(K-1)},\,\epsilon 1_{n_y(K-1)}\big)
+    & \hat{h} = \big( \hat{u}_{1,\max},\ldots,\hat{u}_{K,\max},-\hat{u}_{1,\min},\ldots,-\hat{u}_{K,\min},\,0_{2n_x(K-1)},\,\hat{\varepsilon}_1,\ldots,\hat{\varepsilon}_{K-1}\big)
 \end{align*}
-
+%
 \subsection{Extrapolated PIPG} 
-
+%
 \begin{algorithm}[!htpb]
 \caption{xPIPG implementation with FOH}
 \begin{algorithmic}[1]
@@ -268,7 +295,7 @@ Canonical QP:
 \State $z^{j+1} \gets \zeta^{j} - \alpha(\hat{P}\zeta^j+\hat{p}+\tilde{G}^\top\eta^j + \tilde{H}^\top\chi^j)$
 \State \btx{$E_{\mr{i}}\hat{x}_{1}^{j+1} \gets z_{\mr{i}}$}
 \State \btx{$E_{\mr{f}}\hat{x}_{K}^{j+1} \gets z_{\mr{f}}$}
-\State \btx{$\hat{u}_k^{j+1} \gets \max\{\hat{u}_{\min},\min\{\hat{u}_{\max},\hat{u}_k^{j+1}\}\}~\qquad k=1,\ldots,K$}
+\State \btx{$\hat{u}_k^{j+1} \gets \max\{\hat{u}_{k,\min},\min\{\hat{u}_{k,\max},\hat{u}_k^{j+1}\}\}~\qquad k=1,\ldots,K$}
 \State \btx{$(\mu^{+}_k)^{j+1}\gets\max\{0,(\mu^{+}_k)^{j+1}\}\qquad\qquad\qquad k=1,\ldots,K-1$}
 \State \btx{$(\mu^{-}_k)^{j+1}\gets\max\{0,(\mu^{-}_k)^{j+1}\}\qquad\qquad\qquad k=1,\ldots,K-1$}
 \State $w^{j+1} \gets \eta^j + \beta(\tilde{G}(2z^{j+1}-\zeta^j)-\tilde{g})$
@@ -285,7 +312,7 @@ Canonical QP:
     & \tilde{G} = \left[\hat{G}_{x}~\hat{G}_{u}~\hat{G}_{\mu} \right]\\
     & \tilde{g} = -\big(\hat{w}_1,\ldots,\hat{w}_{K-1}\big)\\
     & \tilde{H} = \left[\hat{H}_y~0_{n_y(K-1)\times n_uK+2n_x(K-1)}\right]\\
-    & \tilde{h} = \epsilon1_{n_y(K-1)}
+    & \tilde{h} = (\varepsilon_1,\ldots,\varepsilon_{K-1})
 \end{align}
 
 \subsubsection{Customization}
