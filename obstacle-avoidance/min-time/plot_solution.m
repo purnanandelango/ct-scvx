@@ -47,12 +47,12 @@ subplot(2,2,3)
 plot(tvec,nrm_T,'-b');
 hold on 
 plot(tvecbar,nrm_Tbar,'ob');
-plot(tvecbar,prb.umin*ones(1,prb.K),'-r','LineWidth',1);
-plot(tvecbar,prb.umax*ones(1,prb.K),'-r','LineWidth',1);
+plot(tvecbar,prb.Tmin*ones(1,prb.K),'-r','LineWidth',1);
+plot(tvecbar,prb.Tmax*ones(1,prb.K),'-r','LineWidth',1);
 title('Thrust');
 xlabel('$t$');
 xlim([0,tvec(end)])
-ylim([0,prb.umax+prb.umin])
+ylim([0,prb.Tmax+prb.Tmin])
 
 subplot(2,2,4)
 hold on
@@ -60,9 +60,9 @@ plot(prb.tau,tvecbar,'ok');
 p1 = plot(tau,tvec,'-k');
 plot(prb.tau,ubar(prb.n+1,:),'og');
 p2 = plot(tau,u(prb.n+1,:),'-g');
-p3 = plot(prb.tau,(prb.K-1)*prb.dtmax*ones(1,prb.K),'-b','LineWidth',1);
-p4 = plot(prb.tau,(prb.K-1)*prb.dtmin*ones(1,prb.K),'-r','LineWidth',1);
+p3 = plot(prb.tau,prb.smax*ones(1,prb.K),'-b','LineWidth',1);
+p4 = plot(prb.tau,prb.smin*ones(1,prb.K),'-r','LineWidth',1);
 legend([p1,p2,p3,p4],{'$t(\tau)$','$s(\tau)$','$\Delta t_{\max}(K-1)$','$\Delta t_{\min}(K-1)$'})
 xlabel('$\tau$');
-ylim([0,1.1*(prb.K-1)*prb.dtmax]);
+ylim([0,1.1*prb.smax]);
 title('Time \& Dilation')

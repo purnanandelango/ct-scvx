@@ -48,14 +48,14 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,util,prb,...
         % Approximation here is to ensure that the dilation factor is
         % always nonnegative
         cnstr = [cnstr;
-                 % -Pu \ (prb.umax*ones(prb.nu-1,1)) <= Pu \ u(:,k) <= Pu \ (prb.umax*ones(prb.nu-1,1)); % thrust bound
-                 (1/Ps)*s(k) >= (1/Ps)*(K-1)*prb.dtmin % lower bound on the dilation factor
+                 % -Pu \ (prb.Tmin*ones(prb.nu-1,1)) <= Pu \ u(:,k) <= Pu \ (prb.Tmax*ones(prb.nu-1,1)); % thrust bound
+                 (1/Ps)*s(k) >= (1/Ps)*prb.smin % lower bound on the dilation factor
                 ];
 
         % Approximation here is to avoid temporal entanglement of the
         % constraint sets
         cnstr = [cnstr;
-                 (1/Ps)*s(k) <= (1/Ps)*(K-1)*prb.dtmax % upper bound on the dilation factor
+                 (1/Ps)*s(k) <= (1/Ps)*prb.smax % upper bound on the dilation factor
                 ];
 
     end
@@ -73,7 +73,7 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,util,prb,...
         %         ];
 
         cnstr = [cnstr;
-                 (1/Py)*y(k+1) <= (1/Py)*y(k) + (1/Py)*1e-6]; % relaxation
+                 (1/Py)*y(k+1) <= (1/Py)*y(k) + (1/Py)*prb.eps_cnstr]; % relaxation
 
         % cnstr = [cnstr;
         %          (1/Py)*y(k+1) == (1/Py)*y(k)]; % no relaxation

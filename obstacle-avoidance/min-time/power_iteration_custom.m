@@ -70,6 +70,6 @@ for j = 1:j_max
 
 end
 
-sig = (1 + eps_buff) * sig_star;
+sig = (1 + eps_buff) * sig_star
 
 end

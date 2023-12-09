@@ -210,8 +210,8 @@ end
 function up = proj_Du(u, prb)
     
     Pu_inv = prb.invSu;
-    u_min = Pu_inv * [prb.umin; prb.umin; prb.dtmin*(prb.K-1)];
-    u_max = Pu_inv * [prb.umax; prb.umax; prb.dtmax*(prb.K-1)];
+    u_min = Pu_inv * [prb.Tmin; prb.Tmin; prb.smin];
+    u_max = Pu_inv * [prb.Tmax; prb.Tmax; prb.smax];
 
     up = u;
     up(end) = min(max(u(end), u_min(end)), u_max(end));
