@@ -28,7 +28,7 @@ function prb = problem_data_3D(K,scp_iters,wvc,wtr,cost_factor)
     prb.pmax        = 10;
 
     prb.ymin        = 0;
-    prb.ymax        = 1;
+    prb.ymax        = 0.1;
 
     prb.Tmin        = 1.5;
     prb.Tmax        = 08;    
@@ -88,7 +88,8 @@ function prb = problem_data_3D(K,scp_iters,wvc,wtr,cost_factor)
     umax = [ prb.Tmax*ones(n,1); prb.smax]; prb.umax = umax;
 
     prb.scl_bnd = [0,1];
-    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},prb.scl_bnd);
+    % [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},prb.scl_bnd);
+    [Sz,cz] = misc.generate_scaling({[zeros(prb.nx,1),xmax],[zeros(prb.nu,1),umax]},prb.scl_bnd);
 
     prb.Sx = Sz{1}; prb.invSx = inv(Sz{1});
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
@@ -145,11 +146,11 @@ function prb = problem_data_3D(K,scp_iters,wvc,wtr,cost_factor)
     prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
-    % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);    
+    prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);    
     % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);    
-    prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
+    % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
-    % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-8,'osqp.eps_rel',1e-8,'osqp.max_iter',5e4);        
+    % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-9,'osqp.eps_rel',1e-9,'osqp.max_iter',1e5);        
    
     % prb.solver = struct('name',"quadprog",'ConstraintTolerance',1e-9,'OptimalityTolerance',1e-9,'Display','none');
     % prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
@@ -157,8 +158,8 @@ function prb = problem_data_3D(K,scp_iters,wvc,wtr,cost_factor)
     % prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
     % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
     % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
-    % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
-    prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.75,'lambda',1,'omega',20,'test_termination',500);
+    prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
+    % prb.solver = struct('name',"pipg",'eps_abs',1e-12,'verbose',0,'max_iter',7e4,'rho',1.75,'lambda',1,'omega',80,'test_termination',200);
     
     % prb.tr_norm = 2;
     % prb.tr_norm = inf;   
