@@ -16,10 +16,10 @@ load('recent_solution','xbar','ubar','taubar');
 % [xbar,ubar] = scp.run_ptr_dvar_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 
 % Vectorized PIPG
-% [xbar,ubar,cost_val,converged] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);
+[xbar,ubar,cost_val,converged] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);
 
 % Prototype PTR
-[xbar,ubar] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar,ubar] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,@sys_cnstr_cost);
 
 %%
 

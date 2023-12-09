@@ -1,8 +1,8 @@
 function [dx, du, phi, psi, w, v, prb] = pipg_custom(sig, A1, A2, B1, B2, d, x, u, prb, verbose)
 
 j_max = 10000;
-j_min = 1000;
-j_check = 1000;
+j_min = 10000;
+j_check = 10000;
 eps_abs = 1e-12;
 eps_rel = 1e-12;
 omg = 0.5;

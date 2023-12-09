@@ -92,22 +92,22 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.x1 = [prb.r1; prb.v1; prb.y1];
     prb.xK = [prb.rK; prb.vK; prb.y1];    
-    prb.u1 = [0.5*(prb.Tmax+prb.Tmin)*ones(n,1); prb.ToFguess];
-    prb.uK = [0.5*(prb.Tmax+prb.Tmin)*ones(n,1); prb.ToFguess];
-    % prb.u1 = [1; 1; prb.ToFguess];
-    % prb.uK = [4; 4; prb.ToFguess];
+    % prb.u1 = [0.5*(prb.Tmax+prb.Tmin)*ones(n,1); prb.ToFguess];
+    % prb.uK = [0.5*(prb.Tmax+prb.Tmin)*ones(n,1); prb.ToFguess];
+    prb.u1 = [1; 1; prb.ToFguess];
+    prb.uK = [4; 4; prb.ToFguess];
 
     % Scaling parameters
     xmin = zeros(prb.nx, 1);
     xmax = [prb.rmax*ones(n,1); prb.vmax*ones(n,1); prb.ymax];
     
-    umin = zeros(prb.nu, 1);
-    umax = [prb.Tmax*ones(n,1); prb.smax];
+    umin = [-prb.Tmax*ones(n,1); prb.smin];
+    umax = [ prb.Tmax*ones(n,1); prb.smax];
 
     prb.umax = umax;
     prb.umin = umin;
 
-    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
+    [Sz,cz] = misc.generate_scaling({[zeros(prb.nx, 1),xmax],[zeros(prb.nu, 1),umax]},[0,1]);
 
     prb.Sx = Sz{1}; prb.invSx = inv(Sz{1});
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
@@ -129,7 +129,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.Ps = Ps;
 
     nc = 5; % number of constraints
-    cnstr_indices = [4, 5]; % indices of the constraints to be imposed
+    cnstr_indices = [3, 4, 5]; % indices of the constraints to be imposed
 
     % 0: no constraints
     % 1: obstacle 1
@@ -212,12 +212,12 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     % prb.solver = struct('name',"quadprog",'ConstraintTolerance',1e-9,'OptimalityTolerance',1e-9,'Display','none');
     % prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
-    prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-8,'reltol',1e-8);
+    % prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-8,'reltol',1e-8);
     % prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
     % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
     % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
     % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
-    % prb.solver = struct('name',"pipg",'eps_abs',1e-12,'verbose',0,'max_iter',7e4,'rho',1.75,'lambda',1,'omega',80,'test_termination',200);
+    prb.solver = struct('name',"pipg",'eps_abs',1e-12,'verbose',0,'max_iter',7e4,'rho',1.75,'lambda',1,'omega',80,'test_termination',200);
 
     % prb.tr_norm = 2;
     % prb.tr_norm = inf;   

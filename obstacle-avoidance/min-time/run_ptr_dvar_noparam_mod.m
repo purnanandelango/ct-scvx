@@ -10,8 +10,8 @@ function [xbar,ubar,converged] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,sys_cons
     
     % PIPG flags %
     pipg_flag = 1;    % 0, 1
-    use_pipg_sol = 1; % 0, 1
-    pipg_verbose = 0; % 0, 1
+    use_pipg_sol = 0; % 0, 1
+    pipg_verbose = 1; % 0, 1
 
     % Warm-start flag %
     warm_start = 0; % 0, 1
