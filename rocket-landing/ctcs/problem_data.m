@@ -10,8 +10,20 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.dtau = diff(prb.tau);
     
-    prb.h = (1/99)*prb.dtau;                 % Step size for integration that computes discretization matrices
+    prb.h = (1/999)*prb.dtau;                 % Step size for integration that computes discretization matrices
     prb.Kfine = 1+round(50/min(prb.dtau));   % Size of grid on which SCP solution is simulated
+
+    nx = prb.nx;
+    nu = prb.nu;
+    N = K;
+
+    % Initialize PIPG solution
+    prb.dx = zeros(nx, N);
+    prb.du = zeros(nu, N);
+    prb.phi = zeros(nx, N-1);
+    prb.psi = zeros(nx, N-1);
+    prb.w = zeros(nx, N-1);
+    prb.v = zeros(1, N-1);
     
     % System parameters
 
@@ -60,7 +72,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.mwet    = 2;
 
     prb.smin    = 5;
-    prb.smax    = 50;
+    prb.smax    = 20;
     prb.dtmin   = 0.1;
     prb.dtmax   = 10;
     prb.ToFmax  = 20;
@@ -124,7 +136,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % Constraint parameters
 
     nc = 8; % number of constraints
-    cnstr_indices = [1]; % indices of the constraints to be imposed
+    cnstr_indices = [1, 3, 4, 5, 6, 7, 8]; % indices of the constraints to be imposed
 
     % 0: no constraints
     % 1: mass
@@ -157,7 +169,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                           1;
                           0.1;
                           1;
-                          1;
+                          0.1;
                           0;
                           ]);
 
@@ -180,7 +192,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                                                                   norm(xi(12:14))^2 - prb.omgmax^2;
                                                                   norm(TB) - TB(1)/prb.cosdelmax;
                                                                   norm(TB) - prb.TBmax;
-                                                                  prb.TBmin - norm(TB);
+                                                                  prb.TBmin^2 - norm(TB)^2;
                                                                   0] ...
                                                                   + prb.cnstr_buffer;
 
@@ -201,7 +213,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                                                     zeros(1,3);
                                                     TB'/norm(TB)+[-1/prb.cosdelmax 0 0];
                                                     TB'/norm(TB);
-                                                   -TB'/norm(TB);
+                                                   -2*TB'; % -TB'/norm(TB);
                                                     zeros(1,3)];
 
     prb.stc_fun = @(xi,TB) plant.rocket6DoF.q_aoa_cnstr(xi(5:7),xi(8:11),prb.vmax_stc_aug,prb.cosaoamax_aug,prb.stc_flag);
@@ -210,11 +222,11 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.disc = "FOH";
     prb.foh_type = "v3";
-    prb.ode_solver = {'ode45',odeset('RelTol',1e-12,'AbsTol',1e-12)};
+    % prb.ode_solver = {'ode45',odeset('RelTol',1e-12,'AbsTol',1e-12)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
     
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);    
-    prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);
+    prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-10,'ecos.reltol',1e-10);
 %     prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-8,'osqp.eps_rel',1e-8,'osqp.max_iter',5e4);        

@@ -15,13 +15,14 @@ load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
-% [xbar1,ubar1] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-% [xbar2,ubar2] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);
-% norm([xbar1(:);ubar1(:)]-[xbar2(:);ubar2(:)])/norm([xbar1(:);ubar1(:)])
+% YALMIP
+% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 
-[xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-
+% Handparsed
 % [xbar,ubar] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);
+
+% Prototype
+[xbar,ubar] = run_ptr_dvar_noparam_mod(xbar,ubar,prb,@sys_cnstr_cost);
 
 %%
 
