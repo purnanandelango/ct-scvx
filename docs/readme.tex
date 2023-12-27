@@ -284,7 +284,7 @@ for $k=1,\ldots,K-1$, where $A_k,B^-_k,B^+_k,w_k$ result from the solution to th
     & \hat{h} = \big( \hat{u}_{1,\max},\ldots,\hat{u}_{K,\max},-\hat{u}_{1,\min},\ldots,-\hat{u}_{K,\min},\,0_{2n_x(K-1)},\,\hat{\varepsilon}_1,\ldots,\hat{\varepsilon}_{K-1}\big)
 \end{align*}
 %
-\subsection{Extrapolated PIPG} 
+\subsubsection{PIPG} 
 %
 \begin{algorithm}[!htpb]
 \caption{xPIPG implementation with FOH}
@@ -315,9 +315,19 @@ for $k=1,\ldots,K-1$, where $A_k,B^-_k,B^+_k,w_k$ result from the solution to th
     & \tilde{h} = (\varepsilon_1,\ldots,\varepsilon_{K-1})
 \end{align}
 
-\subsubsection{Customization}
-
-\btx{WIP}
+\btx{Customization:}
+\begin{align}
+    & \hat{x}, \tilde{x}\\
+    & \hat{u}, \tilde{u}\\
+    & \mu^{\pm}, \nu^{\pm}\\
+    & \phi, \varphi\\
+    & \theta, \vartheta 
+\end{align}
+% \begin{algorithm}[!htpb]
+% \caption{Customized xPIPG}
+% \begin{algorithmic}[1]
+% \end{algorithmic}
+% \end{algorithm}
 
 \subsection{Signed Distance}
 

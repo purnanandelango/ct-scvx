@@ -25,11 +25,19 @@ tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 % Simulate solution on fine grid
 
 % Simulate on [0,1] grid
-[tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,1],prb.Kfine,prb.disc);%,prb.ode_solver);
-tvec = prb.time_grid(tau,x,u);
+[tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,1],prb.Kfine,prb.disc,prb.ode_solver);
+tvec = prb.time_grid(tau,x,u); % 
+
+% t_grid is row vector
+x_grid = interp1(tvec',x',t_grid')';
+u_grid = interp1(tvec',u',t_grid')';
+
+% tau_grid is row vector
+x_grid = interp1(tau',x',tau_grid')';
+u_grid = interp1(tau',u',tau_grid')';
 
 % Simulate on phyiscal time grid
-[~,x2,~] = disc.simulate_dyn(xbar(:,1),{tvec,[u(1:3,:);ones(1,prb.Kfine)]},@(t,x,u) prb.dyn_func(t,x,u),[0,tvec(end)],prb.Kfine,prb.disc);%,prb.ode_solver);
+[~,x2,~] = disc.simulate_dyn(xbar(:,1),{tvec,[u(1:3,:);ones(1,prb.Kfine)]},@(t,x,u) prb.dyn_func(t,x,u),[0,tvec(end)],prb.Kfine,prb.disc,prb.ode_solver);
 
 m = x(1,:);
 rI = x(2:4,:);

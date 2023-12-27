@@ -30,15 +30,10 @@ ax = gca;
 ax.DataAspectRatio = [1,1,1];
 ax.PlotBoxAspectRatio = [1,1,1];
 
-Kfine = length(tau);
-if ~isequal(prb.disc,"Impulse")
-    nrm_T(Kfine) = 0;
-    for j = 1:Kfine
-        nrm_T(j) = norm(u(1:prb.n,j));
-    end
-end
-nrm_v(Kfine) = 0;
-for j = 1:Kfine
+nrm_T(prb.Kfine) = 0;
+nrm_v(prb.Kfine) = 0;
+for j = 1:prb.Kfine
+    nrm_T(j) = norm(u(1:prb.n,j));    
     nrm_v(j) = norm(v(1:prb.n,j));
 end
 nrm_Tbar(prb.K) = 0;
@@ -59,12 +54,10 @@ xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax])
 
 subplot(2,2,3)
-if ~isequal(prb.disc,"Impulse")
-    plot(tvec,nrm_T,'-b');
-end
+plot(tvec,nrm_T,'.b','MarkerSize',8);
 hold on 
 plot(tvecbar,nrm_Tbar,'ob');
-plot(tvecbar,prb.Tmin*ones(1,prb.K),'-r');
+% plot(tvecbar,prb.Tmin*ones(1,prb.K),'-r');
 plot(tvecbar,prb.Tmax*ones(1,prb.K),'-r');
 title('Thrust');
 xlabel('$t$');
