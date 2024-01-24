@@ -2,7 +2,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.K = K;
 
-    prb.ny = 2;
+    prb.ny = 1;
     prb.nx = 14+prb.ny;
     prb.nu = 4;
     
