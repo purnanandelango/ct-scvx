@@ -1,4 +1,4 @@
-function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
+function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.K = K;
 
@@ -11,43 +11,44 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.dtau = diff(prb.tau);
     
     prb.h = (1/19)*prb.dtau;                 % Step size for integration that computes discretization matrices
-    prb.Kfine = 1+round(50/min(prb.dtau));   % Size of grid on which SCP solution is simulated
+    prb.Kfine = 1+round(20/min(prb.dtau));   % Size of grid on which SCP solution is simulated
     
     % System parameters
 
-    prb.g0 = 1;
+    prb.g0 = 1.61;
     
-    prb.c_ax = 0.5; prb.c_ayz = 1;
-    
+    % Not used
+    prb.c_ax = 0; prb.c_ayz = 0;    
     prb.CA = diag([prb.c_ax,prb.c_ayz,prb.c_ayz]);
-    
-    prb.JB = 0.168*diag([2e-2,1,1]);
-    prb.gI = [-prb.g0;0;0];
     prb.rho = 1;
-    prb.SA = 0.5;
+    prb.SA = 0.5;    
+    prb.rcpB = 0.05*[1;0;0];    
+    
+    prb.JB = diag([19150,13600,13600]);
+    prb.gI = [-prb.g0;0;0];
     
     prb.rTB = -0.25*[1;0;0];
-    prb.rcpB = 0.05*[1;0;0];
     
-    prb.Isp = 30;
-    prb.alphmdt = 1/(prb.Isp*prb.g0);
-    prb.betmdt = 0.01;
+    prb.Isp = 225;
+    ge = 9.806;
+    prb.alphmdt = 1/(prb.Isp*ge);
+    prb.betmdt = 0.00; % Not used
     
     % Bounds
 
-    prb.thetmax = 75*pi/180;    prb.sinthetmaxby2 = sin(prb.thetmax/2);     % Vehicle tilt
-    prb.gamgs   = 75*pi/180;    prb.cotgamgs = cot(prb.gamgs);              % Glide-slope
+    prb.thetmax = 80*pi/180;    prb.sinthetmaxby2 = sin(prb.thetmax/2);     % Vehicle tilt
+    prb.gamgs   = 80*pi/180;    prb.cotgamgs = cot(prb.gamgs);              % Glide-slope
     
-    prb.omgmax  = 21.5*pi/180;                                              % Angular velocity (inf-norm 28.6)
+    prb.omgmax  = 28.6*pi/180;                                              % Angular velocity (inf-norm 28.6)
     prb.delmax  = 20*pi/180;    prb.cosdelmax = cos(prb.delmax);            % Gimbal
     
     prb.Hgam    = [0,1,0;0,0,1];
     prb.Hthet   = [0,1,0,0;0,0,1,0];
     
-    prb.TBmin    = 1.5;
-    prb.TBmax    = 6.5;
+    prb.TBmin    = 6000;
+    prb.TBmax    = 22500;
     
-    prb.vmax     = 3;
+    prb.vmax     = 50;
     
     prb.vmax_stc      = 1.5;
     prb.vmax_stc_aug  = 1.5-0.3;     % Trigger conservatively for better numerics
@@ -56,17 +57,17 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.stc_flag      = "v1";
     prb.trig_scl      = 0.1;
 
-    prb.mdry    = 1;
-    prb.mwet    = 2;
+    prb.mdry    = 2100;
+    prb.mwet    = 3250;
 
     prb.smin    = 1;
     prb.smax    = 50;
-    prb.dtmin   = 0.1;
-    prb.dtmax   = 10;
-    prb.ToFmax  = 20;
+    % prb.dtmin   = 0.1;
+    % prb.dtmax   = 10;
+    % prb.ToFmax  = 30;
    
     prb.snom    = [1,15];
-    prb.ToFguess= 10;   
+    prb.ToFguess= 30;   
 
     prb.ymin = 0*ones(prb.ny,1);
     prb.ymax = 1*ones(prb.ny,1);
@@ -75,12 +76,11 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     % Boundary conditions
 
-    prb.rI1     = [7.5;4.5;2];
-    prb.vI1     = [-0.5;-2.8;0];
-    % prb.vI1    = [-2.5;-0.5;0];
+    prb.rI1     = [433;0;250];
+    prb.vI1     = [-15;0;-30];
     
-    prb.rIK     = zeros(3,1);
-    prb.vIK     = -0.1*[1;0;0];
+    prb.rIK     = [30;0;0];
+    prb.vIK     = [-1;0;0];
     prb.omgB1   = zeros(3,1);
     prb.omgBK   = zeros(3,1);
     prb.q1      = [0;0;0;1];
@@ -106,8 +106,8 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.uK      = [-prb.mdry*prb.gI;prb.ToFguess];
 
     % Scaling parameters
-    xmin = [prb.mdry; -10*ones(3,1); -1;-1;-1; -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
-    xmax = [prb.mwet;  10*ones(3,1);  1; 1; 1;  ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
+    xmin = [prb.mdry; -400*ones(3,1); -100*ones(3,1); -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
+    xmax = [prb.mwet;  400*ones(3,1);  100*ones(3,1);   ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
     
     umin = [-prb.TBmax*ones(3,1); prb.smin]; prb.umin = umin;
     umax = [ prb.TBmax*ones(3,1); prb.smax]; prb.umax = umax;  
@@ -124,16 +124,16 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % Constraint parameters
 
     prb.cnstr_scl = diag([ ...
+                          1e-3;
+                          1e-5;
+                          1e-2;
+                          1e-5;
                           1;
-                          0.1;
                           1;
-                          0.1;
-                          0.1;
-                          1;
-                          0.1;
-                          1;
-                          0.1;
-                          0.1;
+                          1e-5;
+                          1e-3;
+                          1e-5;
+                          1e-5;
                           ]);
     prb.cnstr_buffer = [...
                         0;
@@ -187,7 +187,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % SCP parameters
 
     prb.disc = "FOH";
-    prb.foh_type = "v3";
+    prb.foh_type = "v3_parallel";
     prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
     
@@ -215,7 +215,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 1e-4;
+    prb.epstr = 1e-3;
 
     % Takes in unscaled data
     prb.time_of_maneuver =     @(x,u) disc.time_of_maneuver(prb.disc,prb.tau,u(4,:));    

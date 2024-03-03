@@ -39,7 +39,7 @@ function [cnstr,cost_fun,vcvb_cnstr] = sys_cnstr_cost(x,u,prb,...
     
     end  
 
-    cost_fun = cost_fun + prb.cost_factor*prb.invSx(1,1)*(x(1,K)-prb.cx(1));    
+    cost_fun = cost_fun - prb.cost_factor*prb.invSx(1,1)*(x(1,K)-prb.cx(1));    
 
     % Compute time of maneuver and constrain time step
     % cnstr = [cnstr;
