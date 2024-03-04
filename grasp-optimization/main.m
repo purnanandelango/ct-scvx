@@ -1,12 +1,12 @@
 clearvars
 clc
 
-prb = problem_data(20, ...          % K
-                   09, ...          % T
-                   10, ...          % scp_iters
-                   2e2, ...         % wvc
-                   5e1, ...         % wtr
-                   0.01);            % cost_factor
+prb = problem_data(07, ...          % K
+                   12.1, ...        % T
+                   010, ...         % scp_iters
+                   5e1, ...         % wvc
+                   1.00, ...        % wtr
+                   0.001);           % cost_factor
 
 % load('recent_solution','xbar','ubar','taubar');
 % [xbar,ubar] = misc.create_initialization(prb,2, ...
@@ -33,8 +33,8 @@ cost_val = x(7,end);
 
 fprintf('\nFinal position error: %.3f\nFinal velocity error: %.3f\n',norm(r(:,end)-prb.rK),norm(v(:,end)-prb.vK));
 
-% save('recent_solution','r','v','x','u','tvec','tau', ...
-%                        'prb', ...
-%                        'xbar','ubar','tvecbar','taubar','cost_val');
+save('recent_solution','r','v','x','u','tvec','tau', ...
+                       'prb', ...
+                       'xbar','ubar','tvecbar','taubar','cost_val');
 
 % plot_solution;                                         
