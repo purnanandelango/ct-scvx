@@ -3,8 +3,8 @@ clc
 
 prb = problem_data(07, ...          % K
                    12.1, ...        % T
-                   010, ...         % scp_iters
-                   5e1, ...         % wvc
+                   100, ...         % scp_iters
+                   2e2, ...         % wvc
                    1.00, ...        % wtr
                    0.001);           % cost_factor
 
@@ -16,7 +16,10 @@ load('recent_solution_cvx','x_guess','u');
 [xbar,ubar] = misc.create_initialization(prb,2, ...
                                          x_guess,u,[]);
 
-[xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% scp.diagnose_ptr_handparse(xbar,ubar,prb,@sys_cnstr_cost,"affine-var")
+
+[xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 taubar = prb.tau;
 

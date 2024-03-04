@@ -55,13 +55,13 @@ function prb = problem_data_cvx(K,T)
     xmin =   [-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1)];
     xmax =   [ 0.5*prb.rmax*ones(3,1); 0.5*prb.vmax*ones(3,1)];
 
-    umin =   [-0.5*prb.F1max*ones(3,1);
-              -0.5*prb.F2max*ones(3,1);
-              -0.5*prb.F3max*ones(3,1);
+    umin =   [-prb.F1max*ones(3,1);
+              -prb.F2max*ones(3,1);
+              -prb.F3max*ones(3,1);
               ];
-    umax =   [ 0.5*prb.F1max*ones(3,1);
-               0.5*prb.F2max*ones(3,1);
-               0.5*prb.F3max*ones(3,1);
+    umax =   [ prb.F1max*ones(3,1);
+               prb.F2max*ones(3,1);
+               prb.F3max*ones(3,1);
               ];
 
     [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);

@@ -38,10 +38,14 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(xtil,u,prb,...
         %           u(prb.idx{3}(2),k) + prb.F3min <= 0;
         %         ];
 
+        cnstr = [cnstr;
+                 prb.umin <= u(:,k) <= prb.umax;
+                ];
+
         if k < K
         cnstr = [cnstr;
                  y(k+1) - y(k) <= prb.eps_cnstr];
-        end
+        end        
     
     end
 

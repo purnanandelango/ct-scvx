@@ -47,6 +47,8 @@ function prb = problem_data(K,T, ...
     prb.ymin = 0;
     prb.ymax = 1;
 
+    prb.eps_cnstr = 1e-4;    
+
     % Boundary conditions
 
     prb.r1 = [20;-2;10];
@@ -57,7 +59,16 @@ function prb = problem_data(K,T, ...
     prb.rK = [15;10;10];
     prb.vK = [0;0;0];
 
-    prb.eps_cnstr = 1e-4;
+    prb.Ey      = [zeros(1,prb.nx-1),1];
+
+    Inx = eye(prb.nx);
+    prb.Ei      = Inx;
+    prb.zi      = [prb.r1;prb.v1;prb.p1;prb.y1];
+    prb.i_idx   = 1:prb.nx;
+    prb.Ef      = Inx(1:6,:);
+    prb.zf      = [prb.rK;prb.vK];
+    prb.f_idx   = 1:6;    
+    prb.term_cost_vec = [zeros(6,1);1;0];        
 
     % Initialization generator
 
@@ -72,16 +83,17 @@ function prb = problem_data(K,T, ...
     xmin =   [-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1); 0;            prb.ymin];
     xmax =   [ 0.5*prb.rmax*ones(3,1); 0.5*prb.vmax*ones(3,1); 0.5*prb.pmax; prb.ymax];
 
-    umin =   [-0.5*prb.F1max*ones(3,1);
-              -0.5*prb.F2max*ones(3,1);
-              -0.5*prb.F3max*ones(3,1);
-              ];
-    umax =   [ 0.5*prb.F1max*ones(3,1);
-               0.5*prb.F2max*ones(3,1);
-               0.5*prb.F3max*ones(3,1);
-              ];
+    prb.umin =   [-prb.F1max*ones(3,1);
+                  -prb.F2max*ones(3,1);
+                  -prb.F3max*ones(3,1);
+                  ];
+    prb.umax =   [ prb.F1max*ones(3,1);
+                   prb.F2max*ones(3,1);
+                   prb.F3max*ones(3,1);
+                 ];
 
-    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
+    prb.scl_bnd = [0,1];
+    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[prb.umin,prb.umax]},prb.scl_bnd);
 
     prb.Sx = Sz{1}; prb.invSx = inv(Sz{1});
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
@@ -137,7 +149,7 @@ function prb = problem_data(K,T, ...
 % SCP parameters
 
     prb.disc = "ZOH";
-    prb.foh_type = "v3_parallel";
+    prb.zoh_type = "v3_parallel";
     prb.ode_solver = {'ode45',odeset('RelTol',1e-4,'AbsTol',1e-5)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
@@ -146,6 +158,15 @@ function prb = problem_data(K,T, ...
     % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);   
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-7,'osqp.eps_rel',1e-7,'osqp.max_iter',5e4);        
+
+    % prb.solver = struct('name',"quadprog",'ConstraintTolerance',1e-9,'OptimalityTolerance',1e-9,'Display','none');
+    prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
+    % prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-8,'reltol',1e-8);
+    % prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
+    % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
+    % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
+    % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
+    % prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.5,'lambda',0.05,'omega',100,'test_termination',500);    
 
     prb.tr_norm = 'quad';
     
