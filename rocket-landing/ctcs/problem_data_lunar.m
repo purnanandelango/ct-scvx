@@ -50,8 +50,8 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.vmax     = 50;
     
-    prb.vmax_stc      = 1.5;
-    prb.vmax_stc_aug  = 1.5-0.3;     % Trigger conservatively for better numerics
+    prb.vmax_stc      = 25;
+    prb.vmax_stc_aug  = 25-3;     % Trigger conservatively for better numerics
     prb.cosaoamax     = cosd( 10 ); 
     prb.cosaoamax_aug = cosd( 7 );
     prb.stc_flag      = "v1";
@@ -72,7 +72,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.ymin = 0*ones(prb.ny,1);
     prb.ymax = 1*ones(prb.ny,1);
 
-    prb.eps_cnstr = 1e-5;
+    prb.eps_cnstr = 1e-3;
     
     % Boundary conditions
 
@@ -215,7 +215,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 1e-3;
+    prb.epstr = 5e-4;
 
     % Takes in unscaled data
     prb.time_of_maneuver =     @(x,u) disc.time_of_maneuver(prb.disc,prb.tau,u(4,:));    

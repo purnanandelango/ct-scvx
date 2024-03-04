@@ -8,10 +8,10 @@ clc
 %                    0.01);           % cost_factor
 
 prb = problem_data_lunar(08,  ...         % K
-                         120,  ...        % scp_iters
+                         100,  ...        % scp_iters
                          2e1, ...         % wvc
                          1.00, ...        % wtr
-                         0.001);          % cost_factor
+                         0.01);           % cost_factor (0.01,0.10)
 
 load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
