@@ -17,15 +17,15 @@ function prb = problem_data_cvx(K,T)
     % Bounds
     prb.rmax     = 4000;                            % Position [m]
     prb.Tmax     = 24000;                           % Maximum thrust [N]
-    prb.vmax     = 130;                             % Speed [m/s]
-    prb.rho1     = 0.2*prb.Tmax*cosd(0);         % Thrust lower-bound [N]        
+    prb.vmax     = 125;                             % Speed [m/s]
+    prb.rho1     = 0.3*prb.Tmax*cosd(0);         % Thrust lower-bound [N]        
     prb.rho2     = 0.8*prb.Tmax*cosd(0);         % Thrust upper-bound [N]  
-    prb.gam_gs   = 18;                               % Minimum glide-slope angle [deg]
-    prb.thet_tp  = 50;                              % Thrust pointing [deg]
+    prb.gam_gs   = 16;                               % Minimum glide-slope angle [deg]
+    prb.thet_tp  = 85;                              % Thrust pointing [deg]
     prb.tp_vec   = [0; 
                     0; 
-                   -1/cosd(prb.thet_tp); 
-                    1];
+                    1/cosd(prb.thet_tp); 
+                   -1];
     prb.alpha    = 0.0005;
 
     prb.mu_1     = prb.rho1 ./ (prb.mwet - prb.alpha*prb.rho2*prb.tau);
@@ -45,8 +45,8 @@ function prb = problem_data_cvx(K,T)
     
     % Boundary conditions
 
-    prb.r1 = [0;2000;1400];             % [m]
-    prb.v1 = [0;100;-50];               % [m/s]
+    prb.r1 = [0;2000;1300];             % [m]
+    prb.v1 = [0;120;-35];               % [m/s]
     prb.p1 = log(prb.mwet); 
 
     prb.rK = [0;0;0];                   % [m]
@@ -62,10 +62,10 @@ function prb = problem_data_cvx(K,T)
 
     umin =   [ prb.rho1*ones(3,1);
                prb.rho1;
-              ];
+              ]/prb.mdry;
     umax =   [ prb.rho2*ones(3,1);
                prb.rho2;
-              ];
+              ]/prb.mdry;
 
     [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
 
@@ -83,11 +83,25 @@ function prb = problem_data_cvx(K,T)
     prb.wc = [zeros(3,1);prb.gvec;0];
 
 
-    M = expm([prb.Ac, prb.Bc, prb.wc;
-              zeros(5,12)]*prb.dtau);
+    % prb.disc = "ZOH";
+    % prb.ufun = @disc.u_zoh;    
+    % M = expm([prb.Ac, prb.Bc, prb.wc;
+    %           zeros(5,12)]*prb.dtau);
+    % prb.Ad = M(1:7,1:7);
+    % prb.Bd = M(1:7,7+1:7+4);
+    % prb.wd = M(1:7,7+5);
+
+    prb.disc = "FOH";
+    prb.ufun = @disc.u_foh;
+    M = expm([prb.Ac,     prb.Bc,     zeros(7,4), prb.wc; ...
+              zeros(4,7), zeros(4,4), eye(4),     zeros(4,1); ...
+              zeros(5,7), zeros(5,4), zeros(5,4), zeros(5,1)]*prb.dtau);
     prb.Ad = M(1:7,1:7);
-    prb.Bd = M(1:7,7+1:7+4);
-    prb.wd = M(1:7,7+5);
+    Gam = M(1:7,7+1:7+4);
+    Gam1 = M(1:7,7+5:7+8);
+    prb.Bdm = Gam - Gam1/prb.dtau;
+    prb.Bdp = Gam1/prb.dtau;    
+    prb.wd = M(1:7,7+9);
 
     prb.solver_settings = sdpsettings('solver','gurobi','verbose',true,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','ecos','verbose',true,'ecos.abstol',1e-8,'ecos.reltol',1e-8);
