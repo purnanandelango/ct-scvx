@@ -2,18 +2,18 @@ clearvars
 clc
 
 prb = problem_data(08, ...          % K
-                   48, ...          % T
-                   100, ...         % scp_iters
-                   5e1, ...         % wvc
-                   5.00, ...        % wtr
-                   0.01);           % cost_factor
+                   84, ...          % T
+                   300, ...         % scp_iters
+                   2e1, ...         % wvc
+                   1.00, ...        % wtr
+                   0.001);           % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,2, ...
                                          xbar,ubar,taubar);
 
 % load('recent_solution_cvx','x_guess','u');
-% [xbar,ubar] = misc.create_initialization(prb,1, ...
+% [xbar,ubar] = misc.create_initialization(prb,2, ...
 %                                          x_guess,u,[]);
 
 % scp.diagnose_ptr_handparse(xbar,ubar,prb,@sys_cnstr_cost,"affine-var")
@@ -37,7 +37,7 @@ sig = u(4,:) .* mass;
 
 cost_val = mass(end);
 
-fprintf('\nFinal position error: %.3f m\nFinal velocity error: %.3f m\n',norm(r(:,end)-prb.rK),norm(v(:,end)-prb.vK));
+fprintf('\nFinal position error: %.3f m\nFinal velocity error: %.3f m/s\n',norm(r(:,end)-prb.rK),norm(v(:,end)-prb.vK));
 fprintf('Fuel consumed: %.2f kg\n',mass(1)-mass(end));
 
 save('recent_solution','r','v','mass','thrust','sig','x','u','tvec','tau', ...

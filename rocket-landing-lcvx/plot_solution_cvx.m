@@ -8,8 +8,8 @@ figure
 plot3(x_sim(1,:),x_sim(2,:),x_sim(3,:),'-m');
 hold on
 plot3(x(1,:),x(2,:),x(3,:),'om','MarkerSize',13);
-plot3(0*ones(1,100),linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-k')
-view(-90,-1);
+plot3(linspace(0,4000),(430/2600)*linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-k')
+view(180,0);
 ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];
 ax.DataAspectRatio = [1,1,1];

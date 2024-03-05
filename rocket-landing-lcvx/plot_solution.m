@@ -8,13 +8,13 @@ figure
 plot3(x(1,:),x(2,:),x(3,:),'-m');
 hold on
 plot3(xbar(1,:),xbar(2,:),xbar(3,:),'om','MarkerSize',13);
-plot3(0*ones(1,100),linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-k')
-view(-90,-1);
+plot3(linspace(0,4000),(430/2600)*linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-k')
+view(180,0);
 ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];
 ax.DataAspectRatio = [1,1,1];
 ax.ZLim = [0,2000];
-ax.YLim = [0,4000];
+ax.XLim = [0,4000];
 
 mass_bar = exp(xbar(7,:));
 nrm_thrust = misc.compute_vec_norm(u(1:3,:)) .* mass;

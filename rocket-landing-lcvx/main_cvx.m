@@ -2,7 +2,7 @@ clc
 close all
 clearvars
 
-prb = problem_data_cvx(08,48);
+prb = problem_data_cvx(08,84);
 
 yalmip clear
 

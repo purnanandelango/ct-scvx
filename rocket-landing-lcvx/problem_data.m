@@ -16,21 +16,23 @@ function prb = problem_data(K,T, ...
     prb.mwet = 1905;             % Wet mass [kg]
     prb.mdry = 1505;             % Dry mass [kg]
 
-    prb.gvec = [0;0;-3.71];     % Acceleration due to gravity [m/s^2]
+    prb.gvec = [0;0;-3.71];     % Acceleration due to gravity on Mars [m/s^2]
 
     % Bounds
     prb.rmax     = 4000;                            % Position [m]
-    prb.Tmax     = 24000;                           % Maximum thrust [N]
-    prb.vmax     = 125;                             % Speed [m/s]
+    prb.Tmax     = 16572;                           % Maximum thrust [N]
+    prb.vmax     = 500*5/18;                        % Maximum speed [m/s]
     prb.rho1     = 0.3*prb.Tmax*cosd(0);            % Thrust lower-bound [N]        
     prb.rho2     = 0.8*prb.Tmax*cosd(0);            % Thrust upper-bound [N]  
-    prb.gam_gs   = 16;                              % Minimum glide-slope angle [deg]
-    prb.thet_tp  = 85;                              % Thrust pointing [deg]
+    prb.gam_gs   = 6;                               % Minimum glide-slope angle [deg]
+    prb.thet_tp  = 40;                              % Maximum thrust-pointing angle [deg]
     prb.tp_vec   = [0; 
                     0; 
                     1/cosd(prb.thet_tp); 
                    -1];
-    prb.alpha    = 0.0005;
+    Isp          = 225;                             % Rocket engine specific impulse [s]
+    ge           = 9.806;                           % Earth's gravity at sea-level [m/s^2] 
+    prb.alpha    = 1/(Isp*ge);
 
     mu_1  = @(tau) prb.rho1/(prb.mwet - prb.alpha*prb.rho2*tau);
     mu_2  = @(tau) prb.rho2/(prb.mwet - prb.alpha*prb.rho2*tau);    
@@ -46,18 +48,18 @@ function prb = problem_data(K,T, ...
     prb.ymin = 0;
     prb.ymax = 1;
 
-    prb.eps_cnstr = 1e-5;    
+    prb.eps_cnstr = 1e-6;    
 
     % Boundary conditions
 
-    prb.r1 = [0;2000;1300];             % [m]
-    prb.v1 = [0;120;-35];               % [m/s]
+    prb.r1 = [2000;0;1500];             % [m]
+    prb.v1 = [288;108;-270]*5/18;       % [m/s]
     prb.p1 = log(prb.mwet); 
     prb.y1 = 0;
 
     prb.rK = [0;0;0];                   % [m]
     prb.vK = [0;0;0];                   % [m/s]
-    prb.pK = log(prb.mdry); 
+    prb.pK = log(prb.mdry);
 
     prb.Ey = [zeros(1,prb.nx-1),1];
 
@@ -102,10 +104,10 @@ function prb = problem_data(K,T, ...
                       1; ...
                       1; ...
                       1; ...
+                      100; ...
                       1; ...
-                      1; ...
-                      1; ...
-                      10;
+                      1000; ...
+                      1000;
                       ]);
     cnstr_buffer = zeros(10,1);
 
@@ -143,8 +145,8 @@ function prb = problem_data(K,T, ...
 
 % SCP parameters
 
-    prb.disc = "FOH";
-    prb.foh_type = "v3_parallel";
+    prb.disc = "ZOH";
+    prb.zoh_type = "v3_parallel";
     prb.ode_solver = {'ode45',odeset('RelTol',1e-4,'AbsTol',1e-5)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
@@ -170,7 +172,7 @@ function prb = problem_data(K,T, ...
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 1e-3;
+    prb.epstr = 5e-4;
 
     % Takes in unscaled data
     prb.time_of_maneuver = @(z,u) T;    
