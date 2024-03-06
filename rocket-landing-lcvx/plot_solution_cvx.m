@@ -14,7 +14,9 @@ ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];
 ax.DataAspectRatio = [1,1,1];
 ax.ZLim = [0,2000];
-ax.YLim = [0,4000];
+ax.XLim = [0,4000];
+zlabel('Altitude [m]');
+xlabel('Downrange [m]');
 
 mass_sim = exp(x_sim(7,:));
 mass = exp(x(7,:));
@@ -29,10 +31,13 @@ figure
 subplot(1,2,1)
 plot(prb.tau,nrm_thrust,'ob');
 hold on
-plot(tau_sim,nrm_thrust_sim,'-b');
-plot(tau_sim,sig,'--r');
+plt1 = plot(tau_sim,nrm_thrust_sim,'-b');
+plt2 = plot(tau_sim,sig,'--r');
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-k');
 plot(prb.tau,prb.rho2*ones(1,prb.K),'-k');
+title("Thrust magnitude [N]");
+xlabel('$t$ [s]');
+legend([plt1,plt2],{'$T(t)$','$\Gamma(t)$'});
 
 subplot(1,2,2)
 plot(prb.tau,nrm_v,'or');
@@ -40,5 +45,6 @@ hold on
 plot(tau_sim,nrm_v_sim,'-r');
 plot(prb.tau,prb.vmax*ones(1,prb.K),'-k');
 ylim([0,1.1*prb.vmax])
-
+title("Speed [m/s]");
+xlabel('$t$ [s]');
 
