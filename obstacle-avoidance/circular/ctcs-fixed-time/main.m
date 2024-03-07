@@ -6,10 +6,10 @@ cnstr_type = "single-integrator-state";
 
 prb = problem_data(10, ...          % tau_f
                    06, ...          % K
-                   200, ...         % scp_iters
+                   100, ...         % scp_iters
                    5e1, ...         % wvc
                    2.00, ...        % wtr
-                   0.10,...         % cost_factor
+                   0.001,...         % cost_factor
                    cnstr_type);
 
 
@@ -17,10 +17,7 @@ load('recent_solution','xbar','ubar');
 [xbar,ubar] = misc.create_initialization(prb,2, ...
                                          xbar,ubar,[]);
 
-% [xbar1,ubar1,cost_val1] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-% 
-% [xbar2,ubar2,cost_val2] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
-% norm([xbar1(:);ubar1(:)]-[xbar2(:);ubar2(:)])/norm([xbar1(:);ubar1(:)])
+
 
 [xbar,ubar,cost_val] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
 

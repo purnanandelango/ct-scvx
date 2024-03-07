@@ -33,8 +33,9 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     % prb.Tmax = 07;       
 
     % FBP
+    prb.t_burn = 0.01*prb.dtau(1);
     prb.pmax = 200;
-    prb.Tmax = 90;
+    prb.Tmax = 10/prb.t_burn;
 
     % Impulse
     % prb.pmax = 20;
@@ -162,7 +163,6 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
 
     prb.disc = "FBP";
     prb.fbp_type = "v3_parallel";
-    prb.t_burn = 0.05*prb.dtau(1);
 
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
