@@ -2,7 +2,18 @@ clearvars
 close all
 
 load recent_solution.mat
-fig = figure("Position",[97,100,1202,437]);
+fig = figure('Position',[138,100,1034,437], ...
+             'Color',[1,1,1]);
+
+ax = gca;
+ax.DataAspectRatio = [1,1,1];
+ax.PlotBoxAspectRatio = [1,1,1];        
+ax.XLim = [-80,80];
+ax.YLim = [-30,30];
+ax.Units = 'pixels';
+% pos = ax.Position;
+% ti = ax.TightInset;
+% rect = [0, 0, pos(3)+ti(1)+ti(3), pos(4)+ti(2)+ti(4)];
 
 th = linspace(0,2*pi);
 
@@ -36,9 +47,9 @@ if prb.dyn_obs
     for k = 1:prb.Kfine
         [A,map] = rgb2ind(frame2im(F(k)),256);
         if k==1
-            imwrite(A,map,'anim.gif','LoopCount',Inf,'DelayTime',1);
+            imwrite(A,map,'anim.gif','LoopCount',Inf,'DelayTime',0.1);
         else
-            imwrite(A,map,'anim.gif','WriteMode','append','DelayTime',1);
+            imwrite(A,map,'anim.gif','WriteMode','append','DelayTime',0.1);
         end
     end
 else

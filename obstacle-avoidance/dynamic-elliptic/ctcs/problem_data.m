@@ -119,7 +119,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cx = cz{1};
     prb.cu = cz{2};
 
-    prb.eps_cnstr = 1e-5;    
+    prb.eps_cnstr = 1e-4;    
 
     cnstr_scl = 1.0*diag([...
                           1; ...
@@ -147,8 +147,8 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
                     0.01;
                     0.01;
                     0.01;
-                    0;
-                    0;
+                    0.01;
+                    0.01;
                     0.01];
 
     % Constraint parameters
@@ -230,7 +230,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 1e-4;
+    prb.epstr = 5e-4;
 
     % Time of maneuver and time grid
     prb.time_of_maneuver =     @(x,u) x(end-1,end);    
