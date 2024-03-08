@@ -1,11 +1,11 @@
 clearvars
-% clc
+clc
 
 prb = problem_data(10, ...          % K
-                   100, ...         % scp_iters
+                   030, ...         % scp_iters
                    1e2, ...         % wvc
                    1.00, ...        % wtr
-                   0.001);          % cost_factor
+                   0.01);          % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,2, ...
