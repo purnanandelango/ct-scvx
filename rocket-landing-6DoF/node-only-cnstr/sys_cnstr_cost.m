@@ -22,7 +22,7 @@ function [cnstr,cost_fun,vcvb_cnstr] = sys_cnstr_cost(x,u,prb,...
              omgB(:,K) == prb.omgBK];
 
     vb_TBmin = sdpvar(1,K);       
-    vb_stc  = sdpvar(1,K);
+    % vb_stc  = sdpvar(1,K);
 
     cost_fun = 0;
 
@@ -41,23 +41,23 @@ function [cnstr,cost_fun,vcvb_cnstr] = sys_cnstr_cost(x,u,prb,...
                  vb_TBmin(k) >= 0];
 
         % Airspeed-triggered angle-of-attack STC
-        [stc,dstc_dx] = plant.rocket6DoF.q_aoa_cnstr(xbar(5:7,k),xbar(8:11,k),prb.vmax_stc,prb.cosaoamax,prb.stc_flag);
-        cnstr = [cnstr;
-                 stc + dstc_dx*(x(:,k)-xbar(:,k)) <= vb_stc(k);
-                 vb_stc(k) >= 0];
+        % [stc,dstc_dx] = plant.rocket6DoF.q_aoa_cnstr(xbar(5:7,k),xbar(8:11,k),prb.vmax_stc,prb.cosaoamax,prb.stc_flag);
+        % cnstr = [cnstr;
+        %          stc + dstc_dx*(x(:,k)-xbar(:,k)) <= vb_stc(k);
+        %          vb_stc(k) >= 0];
     
     end  
 
-    cost_fun = cost_fun + prb.cost_factor*prb.invSx(1,1)*x(1,K);
+    cost_fun = cost_fun - prb.cost_factor*prb.invSx(1,1)*(x(1,K)-prb.cx(1));
 
-    cnstr = [cnstr;
-             misc.time_cnstr(s,prb.dtau,{prb.dtmin,prb.dtmax,prb.ToFmax},prb.disc)];
+    % cnstr = [cnstr;
+    %          misc.time_cnstr(s,prb.dtau,{prb.dtmin,prb.dtmax,prb.ToFmax},prb.disc)];
 
     vcvb_cnstr = 0;
 
     vcvb_cnstr = vcvb_cnstr + prb.wvc*sum(vb_TBmin(:));
 
-    vcvb_cnstr = vcvb_cnstr + prb.wvc*sum(vb_stc(:));
+    % vcvb_cnstr = vcvb_cnstr + prb.wvc*sum(vb_stc(:));
 
     cost_fun = cost_fun + vcvb_cnstr;
 

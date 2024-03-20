@@ -36,16 +36,16 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     
     % Bounds
 
-    prb.thetmax = 80*pi/180;    prb.sinthetmaxby2 = sin(prb.thetmax/2);     % Vehicle tilt
-    prb.gamgs   = 80*pi/180;    prb.cotgamgs = cot(prb.gamgs);              % Glide-slope
+    prb.thetmax = 45*pi/180;    prb.sinthetmaxby2 = sin(prb.thetmax/2);     % Vehicle tilt
+    prb.gamgs   = 60*pi/180;    prb.cotgamgs = cot(prb.gamgs);              % Glide-slope
     
-    prb.omgmax  = 28.6*pi/180;                                              % Angular velocity (inf-norm 28.6)
+    prb.omgmax  = 20*pi/180;                                              % Angular velocity (inf-norm 28.6)
     prb.delmax  = 20*pi/180;    prb.cosdelmax = cos(prb.delmax);            % Gimbal
     
     prb.Hgam    = [0,1,0;0,0,1];
     prb.Hthet   = [0,1,0,0;0,0,1,0];
     
-    prb.TBmin    = 6000;
+    prb.TBmin    = 7000;
     prb.TBmax    = 22500;
     
     prb.vmax     = 50;
@@ -106,7 +106,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.uK      = [-prb.mdry*prb.gI;prb.ToFguess];
 
     % Scaling parameters
-    xmin = [prb.mdry; -400*ones(3,1); -100*ones(3,1); -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
+    xmin = [prb.mdry; -400*ones(3,1); -100*ones(3,1);  -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
     xmax = [prb.mwet;  400*ones(3,1);  100*ones(3,1);   ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
     
     umin = [-prb.TBmax*ones(3,1); prb.smin]; prb.umin = umin;
@@ -128,7 +128,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
                           1e-5;
                           1e-2;
                           1e-5;
-                          1;
+                          1000;
                           1;
                           1e-5;
                           1e-3;

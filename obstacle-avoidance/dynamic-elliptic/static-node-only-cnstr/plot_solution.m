@@ -3,18 +3,19 @@ close all
 
 load recent_solution
 
-fig = figure("Position",[97,100,1202,437]);
-
-plot(r(1,:),r(2,:),'-k');
-hold on 
-plot(xbar(1,:),xbar(2,:),'.k');    
-title('Position [m]');
+fig = figure('Position',[138,100,1034,437], ...
+             'Color',[1,1,1]);
 
 th = linspace(0,2*pi);
 for j = 1:prb.n_obs
-    posobs = prb.q_obs(:,j) + prb.H_obs{j}\[cos(th);sin(th)];
-    plot(posobs(1,:),posobs(2,:),'-r');
+    pos_obs = prb.q_obs(:,j) + prb.H_obs{j}\[cos(th);sin(th)];
+    plot(pos_obs(1,:),pos_obs(2,:),'-r');
+    hold on
 end
+
+plot(r(1,:),r(2,:),'-k');
+plot(xbar(1,:),xbar(2,:),'.k');    
+title('Position [m]');
 
 ax = gca;
 ax.DataAspectRatio = [1,1,1];
@@ -50,10 +51,10 @@ xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax])
 
 subplot(2,2,3)
-plot(tvec,nrm_T,'-k');
-hold on 
 plot(tvecbar,prb.Tmin*ones(1,prb.K),'-r');
+hold on 
 plot(tvecbar,prb.Tmax*ones(1,prb.K),'-r');
+plot(tvec,nrm_T,'-k');
 plot(tvecbar,nrm_Tbar,'.k');
 title('Thrust');
 xlabel('$t$');

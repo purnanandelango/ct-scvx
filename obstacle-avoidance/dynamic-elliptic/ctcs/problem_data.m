@@ -42,7 +42,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % Obstacle avoidance
 
     % Activate dynamic obstacles
-    prb.dyn_obs = 1;
+    prb.dyn_obs = 0;
     
     % Centers
     prb.psi_obs     = [

@@ -1,7 +1,9 @@
 clearvars
 close all
 
-load recent_solution.mat
+load recent_solution_static
+% load recent_solution
+
 fig = figure('Position',[138,100,1034,437], ...
              'Color',[1,1,1]);
 
@@ -53,18 +55,23 @@ if prb.dyn_obs
         end
     end
 else
-    plot(r(1,:),r(2,:),'-b');
-    plot(xbar(1,:),xbar(2,:),'.b','MarkerSize',25);    
-    rinit = plot(r(1,1),r(2,1),'bo');
-    rfinal = plot(r(1,end),r(2,end),'bx');
-    legend([rinit,rfinal],{'$r_{\mathrm{i}}$','$r_{\mathrm{f}}$'},'Location','east');
+
+    th = linspace(0,2*pi);
+    for j = 1:prb.n_obs
+        pos_obs = prb.q_obs(t_grid(1),j) + prb.H_obs{j}\[cos(th);sin(th)];
+        plot(pos_obs(1,:),pos_obs(2,:),'-r');
+        hold on
+    end    
+
+    plot(r(1,:),r(2,:),'-k');
+    plot(xbar(1,:),xbar(2,:),'.k');    
+    title('Position [m]');
     
     ax = gca;
     ax.DataAspectRatio = [1,1,1];
     ax.PlotBoxAspectRatio = [1,1,1];
-    
-    ax.XLim = [-21,2];
-    ax.YLim = [-5,30];
+    ax.XLim = [-65,65];
+    ax.YLim = [-35,35];
     
     ticklab = ax.XTickLabel;
     for j = 1:length(ticklab)
