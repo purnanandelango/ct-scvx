@@ -36,16 +36,16 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     
     % Bounds
 
-    prb.thetmax = 45*pi/180;    prb.sinthetmaxby2 = sin(prb.thetmax/2);     % Vehicle tilt
-    prb.gamgs   = 60*pi/180;    prb.cotgamgs = cot(prb.gamgs);              % Glide-slope
+    prb.thetmax = 60*pi/180;    prb.sinthetmaxby2 = sin(prb.thetmax/2);     % Vehicle tilt
+    prb.gamgs   = 85*pi/180;    prb.cotgamgs = cot(prb.gamgs);              % Glide-slope
     
-    prb.omgmax  = 20*pi/180;                                              % Angular velocity (inf-norm 28.6)
-    prb.delmax  = 20*pi/180;    prb.cosdelmax = cos(prb.delmax);            % Gimbal
+    prb.omgmax  = 10*pi/180;                                                % Angular velocity (inf-norm 28.6)
+    prb.delmax  = 45*pi/180;    prb.cosdelmax = cos(prb.delmax);            % Gimbal
     
     prb.Hgam    = [0,1,0;0,0,1];
     prb.Hthet   = [0,1,0,0;0,0,1,0];
     
-    prb.TBmin    = 7000;
+    prb.TBmin    = 5000;
     prb.TBmax    = 22500;
     
     prb.vmax     = 50;
@@ -61,7 +61,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.mwet    = 3250;
 
     prb.smin    = 1;
-    prb.smax    = 50;
+    prb.smax    = 60;
     % prb.dtmin   = 0.1;
     % prb.dtmax   = 10;
     % prb.ToFmax  = 30;
@@ -72,12 +72,12 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.ymin = 0*ones(prb.ny,1);
     prb.ymax = 1*ones(prb.ny,1);
 
-    prb.eps_cnstr = 1e-3;
+    prb.eps_cnstr = 1e-4;
     
     % Boundary conditions
 
     prb.rI1     = [433;0;250];
-    prb.vI1     = [-15;0;-30];
+    prb.vI1     = [10;0;-30];
     
     prb.rIK     = [30;0;0];
     prb.vIK     = [-1;0;0];
@@ -215,7 +215,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 5e-4;
+    prb.epstr = 1e-3;
 
     % Takes in unscaled data
     prb.time_of_maneuver =     @(x,u) disc.time_of_maneuver(prb.disc,prb.tau,u(4,:));    

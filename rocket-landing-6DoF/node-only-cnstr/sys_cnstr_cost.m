@@ -17,6 +17,7 @@ function [cnstr,cost_fun,vcvb_cnstr] = sys_cnstr_cost(x,u,prb,...
              vI(:,1)   == prb.vI1;
              rI(:,K)   == prb.rIK;
              vI(:,K)   == prb.vIK;
+             % norm(prb.Hthet*qBI(:,1)) <= sind(50/2);
              qBI(:,K)  == prb.q1;
              omgB(:,1) == prb.omgB1;
              omgB(:,K) == prb.omgBK];

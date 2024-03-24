@@ -13,8 +13,10 @@ subplot(mplot,nplot,[1,2,5,6])
 n = 05;
 plant.rocket6DoF.plot_vehicle_forces(u(1:3,1:n:end),rI(:,1:n:end),vI(:,1:n:end),qBI(:,1:n:end),50,0.005,struct('scl',0.4,'rho',prb.rho,'SA',prb.SA,'CA',prb.CA),{[2,3,1],{'y','z','x'},'x'});
 plot3(xbar(3,:),xbar(4,:),xbar(2,:),'o','Color',[0.7,0.1,0.7],'LineWidth',0.5,'DisplayName','SCP solution');
-legend('Position',[0.279,0.442,0.236,0.167])
-grid on
+% legend('Position',[0.279,0.442,0.236,0.167],'Location','west');
+legend('off');
+% grid on
+view(-90,0);
 
 % Thrust
 subplot(mplot,nplot,[3,4])

@@ -10,11 +10,13 @@ nplot = 4;
 
 % Trajectory, vehicle axis, thrust vector and drag
 subplot(mplot,nplot,[1,2,5,6])
-n = 5;
+n = 10;
 plant.rocket6DoF.plot_vehicle_forces(u(1:3,1:n:end),rI(:,1:n:end),vI(:,1:n:end),qBI(:,1:n:end),50,0.005,struct('scl',0.4,'rho',prb.rho,'SA',prb.SA,'CA',prb.CA),{[2,3,1],{'y','z','x'},'x'});
 plot3(xbar(3,:),xbar(4,:),xbar(2,:),'o','Color',[0.7,0.1,0.7],'LineWidth',0.5,'DisplayName','SCP solution');
-legend('Position',[0.279,0.442,0.236,0.167])
-grid on
+% legend('Position',[0.279,0.442,0.236,0.167],'Location','west');
+legend('off');
+% grid on
+view(-90,0);
 
 % Thrust
 subplot(mplot,nplot,[3,4])
@@ -102,9 +104,9 @@ plt.plot_vec_nrm(tvec,omgB*180/pi,prb.omgmax*180/pi,2,'Angular speed: $\|\omega_
 nrm_omgbar = misc.compute_vec_norm(xbar(12:14,:))*180/pi;
 hold on 
 plot(tvecbar,nrm_omgbar,'ob');
-ylim([0,35])
 ylabel("[deg T$^{-1}$]",'FontSize',18);
 xlabel("[T]",'FontSize',18);
+xlim([0,tvecbar(end)]);
 
 % Tilt
 subplot(2,2,2)
@@ -118,7 +120,7 @@ tilt_cnstr_bar = 2*asind(misc.compute_vec_norm(prb.Hthet*xbar(8:11,:)));
 plot(tvecbar,tilt_cnstr_bar,'ob');
 title('Tilt angle: $2\arcsin\|H_{\theta}q_{\mathcal{B}}\|_2$')
 ylabel("[deg]",'FontSize',18);
-ylim([0,50])
+xlim([0,tvecbar(end)]);
 xlabel("[T]",'FontSize',18);
 
 % Thrust
@@ -129,6 +131,7 @@ hold on
 plot(tvecbar,nrm_Tbar,'ob');
 ylabel("[M L T$^{-2}]$",'FontSize',18);
 xlabel("[T]",'FontSize',18);
+xlim([0,tvecbar(end)]);
 
 % Speed
 subplot(2,2,4)
@@ -139,6 +142,7 @@ hold on
 plot(tvecbar,nrm_vIbar,'ob');
 ylabel("[L T$^{-1}]$",'FontSize',18);
 xlabel("[T]",'FontSize',18);
+xlim([0,tvecbar(end)]);
 
 %%% Diagnostics %%%
 % figure

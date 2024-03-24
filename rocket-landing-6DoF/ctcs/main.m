@@ -7,13 +7,16 @@ clc
 %                    1.00, ...        % wtr
 %                    0.01);           % cost_factor
 
-prb = problem_data_lunar(05,  ...         % K
+prb = problem_data_lunar(06,  ...         % K
                          100,  ...        % scp_iters
                          5e1, ...         % wvc
                          1.00, ...        % wtr
                          0.01);           % cost_factor (0.01,0.10)
 
 load('recent_solution','xbar','ubar','taubar');
+
+% load('../node-only-cnstr/recent_solution_guess','xbar','ubar','taubar');
+
 [xbar,ubar] = misc.create_initialization(prb,2, ...
                                          xbar,ubar,taubar);
 
