@@ -29,6 +29,7 @@ ylabel('[m]');
 xlabel('[m]');
 
 ax = gca;
+ax.Box = 'off';
 ax.DataAspectRatio = [1,1,1];
 ax.PlotBoxAspectRatio = [1,1,1];
 ax.XLim = [-30,30];
@@ -81,6 +82,8 @@ ylabel('[m/s]');
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax])
+ax = gca;
+ax.Box = 'off';
 exportgraphics(fig,'speed.pdf','ContentType','vector');
 
 fig = figure('Position',[215,669,612,340]);
@@ -96,6 +99,8 @@ ylabel('[m/s$^{2}$]');
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.Tmax])
+ax = gca;
+ax.Box = 'off';
 exportgraphics(fig,'acceleration.pdf','ContentType','vector');
 
 fig = figure('Position',[215,669,612,340]);
@@ -110,4 +115,6 @@ xlabel('$\tau$');
 % title('Dilation Factor');
 xlim([0,1])
 ylim([0,1.1*prb.smax])
+ax = gca;
+ax.Box = 'off';
 exportgraphics(fig,'dilation.pdf','ContentType','vector');

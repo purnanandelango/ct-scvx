@@ -25,6 +25,7 @@ ax.ZLim = [0,2000];
 ax.XLim = [0,4000];
 zlabel('Altitude [m]');
 xlabel('Downrange [m]');
+ax.Box = 'off';
 exportgraphics(fig,'traj.pdf','ContentType','vector');
 
 mass_bar1 = exp(s1.xbar(7,:));
@@ -54,7 +55,9 @@ xlabel('$t$ [s]');
 ylabel('[N]');
 xlim([0,s1.tvec(end)]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
-legend([plt1,plt2],{'$T(t)$','$\Gamma(t)$'});
+legend([plt1,plt2],{'$\|T(t)\|$','$\Gamma(t)$'});
+ax = gca;
+ax.Box = 'off';
 
 subplot(1,2,2)
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
@@ -69,6 +72,7 @@ xlim([0,s1.tvec(end)]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
 % legend([plt1,plt2],{'$T(t)$','$\Gamma(t)$'});
 ax = gca;
+ax.Box = 'off';
 plt.inset.MagInset(fig,ax,[42,67,4800,5100],[20,65,7000,8250],{'SW','SW';'NE','NE'});
 ax = gca;
 ax.XTickLabel = {};

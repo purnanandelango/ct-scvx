@@ -25,6 +25,9 @@ ax = gca;
 for k = 1:length(ax.YTickLabel)
     ax.YTickLabel{k} = "$"+ax.YTickLabel{k}+"$";
 end
+ax.PlotBoxAspectRatio = [1,1,1];
+ax.DataAspectRatio = [1,1,1];
+ax.Box = 'off';
 exportgraphics(fig,'traj.pdf','ContentType','vector');
 
 % Thrust
@@ -41,8 +44,11 @@ plot(s1.tvec,nrm_T1,'-k');
 plot(s2.tvecbar,nrm_Tbar2,'.','Color',[0.7,0.7,0.7]);
 plot(s2.tvec,nrm_T2,'-','Color',[0.7,0.7,0.7]);
 xlim([0,s1.tvec(end)]);
+ylim([0.7*prb.TBmin,1.05*prb.TBmax]);
 xlabel('$t$ [s]');
 ylabel('[N]');
+ax = gca;
+ax.Box = 'off';
 exportgraphics(fig,'thrust.pdf','ContentType','vector');
 
 % Angular speed
@@ -60,6 +66,8 @@ plot(s2.tvec,nrm_omg2,'-','Color',[0.7,0.7,0.7]);
 xlim([0,s1.tvec(end)]);
 xlabel('$t$ [s]');
 ylabel('[deg/s]');
+ax = gca;
+ax.Box = 'off';
 exportgraphics(fig,'angspeed.pdf','ContentType','vector');
 
 % Tilt angle
@@ -77,4 +85,6 @@ plot(s2.tvec,nrm_tilt2,'-','Color',[0.7,0.7,0.7]);
 xlim([0,s1.tvec(end)]);
 xlabel('$t$ [s]');
 ylabel('[deg]');
+ax = gca;
+ax.Box = 'off';
 exportgraphics(fig,'tilt.pdf','ContentType','vector');
