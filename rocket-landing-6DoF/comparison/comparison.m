@@ -65,7 +65,7 @@ plot(s2.tvecbar,nrm_omgbar2,'.','Color',[0.7,0.7,0.7]);
 plot(s2.tvec,nrm_omg2,'-','Color',[0.7,0.7,0.7]);
 xlim([0,s1.tvec(end)]);
 xlabel('$t$ [s]');
-ylabel('[deg/s]');
+ylabel('[deg s$^{-1}$]');
 ax = gca;
 ax.Box = 'off';
 exportgraphics(fig,'angspeed.pdf','ContentType','vector');

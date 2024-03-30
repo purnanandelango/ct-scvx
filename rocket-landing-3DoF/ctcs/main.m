@@ -12,7 +12,7 @@ load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,2, ...
                                          xbar,ubar,taubar);
 
-% load('recent_solution_cvx','x_guess','u');
+% load('../node-only-cnstr/recent_solution_cvx','x_guess','u');
 % [xbar,ubar] = misc.create_initialization(prb,2, ...
 %                                          x_guess,u,[]);
 

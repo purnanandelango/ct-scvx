@@ -77,8 +77,8 @@ plot(tvec,nrm_v1,'-k');
 plot(tvecbar,nrm_vbar1,'.k');
 plot(tvec,nrm_v2,'-','Color',[0.7,0.7,0.7]);
 plot(tvecbar,nrm_vbar2,'.','Color',[0.7,0.7,0.7]);
-% title('Speed [m/s]')
-ylabel('[m/s]');
+% title('Speed [m s$^{-1}$]')
+ylabel('[m s$^{-1}$]');
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax])
@@ -94,8 +94,8 @@ plot(tvec,nrm_T1,'-k');
 plot(tvecbar,nrm_Tbar1,'.k');
 plot(tvec,nrm_T2,'-','Color',[0.7,0.7,0.7]);
 plot(tvecbar,nrm_Tbar2,'.','Color',[0.7,0.7,0.7]);
-% title('Acceleration [m/s$^2$]');
-ylabel('[m/s$^{2}$]');
+% title('Acceleration [m s$^{-2}$]');
+ylabel('[m s$^{-2}$]');
 xlabel('$t$ [s]');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.Tmax])

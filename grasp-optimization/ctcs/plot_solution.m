@@ -39,7 +39,7 @@ grid on
 
 axis equal 
 
-load recent_solution_cvx
+load('../node-only-cnstr/recent_solution_cvx');
 
 plt_cvx = plot3(x_sim(1,:),x_sim(2,:),x_sim(3,:),'-m');
 hold on

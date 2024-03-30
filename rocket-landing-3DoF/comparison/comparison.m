@@ -2,9 +2,9 @@ clc
 clearvars
 close all
 
-s1 = load('../recent_solution.mat');
+s1 = load('../ctcs/recent_solution.mat');
 
-s2 = load('../recent_solution_cvx.mat');
+s2 = load('../node-only-cnstr/recent_solution_cvx.mat');
 
 prb = s1.prb;
 
@@ -41,7 +41,6 @@ nrm_thrust_bar2 = misc.compute_vec_norm(s2.u(1:3,:)) .* mass_bar2;
 sig1 = s1.u(4,:) .* s1.mass;
 sig2 = s2.u_sim(4,:) .* mass_sim;
 
-
 fig = figure('Position',[697,439,612,577]);
 subplot(1,2,1)
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
@@ -55,7 +54,7 @@ xlabel('$t$ [s]');
 ylabel('[N]');
 xlim([0,s1.tvec(end)]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
-legend([plt1,plt2],{'$\|T(t)\|$','$\Gamma(t)$'});
+legend([plt1,plt2],{'$\|T(t)\|$','$\sigma(t)$'});
 ax = gca;
 ax.Box = 'off';
 
