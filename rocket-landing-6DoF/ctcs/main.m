@@ -7,17 +7,17 @@ clc
 %                    1.00, ...        % wtr
 %                    0.01);           % cost_factor
 
-prb = problem_data_lunar(06,  ...         % K
-                         100,  ...        % scp_iters
-                         5e1, ...         % wvc
+prb = problem_data_lunar(05,  ...         % K
+                         070,  ...        % scp_iters
+                         3e1, ...         % wvc
                          1.00, ...        % wtr
-                         0.01);           % cost_factor (0.01,0.10)
+                         0.001);          % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
 
 % load('../node-only-cnstr/recent_solution_guess','xbar','ubar','taubar');
 
-[xbar,ubar] = misc.create_initialization(prb,2, ...
+[xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
 % scp.diagnose_ptr_handparse(xbar,ubar,prb,@sys_cnstr_cost,'affine-var')
@@ -50,4 +50,4 @@ fprintf("Fuel consumed: %.2f kg\n",x(1,1)-x(1,end));
 save('recent_solution','m','rI','vI','qBI','omgB','tvec','tau','u','x','x2','prb',...
                        'xbar','ubar','tvecbar','taubar');
 
-plot_solution_lunar;
+% plot_solution_lunar;

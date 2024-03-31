@@ -57,13 +57,9 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.mwet    = 3250;
 
     prb.smin    = 1;
-    prb.smax    = 60;
-    % prb.dtmin   = 0.1;
-    % prb.dtmax   = 10;
-    % prb.ToFmax  = 30;
+    prb.smax    = 150;
    
-    prb.snom    = [1,15];
-    prb.ToFguess= 30;    
+    prb.ToFguess= 60;   
     
     % Boundary conditions
 
@@ -79,8 +75,8 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     % Straight-line initialization
     prb.x1      = [prb.mwet;prb.rI1;prb.vI1;prb.q1;prb.omgB1];
     prb.xK      = [prb.mdry;prb.rIK;prb.vIK;prb.q1;prb.omgBK];    
-    prb.u1      = [-prb.mwet*prb.gI;prb.ToFguess];
-    prb.uK      = [-prb.mdry*prb.gI;prb.ToFguess];
+    prb.u1      = [-2.0*prb.mwet*prb.gI;prb.ToFguess];
+    prb.uK      = [-2.0*prb.mdry*prb.gI;prb.ToFguess];
 
     % Scaling parameters
     xmin = [prb.mdry; -400*ones(3,1); -100*ones(3,1); -ones(4,1); -prb.omgmax*ones(3,1)];
@@ -105,6 +101,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.AbsTol',1e-8,'ecos.RelTol',1e-8,'ecos.FeasTol',1e-9);
+    % prb.solver_settings = sdpsettings('solver','mosek','verbose',false);
 
     % prb.tr_norm = 2;
     % prb.tr_norm = inf;

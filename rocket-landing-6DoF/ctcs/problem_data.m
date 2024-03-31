@@ -61,9 +61,9 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.smin    = 1;
     prb.smax    = 50;
-    prb.dtmin   = 0.1;
-    prb.dtmax   = 10;
-    prb.ToFmax  = 20;
+    % prb.dtmin   = 0.1;
+    % prb.dtmax   = 10;
+    % prb.ToFmax  = 20;
    
     prb.snom    = [1,15];
     prb.ToFguess= 10;   

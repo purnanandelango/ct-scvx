@@ -61,13 +61,9 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.mwet    = 3250;
 
     prb.smin    = 1;
-    prb.smax    = 60;
-    % prb.dtmin   = 0.1;
-    % prb.dtmax   = 10;
-    % prb.ToFmax  = 30;
-   
-    prb.snom    = [1,15];
-    prb.ToFguess= 30;   
+    prb.smax    = 150;
+
+    prb.ToFguess= 70;   
 
     prb.ymin = 0*ones(prb.ny,1);
     prb.ymax = 1*ones(prb.ny,1);
@@ -102,8 +98,8 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     % Straight-line initialization
     prb.x1      = [prb.mwet;prb.rI1;prb.vI1;prb.q1;prb.omgB1;prb.y1];
     prb.xK      = [prb.mdry;prb.rIK;prb.vIK;prb.q1;prb.omgBK;prb.yK];    
-    prb.u1      = [-prb.mwet*prb.gI;prb.ToFguess];
-    prb.uK      = [-prb.mdry*prb.gI;prb.ToFguess];
+    prb.u1      = [-2.0*prb.mwet*prb.gI;prb.ToFguess];
+    prb.uK      = [-2.0*prb.mdry*prb.gI;prb.ToFguess];
 
     % Scaling parameters
     xmin = [prb.mdry; -400*ones(3,1); -100*ones(3,1);  -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
@@ -124,16 +120,16 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     % Constraint parameters
 
     prb.cnstr_scl = diag([ ...
-                          1e-3;
-                          1e-5;
-                          1e-2;
-                          1e-5;
-                          1000;
-                          1;
-                          1e-5;
-                          1e-3;
-                          1e-5;
-                          1e-5;
+                          1e-3; % m
+                          1e-4; % r^2
+                          1e-2; % r
+                          1e-3; % v^2
+                          1e+1; % qB^2
+                          1e+2; % omgB^2
+                          1e-6; % TB^2
+                          1e-3; % TB
+                          1e-6; % TB^2
+                          1e-6; % TB^2
                           ]);
     prb.cnstr_buffer = [...
                         0;

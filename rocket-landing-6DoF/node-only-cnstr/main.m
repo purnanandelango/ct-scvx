@@ -7,14 +7,14 @@ clearvars
 %                    1.00, ...        % wtr
 %                    0.01);           % cost_factor
 
-prb = problem_data_lunar(07,  ...         % K
+prb = problem_data_lunar(05,  ...         % K
                          030,  ...        % scp_iters
-                         1e2, ...         % wvc
+                         2e1, ...         % wvc
                          1.00, ...        % wtr
                          0.01);           % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
-[xbar,ubar] = misc.create_initialization(prb,2, ...
+[xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
 [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
@@ -45,4 +45,4 @@ save('recent_solution','m','rI','vI','qBI','omgB','tvec','tau','u','x','x2','prb
 xbar = [xbar;zeros(1,prb.K)];
 save('recent_solution_guess','xbar','ubar','taubar');
 
-plot_solution_lunar;
+% plot_solution_lunar;
