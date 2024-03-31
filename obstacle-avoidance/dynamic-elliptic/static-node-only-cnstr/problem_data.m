@@ -24,13 +24,12 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.rmax = 40;  
     prb.vmax = 06;
-    prb.Tmax = 06;
-    prb.Tmin = 01;
+    prb.Tmax = 6.0;
+    prb.Tmin = 0.5;
 
-    prb.smin = 02;
-    prb.smax = 30;
-    prb.ToFmax = 30;
-    prb.ToFguess = 15;
+    prb.smin = 01;
+    prb.smax = 60;
+    prb.ToFguess = 30;
 
     % Obstacle avoidance
     
@@ -57,17 +56,17 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % Boundary conditions
 
     prb.r1 = [0;-28];
-    prb.v1 = [0; 0];
+    prb.v1 = [0.1; 0];
     
     prb.rK = [0; 28];
-    prb.vK = [0; 0];
+    prb.vK = [0.1; 0];
 
     % Straight-line initialization    
 
     prb.x1 = [prb.r1;prb.v1];
     prb.xK = [prb.rK;prb.vK];    
-    prb.u1 = [ones(prb.n,1);prb.ToFguess];
-    prb.uK = [ones(prb.n,1);prb.ToFguess];
+    prb.u1 = [prb.Tmin*ones(prb.n,1);prb.ToFguess];
+    prb.uK = [prb.Tmin*ones(prb.n,1);prb.ToFguess];
 
     % Scaling parameters
 
@@ -89,8 +88,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.disc = "FOH";
     prb.foh_type = "v3_parallel";
 
-    prb.ode_solver = {'ode45',odeset('AbsTol',1e-7,'RelTol',1e-6)};
-
+    prb.ode_solver = {'ode45',odeset('AbsTol',1e-5,'RelTol',1e-6)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
     prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.AbsTol',1e-8,'ecos.RelTol',1e-8);
@@ -105,7 +103,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 1e-4;
+    prb.epstr = 7.5e-4;
 
     % Time grid and time of manuever
     prb.time_of_maneuver = @(x,u)     disc.time_of_maneuver(prb.disc,prb.tau,u(prb.n+1,:));    

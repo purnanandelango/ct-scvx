@@ -2,13 +2,13 @@ clearvars
 clc
 
 prb = problem_data(10, ...          % K
-                   100, ...         % scp_iters
-                   1e2, ...         % wvc
+                   500, ...         % scp_iters
+                   2e1, ...         % wvc
                    1.00, ...        % wtr
-                   0.001);          % cost_factor
+                   0.01);          % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
-[xbar,ubar] = misc.create_initialization(prb,2, ...
+[xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
 % scp.diagnose_ptr_handparse(xbar,ubar,prb,@sys_cnstr_cost,'affine-var')
@@ -36,7 +36,13 @@ t = x(2*prb.n+2,:);
 
 fprintf('\nFinal position error: %.3f\nFinal velocity error: %.3f\n',norm(r(:,end)-prb.rK),norm(v(:,end)-prb.vK));
 
-save('recent_solution_static','r','v','x','u','tvec','tau', ...
+if prb.dyn_obs
+    file_name = "recent_solution";
+else
+    file_name = "recent_solution_static";
+end
+
+save(file_name,'r','v','x','u','tvec','tau', ...
                        'prb', ...
                        'xbar','ubar','tvecbar','taubar',...
                        't_grid', 'x_grid', 'u_grid');

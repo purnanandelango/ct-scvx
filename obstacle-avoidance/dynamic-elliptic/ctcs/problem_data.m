@@ -13,7 +13,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
     prb.h = (1/19)*min_dtau;                    % Step size for integration that computes discretization matrices
-    prb.Kfine = 1+20*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
+    prb.Kfine = 1+100*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
 
@@ -25,19 +25,19 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.rmax        = 40;
     prb.vmax        = 06;
     prb.pmin        = 0;
-    prb.pmax        = 150;
+    prb.pmax        = 100;
     prb.tmin        = 1;
-    prb.tmax        = 30;  
+    prb.tmax        = 50;  
 
     prb.ymin        = 0;
     prb.ymax        = 1;
 
-    prb.Tmin        = 01;
-    prb.Tmax        = 06;    
+    prb.Tmin        = 0.5;
+    prb.Tmax        = 6.0;    
 
-    prb.smin        = 02;
-    prb.smax        = 30;
-    prb.ToFguess    = 15;
+    prb.smin        = 01;
+    prb.smax        = 60;
+    prb.ToFguess    = 30;
 
     % Obstacle avoidance
 
@@ -74,7 +74,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.q_obs_jac_t = @(t, idx) [prb.delpsi_obs(idx) * cos( prb.phi_obs(idx) + prb.freq_obs(idx) * t ) * prb.freq_obs(idx);
                                  0];
 
-    prb.obs_inflate = 1.02;
+    prb.obs_inflate = 1.00;
 
     % Boundary conditions
 
@@ -101,8 +101,8 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.x1 = [prb.r1; prb.v1; prb.p1; 0;            prb.y1];
     prb.xK = [prb.rK; prb.vK; prb.pK; prb.ToFguess; prb.y1];
-    prb.u1 = [0.5*(prb.Tmax+prb.Tmin)*ones(n,1);    prb.ToFguess];
-    prb.uK = [0.5*(prb.Tmax+prb.Tmin)*ones(n,1);    prb.ToFguess];
+    prb.u1 = [prb.Tmin*ones(n,1);    prb.ToFguess];
+    prb.uK = [prb.Tmin*ones(n,1);    prb.ToFguess];
 
     % Scaling parameters
     xmin =   [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1); prb.pmin; 0;            prb.ymin]; 
@@ -119,37 +119,37 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cx = cz{1};
     prb.cu = cz{2};
 
-    prb.eps_cnstr = 1e-4;    
+    prb.eps_cnstr = 1e-5;    
 
     cnstr_scl = 1.0*diag([...
-                          1; ...
-                          1; ...
-                          1; ...
-                          1; ...
-                          1; ...
-                          1; ...
-                          1; ...
-                          1; ...
-                          1; ...
-                          1; ...
+                         1.0*[1.0; ...
+                              1.0; ...
+                              1.0; ...
+                              1.0; ...
+                              1.0; ...
+                              1.0; ...
+                              1.0; ...
+                              1.0; ...
+                              1.0; ...
+                              1.0]; ...
                           0.01; ...
                           0.1; ...
-                          0.1; ...
+                          1.0; ...
                           ]);
 
-    cnstr_buffer = [0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01;
-                    0.01];
+    cnstr_buffer = 0.000*[1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00;
+                          1.00];
 
     % Constraint parameters
 
@@ -230,7 +230,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 5e-4;
+    prb.epstr = 7.5e-4;
 
     % Time of maneuver and time grid
     prb.time_of_maneuver =     @(x,u) x(end-1,end);    

@@ -20,8 +20,10 @@ ax.Units = 'pixels';
 th = linspace(0,2*pi);
 
 if prb.dyn_obs
-    F(prb.Kfine) = struct('cdata',[],'colormap',[]);
-    for k = 1:prb.Kfine
+    m = 5;
+    F(1+(prb.Kfine-1)/m) = struct('cdata',[],'colormap',[]);
+    cntr = 1;
+    for k = 1:5:prb.Kfine
         plot(x_grid(1,:),x_grid(2,:),'-','Color',[0,0,0,0.3]);    
         plot(x_grid(1,k),x_grid(2,k),'.','Color',[1,0,0]);    
         hold on
@@ -37,7 +39,8 @@ if prb.dyn_obs
         
         title('Position [m]');
 
-        F(k) = getframe(fig);
+        F(cntr) = getframe(fig);
+        cntr = cntr + 1; 
         cla(ax);
     end
 
@@ -46,7 +49,7 @@ if prb.dyn_obs
     % writeVideo(vid,F);
     % close(vid)
 
-    for k = 1:prb.Kfine
+    for k = 1:1+(prb.Kfine-1)/m
         [A,map] = rgb2ind(frame2im(F(k)),256);
         if k==1
             imwrite(A,map,'anim.gif','LoopCount',Inf,'DelayTime',0.1);
@@ -86,6 +89,45 @@ else
     
     title('Position [m]');    
 end
+
+n=2;
+cnstr_fun_dim       = @(rvpt,T) [-norm(prb.H_obs{ 1}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 1))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 2}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 2))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 3}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 3))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 4}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 4))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 5}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 5))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 6}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 6))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 7}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 7))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 8}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 8))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{ 9}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2), 9))) + 1; % Obstacle avoidance
+                                 -norm(prb.H_obs{10}*(rvpt(1:n)-prb.q_obs(rvpt(2*n+2),10))) + 1; % Obstacle avoidance
+                                  norm(rvpt(n+1:2*n))/prb.vmax - 1;                              % Speed upperbound
+                                  norm(T)/prb.Tmax - 1;                                          % Thrust upperbound
+                                 -norm(T)/prb.Tmin + 1;                                          % Thrust lowerbound
+                                             ];
+
+cnstr_viol(13,prb.Kfine) = 0;
+for k = 1:prb.Kfine
+    cnstr_viol(:,k) = arrayfun(@(y) max(0,y), cnstr_fun_dim(x(:,k),u(1:2,k)));
+end
+figure
+semilogy(tvec,cnstr_viol(1,:),'DisplayName','Obstacle 1','Color',[0.5,0,0]);
+hold on
+semilogy(tvec,cnstr_viol(2,:),'DisplayName','Obstacle 2','Color',[0,0,0.5]);
+semilogy(tvec,cnstr_viol(3,:),'DisplayName','Obstacle 3','Color',[0,0.5,0]);
+semilogy(tvec,cnstr_viol(4,:),'DisplayName','Obstacle 4','Color',[0.5,0.5,0]);
+semilogy(tvec,cnstr_viol(5,:),'DisplayName','Obstacle 5','Color',[0.5,0,0.5]);
+semilogy(tvec,cnstr_viol(6,:),'DisplayName','Obstacle 6','Color',[0,0.5,0.5]);
+semilogy(tvec,cnstr_viol(7,:),'DisplayName','Obstacle 7','Color',[0.5,0.7,0.5]);
+semilogy(tvec,cnstr_viol(8,:),'DisplayName','Obstacle 8','Color',[0.7,0.5,0.5]);
+semilogy(tvec,cnstr_viol(9,:),'DisplayName','Obstacle 9','Color',[0.7,0.5,0.7]);
+semilogy(tvec,cnstr_viol(10,:),'DisplayName','Obstacle 10','Color',[0.7,0.7,0.5]);
+semilogy(tvec,cnstr_viol(11,:),'DisplayName','Speed','Color',[0.5,0.7,0.7]);
+semilogy(tvec,cnstr_viol(12,:),'DisplayName','Accl. Upper','Color',[0.7,0.7,0.7]);
+semilogy(tvec,cnstr_viol(13,:),'DisplayName','Accl. Lower','Color',[0.0,0.0,0.0]);
+title("Constraint Violation")
+legend('Location','best');
+ylim([1e-4,1e0])
 
 figure
 nrm_T(prb.Kfine) = 0;

@@ -80,7 +80,6 @@ cnstr_fun_dim       = @(xi,TB) [ 1 - xi(1)/prb.mdry;
 
 
 cnstr_viol(8,prb.Kfine) = 0;
-stc_viol(2,prb.Kfine) = 0;
 for k = 1:prb.Kfine
     cnstr_viol(:,k) = arrayfun(@(y) max(0,y), cnstr_fun_dim(x(:,k),u(1:3,k)));
 end
