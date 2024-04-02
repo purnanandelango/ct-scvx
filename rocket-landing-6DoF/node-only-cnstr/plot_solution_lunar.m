@@ -143,27 +143,3 @@ plot(tvecbar,nrm_vIbar,'ob');
 ylabel("[L T$^{-1}]$",'FontSize',18);
 xlabel("[T]",'FontSize',18);
 xlim([0,tvecbar(end)]);
-
-%%% Diagnostics %%%
-% figure
-% subplot(2,2,1)
-% plot3(rI(1,:),rI(2,:),rI(3,:),'-r');
-% hold on
-% plot3(x2(2,:),x2(3,:),x2(4,:),'--b');
-% title("Position");
-% axis equal
-% 
-% subplot(2,2,2)
-% plot3(vI(1,:),vI(2,:),vI(3,:),'-r');
-% hold on
-% plot3(x2(5,:),x2(6,:),x2(7,:),'--b');
-% title("Velocity");
-% axis equal
-% 
-% subplot(2,2,3)
-% plot3(qBI(1,:),qBI(2,:),qBI(3,:),'-r');
-% hold on
-% plot3(x2(8,:),x2(9,:),x2(10,:),'--b');
-% title("Quaternion [1:3]");
-% axis equal
-%%%%%%
