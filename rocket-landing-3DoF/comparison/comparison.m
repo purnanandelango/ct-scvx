@@ -2,6 +2,9 @@ clc
 clearvars
 close all
 
+interpreter = "tex";
+% interpreter = "latex";
+
 s1 = load('../ctcs/recent_solution.mat');
 
 s2 = load('../node-only-cnstr/recent_solution_cvx.mat');
@@ -49,12 +52,16 @@ plot(prb.tau,prb.rho2*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 plt1 = plot(s1.tau,nrm_thrust1,'-k');
 plt2 = plot(s1.tau,sig1,'--','Color',[0.7,0.7,0.7]);
 plot(prb.tau,nrm_thrust_bar1,'.k');
-% title("Thrust magnitude [N]");
-xlabel('$t$ [s]');
 ylabel('[N]');
 xlim([0,s1.tvec(end)]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
-legend([plt1,plt2],{'$\|T(t)\|$','$\sigma(t)$'});
+if interpreter == "latex"
+    legend([plt1,plt2],{'$\|T(t)\|$','$\sigma(t)$'});
+    xlabel('$t$ [s]');
+elseif interpreter == "tex"
+    legend([plt1,plt2],{char(8214)+"{\itT{\rm(}t{\rm)}}"+char(8214),'\sigma({\itt})'});
+    xlabel('{\itt} [s]');
+end
 ax = gca;
 ax.Box = 'off';
 
@@ -65,11 +72,14 @@ plot(prb.tau,prb.rho2*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 plt1 = plot(s2.tau_sim,nrm_thrust2,'-k');
 plt2 = plot(s2.tau_sim,sig2,'--','Color',[0.7,0.7,0.7]);
 plot(prb.tau,nrm_thrust_bar2,'.k');
-% title("Thrust magnitude [N]");
-xlabel('$t$ [s]');
+% ylabel('[N]');
+if interpreter == "latex"
+    xlabel('$t$ [s]');
+elseif interpreter == "tex"
+    xlabel('{\it t} [s]')
+end
 xlim([0,s1.tvec(end)]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
-% legend([plt1,plt2],{'$T(t)$','$\Gamma(t)$'});
 ax = gca;
 ax.Box = 'off';
 plt.inset.MagInset(fig,ax,[42,67,4800,5100],[20,65,7000,8250],{'SW','SW';'NE','NE'});

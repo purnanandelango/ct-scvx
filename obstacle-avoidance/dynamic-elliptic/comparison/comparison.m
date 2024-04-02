@@ -2,6 +2,9 @@ clc
 clearvars
 close all
 
+interpreter = "tex";
+% interpreter = "latex";
+
 s1 = load('../ctcs/recent_solution_static.mat');
 
 s2 = load('../static-node-only-cnstr/recent_solution');
@@ -22,9 +25,8 @@ end
 
 plot(s1.r(1,:),s1.r(2,:),'-k');
 plot(s1.xbar(1,:),s1.xbar(2,:),'.k');    
-plot(s2.r(1,:),s2.r(2,:),'-','Color',[0.7,0.7,0.7]);
+plot(s2.r(1,:),s2.r(2,:),'--','Color',[0.7,0.7,0.7]);
 plot(s2.xbar(1,:),s2.xbar(2,:),'.','Color',[0.7,0.7,0.7]);    
-% title('Position [m]');
 ylabel('[m]');
 xlabel('[m]');
 
@@ -35,16 +37,21 @@ ax.PlotBoxAspectRatio = [1,1,1];
 ax.XLim = [-30,30];
 ax.YLim = [-35,35];
 
-ticklab = ax.XTickLabel;
-for j = 1:length(ticklab)
-    ticklab{j} = horzcat('$',ticklab{j},'$');
+if interpreter == "latex"
+    ticklab = ax.XTickLabel;
+    for j = 1:length(ticklab)
+        ticklab{j} = horzcat('$',ticklab{j},'$');
+    end
+    ax.XTickLabel = ticklab;
+    ticklab = ax.YTickLabel;
+    for j = 1:length(ticklab)
+        ticklab{j} = horzcat('$',ticklab{j},'$');
+    end
+    ax.YTickLabel = ticklab;
+elseif interpreter == "tex"
+    ax.XTickLabel = strrep(ax.XTickLabel,'-',char(8722));
+    ax.YTickLabel = strrep(ax.YTickLabel,'-',char(8722));
 end
-ax.XTickLabel = ticklab;
-ticklab = ax.YTickLabel;
-for j = 1:length(ticklab)
-    ticklab{j} = horzcat('$',ticklab{j},'$');
-end
-ax.YTickLabel = ticklab;
 exportgraphics(fig,'traj.pdf','ContentType','vector');
 
 Kfine = length(tau);
@@ -75,11 +82,15 @@ plot(tvecbar,prb.vmax*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 hold on 
 plot(tvec,nrm_v1,'-k');
 plot(tvecbar,nrm_vbar1,'.k');
-plot(tvec,nrm_v2,'-','Color',[0.7,0.7,0.7]);
+plot(tvec,nrm_v2,'--','Color',[0.7,0.7,0.7]);
 plot(tvecbar,nrm_vbar2,'.','Color',[0.7,0.7,0.7]);
-% title('Speed [m s$^{-1}$]')
-ylabel('[m s$^{-1}$]');
-xlabel('$t$ [s]');
+if interpreter == "latex"
+    ylabel('[m s$^{-1}$]');
+    xlabel('$t$ [s]');
+elseif interpreter == "tex"
+    ylabel("[m s^{"+char(8722)+"1}]");
+    xlabel('{\it t} [s]');
+end
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax])
 ax = gca;
@@ -92,11 +103,15 @@ hold on
 plot(tvecbar,prb.Tmax*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 plot(tvec,nrm_T1,'-k');
 plot(tvecbar,nrm_Tbar1,'.k');
-plot(tvec,nrm_T2,'-','Color',[0.7,0.7,0.7]);
+plot(tvec,nrm_T2,'--','Color',[0.7,0.7,0.7]);
 plot(tvecbar,nrm_Tbar2,'.','Color',[0.7,0.7,0.7]);
-% title('Acceleration [m s$^{-2}$]');
-ylabel('[m s$^{-2}$]');
-xlabel('$t$ [s]');
+if interpreter == "latex"
+    ylabel('[m s$^{-2}$]');
+    xlabel('$t$ [s]');
+elseif interpreter == "tex"
+    ylabel("[m s^{"+char(8722)+"2}]");
+    xlabel('{\it t} [s]');
+end
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.Tmax])
 ax = gca;
@@ -110,9 +125,12 @@ plot(prb.tau,prb.smax*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 plot(prb.tau,s1.ubar(prb.n+1,:),'.k');
 plot(tau,s1.u(prb.n+1,:),'-k');
 plot(s2.prb.tau,s2.ubar(prb.n+1,:),'.','Color',[0.7,0.7,0.7]);
-plot(tau,s2.u(prb.n+1,:),'-','Color',[0.7,0.7,0.7]);
-xlabel('$\tau$');
-% title('Dilation Factor');
+plot(tau,s2.u(prb.n+1,:),'--','Color',[0.7,0.7,0.7]);
+if interpreter == "latex"
+    xlabel('$\tau$');
+elseif interpreter == "tex"
+    xlabel('\tau');
+end
 xlim([0,1])
 ylim([0,1.1*prb.smax])
 ax = gca;

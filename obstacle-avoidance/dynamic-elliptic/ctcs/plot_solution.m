@@ -1,8 +1,8 @@
 clearvars
 close all
 
-load recent_solution_static
-% load recent_solution
+% load recent_solution_static
+load recent_solution
 
 fig = figure('Position',[138,100,1034,437], ...
              'Color',[1,1,1]);

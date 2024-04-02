@@ -13,7 +13,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.dtau = diff(prb.tau);
     
     prb.h = (1/19)*min(prb.dtau);               % Step size for integration that computes discretization matrices
-    prb.Kfine = 1+20*round(1/min(prb.dtau));    % Size of grid on which SCP solution is simulated
+    prb.Kfine = 1+100*round(1/min(prb.dtau));    % Size of grid on which SCP solution is simulated
     
     % System parameters
 
