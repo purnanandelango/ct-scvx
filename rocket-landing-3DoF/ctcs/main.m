@@ -1,17 +1,28 @@
 clearvars
 clc
 
+% Initialize from straight-line
+
 prb = problem_data(08, ...          % K
                    84, ...          % T
                    300, ...         % scp_iters
                    2e1, ...         % wvc
                    1.00, ...        % wtr
-                   0.001);           % cost_factor
+                   0.0200);         % cost_factor (0.0200,0.0002)
 
 load('recent_solution','xbar','ubar','taubar');
-[xbar,ubar] = misc.create_initialization(prb,2, ...
+[xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
+% Warm-start from node-only-cnstr solution
+
+% prb = problem_data(08, ...          % K
+%                    84, ...          % T
+%                    300, ...         % scp_iters
+%                    2e1, ...         % wvc
+%                    1.00, ...        % wtr
+%                    0.003);           % cost_factor
+% 
 % load('../node-only-cnstr/recent_solution_cvx','x_guess','u');
 % [xbar,ubar] = misc.create_initialization(prb,2, ...
 %                                          x_guess,u,[]);

@@ -48,7 +48,10 @@ function prb = problem_data(K,T, ...
     prb.ymin = 0;
     prb.ymax = 1;
 
-    prb.eps_cnstr = 1e-6;    
+    prb.pmin = log(prb.mdry);
+    prb.pmax = log(prb.mwet);
+
+    prb.eps_cnstr = 1e-4;    
 
     % Boundary conditions
 
@@ -77,15 +80,15 @@ function prb = problem_data(K,T, ...
     prb.x1 = [prb.r1; 0.5*prb.vmax*ones(3,1); prb.p1; prb.y1];
     prb.xK = [prb.rK; 0.5*prb.vmax*ones(3,1); prb.pK; prb.y1];    
 
-    prb.u1 = [-0.5*prb.gvec;
+    prb.u1 = [-0.9*prb.gvec;
               (prb.rho1+prb.rho2)/(prb.mwet+prb.mdry)];
-    prb.uK = [-0.5*prb.gvec;
+    prb.uK = [-0.9*prb.gvec;
               (prb.rho1+prb.rho2)/(prb.mwet+prb.mdry)];
 
     % Scaling parameters
 
-    xmin =   [-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1); prb.pK; prb.ymin];
-    xmax =   [ 0.5*prb.rmax*ones(3,1); 0.5*prb.vmax*ones(3,1); prb.p1; prb.ymax];
+    xmin =   [-0.5*prb.rmax*ones(3,1);-0.5*prb.vmax*ones(3,1); prb.pmin; prb.ymin];
+    xmax =   [ 0.5*prb.rmax*ones(3,1); 0.5*prb.vmax*ones(3,1); prb.pmax; prb.ymax];
 
     prb.umin = [-prb.rho2*ones(3,1)/prb.mdry;0];
     prb.umax =  prb.rho2*ones(4,1)/prb.mdry;
@@ -97,19 +100,31 @@ function prb = problem_data(K,T, ...
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
     prb.cx = cz{1};
     prb.cu = cz{2};    
-    
-    cnstr_scl = diag([1; ...        % Glide-slope
-                      1; ...        % Positive z    
-                      0.01; ...     % Speed
-                      1; ...        % Log-mass upper
-                      1; ...        % Log-mass lower
-                      1; ...        % Thrust pointing
-                      100; ...      % Thrust-slack cone
-                      1; ...        % Slack positive
-                      1000; ...     % Thrust lower
-                      10000;        % Thrust upper
+
+    cnstr_scl = diag([1e-5; ...     % Glide-slope
+                      1e-3; ...     % Positive z    
+                      1e-2; ...     % Speed
+                      1e-0; ...     % Log-mass upper
+                      1e-0; ...     % Log-mass lower
+                      1e-0; ...     % Thrust pointing
+                      1e+0; ...     % Thrust-slack cone
+                      1e-1; ...     % Slack positive
+                      1e+1; ...     % Thrust lower
+                      3e+1;         % Thrust upper
                       ]);
-    cnstr_buffer = zeros(10,1);
+
+    cnstr_buffer = [
+                    0;
+                    0;
+                    0;
+                    0;
+                    0;
+                    0;
+                    0;
+                    0;
+                    0;
+                    0;
+                    ];
 
     % Path constraints
 
@@ -172,7 +187,7 @@ function prb = problem_data(K,T, ...
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 5e-4;
+    prb.epstr = 7.5e-4;
 
     % Takes in unscaled data
     prb.time_of_maneuver = @(z,u) T;    
