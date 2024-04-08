@@ -102,8 +102,8 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.uK      = [-2.0*prb.mdry*prb.gI;prb.ToFguess];
 
     % Scaling parameters
-    xmin = [prb.mdry; -400*ones(3,1); -100*ones(3,1);  -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
-    xmax = [prb.mwet;  400*ones(3,1);  100*ones(3,1);   ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
+    xmin = [prb.mdry; -400; -400; -400; -100; -100; -100; -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
+    xmax = [prb.mwet;  400;  400;  400;  100;  100;  100;  ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
     
     umin = [-prb.TBmax*ones(3,1); prb.smin]; prb.umin = umin;
     umax = [ prb.TBmax*ones(3,1); prb.smax]; prb.umax = umax;  

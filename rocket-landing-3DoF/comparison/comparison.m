@@ -12,24 +12,47 @@ s2 = load('../node-only-cnstr/recent_solution_cvx.mat');
 prb = s1.prb;
 
 fig = figure('Position',[214,19,612,340]);
+% fig = figure;
 
-plot3(linspace(0,4000),(430/2600)*linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-','LineWidth',3.5,'Color',[1,0.5,0.5])
+% plot3(linspace(0,4000),(430/2600)*linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-','LineWidth',3.5,'Color',[1,0.5,0.5])
+% hold on
+% plot3(s1.x(1,:),s1.x(2,:),s1.x(3,:),'-k');
+% plot3(s1.xbar(1,:),s1.xbar(2,:),s1.xbar(3,:),'.k');
+% plot3(s2.x_sim(1,:),s2.x_sim(2,:),s2.x_sim(3,:),'--','Color',[0.7,0.7,0.7]);
+% plot3(s2.x(1,:),s2.x(2,:),s2.x(3,:),'.','Color',[0.7,0.7,0.7]);
+% view(180,0);
+% ax = gca;
+% ax.PlotBoxAspectRatio = [1,1,1];
+% ax.DataAspectRatio = [1,1,1];
+% ax.ZLim = [0,2000];
+% ax.XLim = [0,4000];
+% zlabel('Altitude [m]');
+% xlabel('Downrange [m]');
+% ax.Box = 'off';
+
+plot(linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-','LineWidth',3.5,'Color',[1,0.5,0.5])
 hold on
-plot3(s1.x(1,:),s1.x(2,:),s1.x(3,:),'-k');
-plot3(s1.xbar(1,:),s1.xbar(2,:),s1.xbar(3,:),'.k');
-plot3(s2.x_sim(1,:),s2.x_sim(2,:),s2.x_sim(3,:),'-','Color',[0.6,0.6,0.6]);
-plot3(s2.x(1,:),s2.x(2,:),s2.x(3,:),'.','Color',[0.6,0.6,0.6]);
-
-view(180,0);
+plot(s1.x(1,:),s1.x(3,:),'-k');
+plot(s1.xbar(1,:),s1.xbar(3,:),'.k');
+plot(s2.x_sim(1,:),s2.x_sim(3,:),'--','Color',[0.7,0.7,0.7]);
+plot(s2.x(1,:),s2.x(3,:),'.','Color',[0.7,0.7,0.7]);
 ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];
 ax.DataAspectRatio = [1,1,1];
-ax.ZLim = [0,2000];
+ax.YLim = [0,2000];
 ax.XLim = [0,4000];
-zlabel('Altitude [m]');
+% ax.XDir = "reverse";
+ylabel('Altitude [m]');
 xlabel('Downrange [m]');
 ax.Box = 'off';
-exportgraphics(fig,'traj.pdf','ContentType','vector');
+plt.inset.MagInset(fig,ax,[2500,3000,200,500],[3100,3600,1200,1800]);%,{'NW','NW';'SE','SE'});
+ax = gca;
+ax.XTickLabel = {};
+ax.YTickLabel = {};
+ax.PlotBoxAspectRatio = [250,150,1];
+ax.DataAspectRatio = [1,1,1];
+
+% exportgraphics(fig,'traj.pdf','ContentType','vector');
 
 mass_bar1 = exp(s1.xbar(7,:));
 mass_bar2 = exp(s2.x(7,:));
@@ -82,7 +105,7 @@ xlim([0,s1.tvec(end)]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
 ax = gca;
 ax.Box = 'off';
-plt.inset.MagInset(fig,ax,[42,67,4800,5100],[20,65,7000,8250],{'SW','SW';'NE','NE'});
+plt.inset.MagInset(fig,ax,[42,67,4800,5100],[20,65,7000,8250]);%,{'SW','SW';'NE','NE'});
 ax = gca;
 ax.XTickLabel = {};
 ax.YTickLabel = {};
