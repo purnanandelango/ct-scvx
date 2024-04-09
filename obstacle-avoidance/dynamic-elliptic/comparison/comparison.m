@@ -14,7 +14,7 @@ tau = s1.tau;
 tvecbar = s1.tvecbar;
 tvec = s1.tvec;
 
-fig = figure('Position',[214,19,612,680]);
+fig = figure('Position',[214,19,407,407]);
 
 th = linspace(0,2*pi);
 for j = 1:prb.n_obs
@@ -77,7 +77,7 @@ for j = 1:prb.K
     nrm_vbar2(j) = norm(s2.xbar(prb.n+1:2*prb.n,j));    
 end
 
-fig = figure('Position',[215,669,612,340]);
+fig = figure('Position',[215,669,407,228]);
 plot(tvecbar,prb.vmax*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 hold on 
 plot(tvec,nrm_v1,'-k');
@@ -97,7 +97,7 @@ ax = gca;
 ax.Box = 'off';
 exportgraphics(fig,'speed.pdf','ContentType','vector');
 
-fig = figure('Position',[215,669,612,340]);
+fig = figure('Position',[215,669,407,228]);
 plot(tvecbar,prb.Tmin*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 hold on 
 plot(tvecbar,prb.Tmax*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
@@ -118,7 +118,7 @@ ax = gca;
 ax.Box = 'off';
 exportgraphics(fig,'acceleration.pdf','ContentType','vector');
 
-fig = figure('Position',[215,669,612,340]);
+fig = figure('Position',[215,669,407,228]);
 hold on
 plot(prb.tau,prb.smin*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 plot(prb.tau,prb.smax*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);

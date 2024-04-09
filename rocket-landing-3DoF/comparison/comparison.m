@@ -11,7 +11,7 @@ s2 = load('../node-only-cnstr/recent_solution_cvx.mat');
 
 prb = s1.prb;
 
-fig = figure('Position',[214,19,612,340]);
+fig = figure('Position',[214,19,407,407]);
 % fig = figure;
 
 % plot3(linspace(0,4000),(430/2600)*linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-','LineWidth',3.5,'Color',[1,0.5,0.5])
@@ -67,7 +67,7 @@ nrm_thrust_bar2 = misc.compute_vec_norm(s2.u(1:3,:)) .* mass_bar2;
 sig1 = s1.u(4,:) .* s1.mass;
 sig2 = s2.u_sim(4,:) .* mass_sim;
 
-fig = figure('Position',[697,439,612,577]);
+fig = figure('Position',[697,439,407,407]);
 subplot(1,2,1)
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
 hold on

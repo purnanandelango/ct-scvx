@@ -8,10 +8,10 @@ clc
 %                    0.01);           % cost_factor
 
 prb = problem_data_lunar(05,  ...         % K
-                         070,  ...        % scp_iters
+                         100,  ...        % scp_iters
                          2e1, ...         % wvc
                          1.00, ...        % wtr
-                         0.01);           % cost_factor
+                         0.005);           % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
 
@@ -22,9 +22,19 @@ load('recent_solution','xbar','ubar','taubar');
 
 % scp.diagnose_ptr_handparse(xbar,ubar,prb,@sys_cnstr_cost,'affine-var')
 
-% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar,ubar] = scp.run_ptr_dvar_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar,ubar] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);
 
+% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 [xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+
+% [xbar1,ubar1] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);
+% [xbar2,ubar2] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+
+% [xbar1,ubar1] = scp.run_ptr_dvar_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar2,ubar2] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+
+% norm([xbar1(:);ubar1(:)]-[xbar2(:);ubar2(:)])/norm([xbar1(:);ubar1(:)])
 
 taubar = prb.tau;
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);

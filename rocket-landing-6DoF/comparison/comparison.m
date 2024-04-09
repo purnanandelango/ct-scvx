@@ -11,7 +11,7 @@ s2 = load('../node-only-cnstr/recent_solution');
 
 prb = s1.prb;
 
-fig = figure('Position',[214,19,612,680]);
+fig = figure('Position',[214,19,407,407]);
 n = 10;
 hold on
 plot3(s1.x(3,:),s1.x(4,:),s1.x(2,:),'-k');
@@ -38,7 +38,7 @@ ax.Box = 'off';
 exportgraphics(fig,'traj.pdf','ContentType','vector');
 
 % Thrust
-fig = figure('Position',[215,669,612,340]);
+fig = figure('Position',[215,669,407,228]);
 nrm_T1 = misc.compute_vec_norm(s1.u(1:3,:));
 nrm_Tbar1 = misc.compute_vec_norm(s1.ubar(1:3,:));
 nrm_T2 = misc.compute_vec_norm(s2.u(1:3,:));
@@ -60,10 +60,14 @@ end
 ylabel('[N]');
 ax = gca;
 ax.Box = 'off';
+plt.inset.MagInset(fig,ax,[-1,10,0.8*prb.TBmin,1.2*prb.TBmin],[10,30,1e4,1.4e4]);
+ax = gca;
+ax.XTickLabel = {};
+ax.YTickLabel = {};
 exportgraphics(fig,'thrust.pdf','ContentType','vector');
 
 % Angular speed
-fig = figure('Position',[215,669,612,340]);
+fig = figure('Position',[215,669,407,228]);
 nrm_omg1 = misc.compute_vec_norm(s1.x(12:14,:))*180/pi;
 nrm_omgbar1 = misc.compute_vec_norm(s1.xbar(12:14,:))*180/pi;
 nrm_omg2 = misc.compute_vec_norm(s2.x(12:14,:))*180/pi;
@@ -87,7 +91,7 @@ ax.Box = 'off';
 exportgraphics(fig,'angspeed.pdf','ContentType','vector');
 
 % Tilt angle
-fig = figure('Position',[215,669,612,340]);
+fig = figure('Position',[215,669,407,228]);
 nrm_tilt1 = 2*asind(misc.compute_vec_norm(prb.Hthet*s1.x(8:11,:)));
 nrm_tiltbar1 = 2*asind(misc.compute_vec_norm(prb.Hthet*s1.xbar(8:11,:)));
 nrm_tilt2 = 2*asind(misc.compute_vec_norm(prb.Hthet*s2.x(8:11,:)));

@@ -104,13 +104,11 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     % Scaling parameters
     xmin = [prb.mdry; -400; -400; -400; -100; -100; -100; -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
     xmax = [prb.mwet;  400;  400;  400;  100;  100;  100;  ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
-    
+
     umin = [-prb.TBmax*ones(3,1); prb.smin]; prb.umin = umin;
     umax = [ prb.TBmax*ones(3,1); prb.smax]; prb.umax = umax;  
 
-    prb.scl_bnd = [0,1];
-    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},prb.scl_bnd);
-    % [Sz,cz] = misc.generate_scaling({[zeros(prb.nx,1),xmax],[zeros(prb.nu,1),umax]},prb.scl_bnd);
+    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
 
     prb.Sx = Sz{1}; prb.invSx = inv(Sz{1});
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
