@@ -110,7 +110,7 @@ function prb = problem_data(K,T, ...
                       1e+0; ...     % Thrust-slack cone
                       1e-1; ...     % Slack positive
                       1e+1; ...     % Thrust lower
-                      3e+1;         % Thrust upper
+                      5e+1;         % Thrust upper
                       ]);
 
     cnstr_buffer = [
@@ -162,7 +162,7 @@ function prb = problem_data(K,T, ...
 
     prb.disc = "ZOH";
     prb.zoh_type = "v3_parallel";
-    prb.ode_solver = {'ode45',odeset('RelTol',1e-4,'AbsTol',1e-5)};
+    prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
     prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);

@@ -113,9 +113,30 @@ elseif interpreter == "tex"
     xlabel('{\it t} [s]');
 end
 xlim([0,tvec(end)])
-ylim([0,1.1*prb.Tmax])
+ylim([-0.25,1.1*prb.Tmax])
 ax = gca;
 ax.Box = 'off';
+
+annotation(fig,"rectangle",[0.3966,0.2807,0.2054,0.136],'LineWidth',1);
+annotation(fig,"arrow",'Position',[0.609,0.364,0.0786,0.2149],...
+           'LineWidth',1,'HeadStyle','plain','HeadLength',7,'HeadWidth',4);
+
+axes('Position',[0.5377,0.6123,0.3737,0.3439]);
+plot(tvecbar,prb.Tmin*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
+hold on 
+plot(tvecbar,prb.Tmax*ones(1,prb.K),'-','LineWidth',3.5,'Color',[1,0.5,0.5]);
+plot(tvec,nrm_T1,'-k');
+plot(tvecbar,nrm_Tbar1,'.k');
+plot(tvec,nrm_T2,'--','Color',[0.7,0.7,0.7]);
+plot(tvecbar,nrm_Tbar2,'.','Color',[0.7,0.7,0.7]);
+ax = gca;
+ax.XLim = [7.6,13.2];
+ax.YLim = [0,1.5];
+ax.XTick = [8,13];
+ax.YTick = [0,1.5];
+ax.FontSize = 16;
+set(ax,'LineWidth',1);
+
 exportgraphics(fig,'acceleration.pdf','ContentType','vector');
 
 fig = figure('Position',[215,669,407,228]);
@@ -132,7 +153,7 @@ elseif interpreter == "tex"
     xlabel('\tau');
 end
 xlim([0,1])
-ylim([0,1.1*prb.smax])
+ylim([-2,1.05*prb.smax])
 ax = gca;
 ax.Box = 'off';
 exportgraphics(fig,'dilation.pdf','ContentType','vector');

@@ -60,10 +60,26 @@ end
 ylabel('[N]');
 ax = gca;
 ax.Box = 'off';
-plt.inset.MagInset(fig,ax,[-1,10,0.8*prb.TBmin,1.2*prb.TBmin],[10,30,1e4,1.4e4]);
+
+annotation(fig,"rectangle",[0.1572,0.2807,0.0639,0.0570],'LineWidth',1);
+annotation(fig,"arrow",'Position',[0.226,0.34,0.2948,0.1750],...
+           'LineWidth',1,'HeadStyle','plain','HeadLength',7,'HeadWidth',4);
+
+axes('Position',[0.5452,0.5553,0.2,0.2]);
+plot(s1.tvec,prb.TBmin*ones(1,length(s1.tvec)),'-','Color',[1,0.5,0.5],'LineWidth',3.5);
+hold on
+plot(s1.tvecbar,nrm_Tbar1,'.k');
+plot(s1.tvec,nrm_T1,'-k');
+plot(s2.tvecbar,nrm_Tbar2,'.','Color',[0.7,0.7,0.7]);
+plot(s2.tvec,nrm_T2,'--','Color',[0.7,0.7,0.7]);
 ax = gca;
-ax.XTickLabel = {};
-ax.YTickLabel = {};
+ax.XLim = [0,7];
+ax.YLim = [4000,6000];
+ax.XTick = [0,3,7];
+ax.YTick = [4000,6000];
+ax.FontSize = 16;
+set(ax,'LineWidth',1);
+
 exportgraphics(fig,'thrust.pdf','ContentType','vector');
 
 % Angular speed
@@ -111,4 +127,5 @@ end
 ylabel('[deg]');
 ax = gca;
 ax.Box = 'off';
+ax.YLim = [0,70];
 exportgraphics(fig,'tilt.pdf','ContentType','vector');
