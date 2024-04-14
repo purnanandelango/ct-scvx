@@ -18,16 +18,9 @@ load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
-%%% DIAGNOSTICS %%%
-    % [xbar1,ubar1] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-    % [xbar1,ubar1] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);
-    
-    % [xbar2,ubar2] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-    % [xbar2,ubar2] = scp.run_ptr_dvar_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-    % [xbar2,ubar2] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
-    
-    % norm([xbar1(:);ubar1(:)]-[xbar2(:);ubar2(:)])/norm([xbar1(:);ubar1(:)])
-%%%
+% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
+% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"dvar_","handparse"},{"dvar_",[]})
+scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"",[]},{"dvar_",[]})
 
 % [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 [xbar,ubar] = scp.run_ptr_dvar_handparse_noparam(xbar,ubar,prb);

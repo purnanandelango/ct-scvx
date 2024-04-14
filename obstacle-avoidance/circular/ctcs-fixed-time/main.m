@@ -14,19 +14,19 @@ prb = problem_data(10, ...          % tau_f
 
 
 load('recent_solution','xbar','ubar');
-[xbar,ubar] = misc.create_initialization(prb,2, ...
+[xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,[]);
 
-
+scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
 
 [xbar,ubar,cost_val] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
 
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 
 % Simulate solution on fine grid
-% [tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,prb.tau(end)],prb.Kfine,prb.disc,prb.ode_solver);
+[tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,prb.tau(end)],prb.Kfine,prb.disc,prb.ode_solver);
 % [tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,prb.tau(end)],prb.Kfine,prb.disc,prb.Eu2x,prb.ode_solver);
-[tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,prb.tau(end)],prb.Kfine,prb.disc,prb.t_burn,prb.ode_solver);
+% [tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,prb.tau(end)],prb.Kfine,prb.disc,prb.t_burn,prb.ode_solver);
 tvec = prb.time_grid(tau,x,u);
 
 r = x(1:prb.n,:);

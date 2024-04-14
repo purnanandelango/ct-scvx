@@ -29,13 +29,13 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     prb.pmin = 0;    
 
     % FOH/ZOH
-    % prb.pmax = 20;
-    % prb.Tmax = 07;       
+    prb.pmax = 20;
+    prb.Tmax = 07;       
 
     % FBP
-    prb.t_burn = 0.01*prb.dtau(1);
-    prb.pmax = 200;
-    prb.Tmax = 10/prb.t_burn;
+    % prb.t_burn = 0.5*prb.dtau(1);
+    % prb.pmax = 200;
+    % prb.Tmax = 10/prb.t_burn;
 
     % Impulse
     % prb.pmax = 20;
@@ -84,7 +84,7 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
         prb.y1              = 0;    
         prb.yK              = 0;
         
-        prb.eps_cnstr       = 1e-5;
+        prb.eps_cnstr       = 1e-4;
 
         prb.Ey              = [zeros(1,2*prb.n+1),1];        
         prb.term_cost_vec   = [zeros(2*prb.n,1);1;0];        
@@ -152,8 +152,8 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
 
     % SCP parameters
 
-    % prb.disc = "FOH";
-    % prb.foh_type = "v3_parallel";
+    prb.disc = "FOH";
+    prb.foh_type = "v3_parallel";
 
     % prb.disc = "ZOH";
     % prb.foh_type = "v3";    
@@ -161,8 +161,8 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     % prb.disc = "Impulse";
     % prb.impulse_type = "v3";    
 
-    prb.disc = "FBP";
-    prb.fbp_type = "v3_parallel";
+    % prb.disc = "FBP";
+    % prb.fbp_type = "v3_parallel";
 
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
@@ -175,9 +175,9 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-8,'osqp.eps_rel',1e-8,'osqp.max_iter',5e4);        
    
     % prb.solver = struct('name',"quadprog",'ConstraintTolerance',1e-9,'OptimalityTolerance',1e-9,'Display','none');
-    prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
+    % prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
     % prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-8,'reltol',1e-8);
-    % prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
+    prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
     % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
     % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
     % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
