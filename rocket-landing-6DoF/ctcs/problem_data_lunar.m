@@ -97,7 +97,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
 
     % Straight-line initialization
     prb.x1      = [prb.mwet;prb.rI1;prb.vI1;prb.q1;prb.omgB1;prb.y1];
-    prb.xK      = [prb.mdry;prb.rIK;prb.vIK;prb.q1;prb.omgBK;prb.yK];    
+    prb.xK      = [prb.mwet;prb.rIK;prb.vIK;prb.q1;prb.omgBK;prb.yK];    
     prb.u1      = [-2.0*prb.mwet*prb.gI;prb.ToFguess];
     prb.uK      = [-2.0*prb.mdry*prb.gI;prb.ToFguess];
 
@@ -211,7 +211,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 1e-3;
+    prb.epstr = 5e-3;
 
     % Takes in unscaled data
     prb.time_of_maneuver =     @(x,u) disc.time_of_maneuver(prb.disc,prb.tau,u(4,:));    

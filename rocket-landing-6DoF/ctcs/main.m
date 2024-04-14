@@ -9,9 +9,9 @@ clc
 
 prb = problem_data_lunar(05,  ...         % K
                          100,  ...        % scp_iters
-                         2e1, ...         % wvc
+                         1e0, ...         % wvc
                          1.00, ...        % wtr
-                         0.005);          % cost_factor
+                         0.001);          % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
 
