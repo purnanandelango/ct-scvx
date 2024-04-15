@@ -122,7 +122,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
                           1e-4; % r^2
                           1e-2; % r
                           1e-3; % v^2
-                          2e+1; % qB^2
+                          3e+1; % qB^2
                           1e+2; % omgB^2
                           1e-6; % TB^2
                           1e-3; % TB
