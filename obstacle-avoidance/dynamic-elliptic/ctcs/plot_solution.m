@@ -12,10 +12,6 @@ ax.DataAspectRatio = [1,1,1];
 ax.PlotBoxAspectRatio = [1,1,1];        
 ax.XLim = [-80,80];
 ax.YLim = [-30,30];
-ax.Units = 'pixels';
-% pos = ax.Position;
-% ti = ax.TightInset;
-% rect = [0, 0, pos(3)+ti(1)+ti(3), pos(4)+ti(2)+ti(4)];
 
 th = linspace(0,2*pi);
 

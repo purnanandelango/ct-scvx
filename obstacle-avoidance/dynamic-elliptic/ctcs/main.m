@@ -2,7 +2,7 @@ clearvars
 clc
 
 prb = problem_data(10, ...          % K
-                   010, ...         % scp_iters
+                   100, ...         % scp_iters
                    2e1, ...         % wvc
                    1.00, ...        % wtr
                    0.003);           % cost_factor
@@ -11,11 +11,15 @@ load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
+% Initial guess for SCvxGEN
+writematrix(xbar',"initialguess.csv")
+writematrix((diag([1,1,1/(prb.K-1)])*ubar)',"initialguess.csv","WriteMode","append")
+
 % scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
 % scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"dvar_","handparse"})
 
-[xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-% [xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+[xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
 
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 taubar = prb.tau;
@@ -47,5 +51,13 @@ save(file_name,'r','v','x','u','tvec','tau', ...
                        'prb', ...
                        'xbar','ubar','tvecbar','taubar',...
                        't_grid', 'x_grid', 'u_grid');
+
+% Compare against SCvxGEN solution
+if exist("solution.csv")
+    xx = readmatrix("solution.csv","Range",[1 1 prb.K prb.nx])';
+    uu = diag([1,1,prb.K-1])*readmatrix("solution.csv","Range",[prb.K+1 1 2*prb.K prb.nu])';
+    norm(xx - xbar)/norm(xbar)
+    norm(uu - ubar)/norm(ubar)
+end
 
 % plot_solution;

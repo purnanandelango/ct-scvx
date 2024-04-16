@@ -12,7 +12,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.tau = grid.generate_grid(0,1,K,'uniform'); 
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
-    prb.h = (1/49)*min_dtau;                    % Step size for integration that computes discretization matrices
+    prb.h = (1/19)*min_dtau;                    % Step size for integration that computes discretization matrices
     prb.Kfine = 1+100*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
@@ -87,10 +87,10 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.rK = [0; 28];
     prb.vK = [0.1;0];
-    % prb.pK = prb.pmax;
-    prb.pK = 0;
-    % prb.tK = prb.ToFguess;
-    prb.tK = 0;
+    prb.pK = prb.pmax;
+    % prb.pK = 0;
+    prb.tK = prb.ToFguess;
+    % prb.tK = 0;
 
     prb.Ey = [zeros(1,2*n+1+1),1];
 
@@ -112,11 +112,13 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     xmin =   [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1);        0;            0; prb.ymin]; 
     xmax =   [ 0.5*prb.rmax*ones(n,1);  0.5*prb.vmax*ones(n,1); prb.pmax; prb.ToFguess; prb.ymax];
     
-    umin =   [-prb.Tmax*ones(n,1); 0];          prb.umin = umin;
+    umin =   [-prb.Tmax*ones(n,1); prb.smin];   prb.umin = umin;
     umax =   [ prb.Tmax*ones(n,1); prb.smax];   prb.umax = umax;
 
+    umin_scale = [-prb.Tmax*ones(n,1); 0.0];
+
     prb.scl_bnd = [0,1];
-    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},prb.scl_bnd);
+    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin_scale,umax]},prb.scl_bnd);
 
     prb.Sx = Sz{1}; prb.invSx = inv(Sz{1});
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
@@ -211,14 +213,14 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);    
-    prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);    
+    prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-10,'ecos.reltol',1e-10);    
     % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-8,'osqp.eps_rel',1e-8,'osqp.max_iter',5e4);        
    
     % prb.solver = struct('name',"quadprog",'ConstraintTolerance',1e-9,'OptimalityTolerance',1e-9,'Display','none');
     prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
-    % prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-8,'reltol',1e-8);
+    % prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-10,'reltol',1e-10);
     % prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
     % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
     % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
@@ -238,7 +240,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     % Time of maneuver and time grid
     prb.time_of_maneuver =     @(x,u) x(end-1,end);    
-    prb.time_grid        = @(tau,x,u) disc.time_grid(prb.disc,    tau,u(n+1,:));    
+    prb.time_grid        = @(tau,x,u) disc.time_grid(prb.disc,tau,u(n+1,:));    
     
     % Convenient functions for accessing RHS of nonlinear and linearized ODE
     prb.dyn_func = @(tau,x,u)             evaluate_dyn_func     (x,u,n,prb.c_d,prb.accl,prb.cnstr_fun);
