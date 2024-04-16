@@ -12,7 +12,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.tau = grid.generate_grid(0,1,K,'uniform'); 
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
-    prb.h = (1/19)*min_dtau;                    % Step size for integration that computes discretization matrices
+    prb.h = (1/49)*min_dtau;                    % Step size for integration that computes discretization matrices
     prb.Kfine = 1+100*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
@@ -24,10 +24,10 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.rmax        = 40;
     prb.vmax        = 06;
-    prb.pmin        = 0;
+    % prb.pmin        = 0;
     prb.pmax        = 100;
-    prb.tmin        = 1;
-    prb.tmax        = 50;  
+    % prb.tmin        = 1;
+    % prb.tmax        = 50;  
 
     prb.ymin        = 0;
     prb.ymax        = 1;
@@ -87,7 +87,10 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     
     prb.rK = [0; 28];
     prb.vK = [0.1;0];
-    prb.pK = 100;
+    % prb.pK = prb.pmax;
+    prb.pK = 0;
+    % prb.tK = prb.ToFguess;
+    prb.tK = 0;
 
     prb.Ey = [zeros(1,2*n+1+1),1];
 
@@ -99,17 +102,18 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
 
     % Initialization generator
 
-    prb.x1 = [prb.r1; prb.v1; prb.p1; 0;            prb.y1];
-    prb.xK = [prb.rK; prb.vK; prb.pK; prb.ToFguess; prb.y1];
-    prb.u1 = [prb.Tmin*ones(n,1);    prb.ToFguess];
-    prb.uK = [prb.Tmin*ones(n,1);    prb.ToFguess];
+    prb.x1 = [prb.r1; prb.v1; prb.p1; prb.t1; prb.y1];
+    prb.xK = [prb.rK; prb.vK; prb.pK; prb.tK; prb.y1];
+
+    prb.u1 = [prb.Tmin*ones(n,1);     prb.ToFguess];
+    prb.uK = [prb.Tmin*ones(n,1);     prb.ToFguess];
 
     % Scaling parameters
-    xmin =   [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1); prb.pmin; 0;            prb.ymin]; 
+    xmin =   [-0.5*prb.rmax*ones(n,1); -0.5*prb.vmax*ones(n,1);        0;            0; prb.ymin]; 
     xmax =   [ 0.5*prb.rmax*ones(n,1);  0.5*prb.vmax*ones(n,1); prb.pmax; prb.ToFguess; prb.ymax];
     
-    umin =   [-prb.Tmax*ones(n,1); prb.smin];    prb.umin = umin;
-    umax =   [ prb.Tmax*ones(n,1); prb.smax];    prb.umax = umax;
+    umin =   [-prb.Tmax*ones(n,1); 0];          prb.umin = umin;
+    umax =   [ prb.Tmax*ones(n,1); prb.smax];   prb.umax = umax;
 
     prb.scl_bnd = [0,1];
     [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},prb.scl_bnd);
@@ -203,12 +207,12 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.foh_type = "v3_parallel";
 
     % prb.ode_solver = {'ode45',odeset('RelTol',1e-3,'AbsTol',1e-4)};
-    prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-6)};    
+    % prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-6)};    
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);    
-    % prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);    
-    prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
+    prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.abstol',1e-8,'ecos.reltol',1e-8);    
+    % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
     % prb.solver_settings = sdpsettings('solver','mosek','verbose',false,'mosek.MSK_DPAR_INTPNT_CO_TOL_PFEAS',1e-9,'mosek.MSK_DPAR_INTPNT_CO_TOL_REL_GAP',1e-9);
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-8,'osqp.eps_rel',1e-8,'osqp.max_iter',5e4);        
    

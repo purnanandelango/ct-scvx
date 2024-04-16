@@ -2,7 +2,7 @@ clearvars
 clc
 
 prb = problem_data(10, ...          % K
-                   500, ...         % scp_iters
+                   010, ...         % scp_iters
                    2e1, ...         % wvc
                    1.00, ...        % wtr
                    0.003);           % cost_factor
@@ -11,10 +11,11 @@ load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
-% scp.diagnose_ptr_handparse(xbar,ubar,prb,@sys_cnstr_cost,'affine-var')
+% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
+% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"dvar_","handparse"})
 
-% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-[xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+[xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+% [xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
 
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 taubar = prb.tau;
@@ -22,7 +23,7 @@ taubar = prb.tau;
 % Simulate solution on fine grid
 
 % Simulate on [0,1] grid
-[tau,x,u] = disc.simulate_dyn(xbar(:,1), {prb.tau,ubar}, @(t,x,u) prb.dyn_func(t,x,u), [0,1], prb.Kfine, prb.disc, prb.ode_solver);
+[tau,x,u] = disc.simulate_dyn(xbar(:,1), {prb.tau,ubar}, @(t,x,u) prb.dyn_func(t,x,u), [0,1], prb.Kfine, prb.disc);%, prb.ode_solver);
 tvec = prb.time_grid(tau,x,u);
 
 t_grid = linspace(0, tvec(end), prb.Kfine);
