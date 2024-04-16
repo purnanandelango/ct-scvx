@@ -11,7 +11,7 @@ prb = problem_data_lunar(05,  ...        % K
                          300,  ...       % scp_iters
                          1e1, ...        % wvc
                          1.00, ...       % wtr
-                         0.01);          % cost_factor (0.01,0.025)
+                         0.01);          % cost_factor (0.01,0.02)
 
 load('recent_solution','xbar','ubar','taubar');
 
@@ -19,6 +19,10 @@ load('recent_solution','xbar','ubar','taubar');
 
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
+
+% Initial guess for SCvxGEN
+writematrix(xbar',"initialguess.csv")
+writematrix((diag([1,1,1,1/(prb.K-1)])*ubar)',"initialguess.csv","WriteMode","append")
 
 % scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"",[]},{"","handparse"})
 % scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"dvar_","handparse"})
@@ -47,5 +51,13 @@ fprintf("Fuel consumed: %.2f kg\n",x(1,1)-x(1,end));
 
 save('recent_solution','m','rI','vI','qBI','omgB','tvec','tau','u','x','prb',...
                        'xbar','ubar','tvecbar','taubar');
+
+% Compare against SCvxGEN solution
+if exist("solution.csv")
+    xx = readmatrix("solution.csv","Range",[1 1 prb.K prb.nx])';
+    uu = diag([1,1,1,prb.K-1])*readmatrix("solution.csv","Range",[prb.K+1 1 2*prb.K prb.nu])';
+    norm(xx - xbar)/norm(xbar)
+    norm(uu - ubar)/norm(ubar)
+end
 
 % plot_solution_lunar;

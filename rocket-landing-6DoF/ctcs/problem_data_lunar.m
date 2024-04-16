@@ -97,7 +97,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
 
     % Straight-line initialization
     prb.x1      = [prb.mwet;prb.rI1;prb.vI1;prb.q1;prb.omgB1;prb.y1];
-    prb.xK      = [prb.mwet;prb.rIK;prb.vIK;prb.q1;prb.omgBK;prb.yK];    
+    prb.xK      = [prb.mdry;prb.rIK;prb.vIK;prb.q1;prb.omgBK;prb.yK];    
     prb.u1      = [-2*prb.mwet*prb.gI;prb.ToFguess];
     prb.uK      = [-2*prb.mdry*prb.gI;prb.ToFguess];
 
@@ -105,10 +105,12 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     xmin = [prb.mdry; -400; -400; -400; -100; -100; -100; -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
     xmax = [prb.mwet;  400;  400;  400;  100;  100;  100;  ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
 
-    umin = [-prb.TBmax*ones(3,1); 0]; prb.umin = umin;
+    umin = [-prb.TBmax*ones(3,1); prb.smin]; prb.umin = umin;
     umax = [ prb.TBmax*ones(3,1); prb.smax]; prb.umax = umax;  
 
-    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
+    umin_scale =  [-prb.TBmax*ones(3,1); 0];
+
+    [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin_scale,umax]},[0,1]);
 
     prb.Sx = Sz{1}; prb.invSx = inv(Sz{1});
     prb.Su = Sz{2}; prb.invSu = inv(Sz{2});
