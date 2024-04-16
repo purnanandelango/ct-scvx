@@ -10,7 +10,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.dtau = diff(prb.tau);
     
-    prb.h = (1/19)*prb.dtau;                 % Step size for integration that computes discretization matrices
+    prb.h = (1/09)*prb.dtau;                 % Step size for integration that computes discretization matrices
     prb.Kfine = 1+round(20/min(prb.dtau));   % Size of grid on which SCP solution is simulated
     
     % System parameters
@@ -97,15 +97,15 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
 
     % Straight-line initialization
     prb.x1      = [prb.mwet;prb.rI1;prb.vI1;prb.q1;prb.omgB1;prb.y1];
-    prb.xK      = [prb.mdry;prb.rIK;prb.vIK;prb.q1;prb.omgBK;prb.yK];    
-    prb.u1      = [-2.0*prb.mwet*prb.gI;prb.ToFguess];
-    prb.uK      = [-2.0*prb.mdry*prb.gI;prb.ToFguess];
+    prb.xK      = [prb.mwet;prb.rIK;prb.vIK;prb.q1;prb.omgBK;prb.yK];    
+    prb.u1      = [-2*prb.mwet*prb.gI;prb.ToFguess];
+    prb.uK      = [-2*prb.mdry*prb.gI;prb.ToFguess];
 
     % Scaling parameters
     xmin = [prb.mdry; -400; -400; -400; -100; -100; -100; -ones(4,1); -prb.omgmax*ones(3,1); prb.ymin];
     xmax = [prb.mwet;  400;  400;  400;  100;  100;  100;  ones(4,1);  prb.omgmax*ones(3,1); prb.ymax];
 
-    umin = [-prb.TBmax*ones(3,1); prb.smin]; prb.umin = umin;
+    umin = [-prb.TBmax*ones(3,1); 0]; prb.umin = umin;
     umax = [ prb.TBmax*ones(3,1); prb.smax]; prb.umax = umax;  
 
     [Sz,cz] = misc.generate_scaling({[xmin,xmax],[umin,umax]},[0,1]);
@@ -182,7 +182,7 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
 
     prb.disc = "FOH";
     prb.foh_type = "v3_parallel";
-    prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
+    % prb.ode_solver = {'ode45',odeset('RelTol',1e-5,'AbsTol',1e-7)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
     
     % prb.solver_settings = sdpsettings('solver','quadprog','verbose',false);    
@@ -192,11 +192,11 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     % prb.solver_settings = sdpsettings('solver','osqp','verbose',false,'osqp.eps_abs',1e-8,'osqp.eps_rel',1e-8,'osqp.max_iter',5e4);        
    
     % prb.solver = struct('name',"quadprog",'ConstraintTolerance',1e-9,'OptimalityTolerance',1e-9,'Display','none');
-    prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
+    % prb.solver = struct('name',"piqp",'verbose',0,'eps_abs',1e-8,'eps_rel',1e-8,'eps_duality_gap_rel',1e-8,'eps_duality_gap_abs',1e-8);
     % prb.solver = struct('name',"ecos",'verbose',false,'abstol',1e-8,'reltol',1e-8);
     % prb.solver = struct('name',"gurobi",'verbose',0,'OptimalityTol',1e-9,'FeasibilityTol',1e-9);
     % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
-    % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
+    prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
     % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
     % prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.5,'lambda',0.05,'omega',100,'test_termination',500);
 

@@ -7,11 +7,11 @@ clc
 %                    1.00, ...        % wtr
 %                    0.01);           % cost_factor
 
-prb = problem_data_lunar(05,  ...         % K
-                         100,  ...        % scp_iters
-                         2e1, ...         % wvc
-                         1.00, ...        % wtr
-                         0.01);           % cost_factor
+prb = problem_data_lunar(05,  ...        % K
+                         300,  ...       % scp_iters
+                         1e1, ...        % wvc
+                         1.00, ...       % wtr
+                         0.01);          % cost_factor (0.01,0.025)
 
 load('recent_solution','xbar','ubar','taubar');
 
@@ -20,10 +20,12 @@ load('recent_solution','xbar','ubar','taubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,taubar);
 
+% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"",[]},{"","handparse"})
 % scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"dvar_","handparse"})
-scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"",[]},{"dvar_",[]})
+% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"",[]},{"dvar_",[]})
 
 [xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 
 taubar = prb.tau;
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
@@ -31,7 +33,7 @@ tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 % Simulate solution on fine grid
 
 % Simulate on [0,1] grid
-[tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,1],prb.Kfine,prb.disc,prb.ode_solver);
+[tau,x,u] = disc.simulate_dyn(xbar(:,1),{prb.tau,ubar},@(t,x,u) prb.dyn_func(t,x,u),[0,1],prb.Kfine,prb.disc);%,prb.ode_solver);
 tvec = prb.time_grid(tau,x,u);
 
 m = x(1,:);
