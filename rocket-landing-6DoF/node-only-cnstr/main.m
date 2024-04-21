@@ -8,7 +8,7 @@ clearvars
 %                    0.01);           % cost_factor
 
 prb = problem_data_lunar(05,  ...         % K
-                         030,  ...        % scp_iters
+                         050,  ...        % scp_iters
                          2e1, ...         % wvc
                          1.00, ...        % wtr
                          0.01);           % cost_factor

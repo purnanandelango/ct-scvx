@@ -11,7 +11,7 @@ prb = problem_data_lunar(05,  ...        % K
                          300,  ...       % scp_iters
                          1e1, ...        % wvc
                          1.00, ...       % wtr
-                         0.01);          % cost_factor (0.01,0.02)
+                         0.005);          % cost_factor (0.01,0.02)
 
 load('recent_solution','xbar','ubar','taubar');
 
@@ -60,4 +60,4 @@ if exist("solution.csv")
     norm(uu - ubar)/norm(ubar)
 end
 
-% plot_solution_lunar;
+plot_solution_lunar;

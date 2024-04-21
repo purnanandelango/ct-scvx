@@ -59,12 +59,12 @@ function prb = problem_data_lunar(K,scp_iters,wvc,wtr,cost_factor)
     prb.smin    = 1;
     prb.smax    = 150;
    
-    prb.ToFguess= 60;   
+    prb.ToFguess= 55;   
     
     % Boundary conditions
 
     prb.rI1     = [433;0;250];
-    prb.vI1     = [10;00;-30];
+    prb.vI1     = [10;0;-30];
     
     prb.rIK     = [30;0;0];
     prb.vIK     = [-1;0;0];

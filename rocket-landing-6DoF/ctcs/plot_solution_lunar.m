@@ -119,7 +119,7 @@ tilt_cnstr_bar = 2*asind(misc.compute_vec_norm(prb.Hthet*xbar(8:11,:)));
 plot(tvecbar,tilt_cnstr_bar,'ob');
 title('Tilt angle: $2\arcsin\|H_{\theta}q_{\mathcal{B}}\|_2$')
 ylabel("[deg]",'FontSize',18);
-ylim([0,50])
+ylim([0,1.05*prb.thetmax*180/pi])
 xlabel("[T]",'FontSize',18);
 
 % Thrust
