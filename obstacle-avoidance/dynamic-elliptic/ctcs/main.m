@@ -60,4 +60,4 @@ if exist("solution.csv")
     norm(uu - ubar)/norm(ubar)
 end
 
-% plot_solution;
+plot_solution;
