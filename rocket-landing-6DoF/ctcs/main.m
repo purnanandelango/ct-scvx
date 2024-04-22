@@ -53,11 +53,13 @@ save('recent_solution','m','rI','vI','qBI','omgB','tvec','tau','u','x','prb',...
                        'xbar','ubar','tvecbar','taubar');
 
 % Compare against SCvxGEN solution
-if exist("solution.csv")
-    xx = readmatrix("solution.csv","Range",[1 1 prb.K prb.nx])';
+% solution_file = "../../../scvxgen/examples/rocket_landing/code_rocket_landing_6_DoF_lunar/build/solution.csv";
+solution_file = "solution.csv";
+if exist(solution_file)
+    xx = readmatrix(solution_file,"Range",[1 1 prb.K prb.nx])';
     uu = diag([1,1,1,prb.K-1])*readmatrix("solution.csv","Range",[prb.K+1 1 2*prb.K prb.nu])';
     norm(xx - xbar)/norm(xbar)
     norm(uu - ubar)/norm(ubar)
 end
 
-plot_solution_lunar;
+% plot_solution_lunar;

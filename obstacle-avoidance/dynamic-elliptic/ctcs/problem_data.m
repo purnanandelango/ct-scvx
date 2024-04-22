@@ -13,7 +13,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.dtau = diff(prb.tau); min_dtau = min(prb.dtau);
     
     prb.h = (1/19)*min_dtau;                    % Step size for integration that computes discretization matrices
-    prb.Kfine = 1+100*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
+    prb.Kfine = 1+500*round(1/min_dtau);         % Size of grid on which SCP solution is simulated
     
     % System parameters
 
@@ -95,8 +95,10 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.Ey = [zeros(1,2*n+1+1),1];
 
     prb.Ei = eye(prb.nx);
+    prb.i_idx = 1:prb.nx;
     prb.zi = [prb.r1;prb.v1;prb.p1;prb.t1;prb.y1];
     prb.Ef = prb.Ei(1:2*n,:);
+    prb.f_idx = 1:2*n;
     prb.zf = [prb.rK;prb.vK];
     prb.term_cost_vec = [zeros(2*n,1);1;0;0]; 
 
@@ -225,7 +227,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % prb.solver = struct('name',"scs",'eps_abs',1e-9,'eps_rel',1e-9,'verbose',false);
     % prb.solver = struct('name',"mosek",'MSK_DPAR_INTPNT_QO_TOL_PFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_DFEAS',1e-9,'MSK_DPAR_INTPNT_QO_TOL_REL_GAP',1e-9);
     % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
-    % prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.75,'lambda',1,'omega',20,'test_termination',500);
+    % prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.75,'lambda',0.05,'omega',200,'test_termination',500);
 
     % prb.tr_norm = 2;
     % prb.tr_norm = inf;   

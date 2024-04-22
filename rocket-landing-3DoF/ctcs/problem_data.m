@@ -10,7 +10,7 @@ function prb = problem_data(K,T, ...
     prb.dtau = T/(K-1);
         
     prb.h = (1/10)*prb.dtau;
-    prb.Kfine = 20*K;
+    prb.Kfine = 100*K;
 
     % System parameters
     prb.mwet = 1905;             % Wet mass [kg]
@@ -51,7 +51,7 @@ function prb = problem_data(K,T, ...
     prb.pmin = log(prb.mdry);
     prb.pmax = log(prb.mwet);
 
-    prb.eps_cnstr = 1e-4;    
+    prb.eps_cnstr = 1e-5;    
 
     % Boundary conditions
 
@@ -110,7 +110,7 @@ function prb = problem_data(K,T, ...
                       1e+0; ...     % Thrust-slack cone
                       1e-1; ...     % Slack positive
                       1e+1; ...     % Thrust lower
-                      5e+1;         % Thrust upper
+                      7e+1;         % Thrust upper
                       ]);
 
     cnstr_buffer = [
@@ -187,7 +187,7 @@ function prb = problem_data(K,T, ...
     prb.cost_factor = cost_factor;
     
     prb.epsvc = 1e-7;
-    prb.epstr = 7.5e-4;
+    prb.epstr = 5e-4;
 
     % Takes in unscaled data
     prb.time_of_maneuver = @(z,u) T;    

@@ -80,7 +80,7 @@ fprintf("\nFuel consumed: %.2f kg\n",exp(x(7,1))-exp(x(7,end)));
 x_guess = [x;
            zeros(1,prb.K)];
 
-[tau_sim,x_sim] = ode45(@(tau,x) prb.dyn_func(tau,x,prb.ufun(tau,u,prb.tau)),[0,prb.tau(end)],x(:,1),odeset('RelTol',1e-5,'AbsTol',1e-7));
+[tau_sim,x_sim] = ode45(@(tau,x) prb.dyn_func(tau,x,prb.ufun(tau,u,prb.tau)),[0,prb.tau(end)],x(:,1),odeset('RelTol',1e-7,'AbsTol',1e-9));
 x_sim = x_sim';
 u_sim = prb.ufun(tau_sim,u,prb.tau);
 

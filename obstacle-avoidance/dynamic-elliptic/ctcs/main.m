@@ -53,11 +53,13 @@ save(file_name,'r','v','x','u','tvec','tau', ...
                        't_grid', 'x_grid', 'u_grid');
 
 % Compare against SCvxGEN solution
-if exist("solution.csv")
-    xx = readmatrix("solution.csv","Range",[1 1 prb.K prb.nx])';
+solution_file = "../../../../scvxgen/examples/obstacle_avoidance/code_dynamic_obstacle_avoidance/build/solution.csv";
+% solution_file = "solution.csv";
+if exist(solution_file)
+    xx = readmatrix(solution_file,"Range",[1 1 prb.K prb.nx])';
     uu = diag([1,1,prb.K-1])*readmatrix("solution.csv","Range",[prb.K+1 1 2*prb.K prb.nu])';
     norm(xx - xbar)/norm(xbar)
     norm(uu - ubar)/norm(ubar)
 end
 
-plot_solution;
+% plot_solution;
