@@ -40,7 +40,7 @@ xlim([0,4000]);
 xticks([500,1500,2500,3500]);
 ylabel('Altitude [m]');
 xlabel('Downrange [m]');
-title('Position');
+% title('Position');
 
 ax = gca;
 % ax.PlotBoxAspectRatio = [1,1,1];
@@ -51,8 +51,8 @@ ax.OuterPosition = [0, 0,  pxaxwidth, pxaxheight];
 
 %%% Magnified inset
 annotation(fig,"rectangle",[0.5713    0.2367    0.0913    0.0926],'LineWidth',1);
-annotation(fig,"arrow",'Position',[0.6661    0.3362    0.0506    0.2144],...
-           'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
+% annotation(fig,"arrow",'Position',[0.6661    0.3362    0.0506    0.2144],...
+%            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
 axes('Position',[0.6011    0.5851    0.2500    0.2500])
 plot(linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-','LineWidth',4.5,'Color',[1,0.5,0.5])
@@ -95,8 +95,8 @@ sig2 = s2.u_sim(4,:) .* mass_sim;
 pxaxheight = pxaxwidth/2;
 fig = figure('Position',[-1375,64,pxaxwidth*1.05,pxaxheight*1.05]);
 
-sgt = sgtitle('Thrust');
-sgt.FontSize = 42;
+% sgt = sgtitle('Thrust');
+% sgt.FontSize = 42;
 
 subplot(1,2,1)
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
@@ -148,8 +148,8 @@ ax.YTickLabel = {};
 
 %%% Magnified inset
 annotation(fig,"rectangle",[0.6900    0.1935    0.1057    0.0361],'LineWidth',1);
-annotation(fig,"arrow",'Position',[0.7554    0.2316   -0.0189    0.1544],...
-           'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
+% annotation(fig,"arrow",'Position',[0.7554    0.2316   -0.0189    0.1544],...
+%            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
 axes('Position',[0.6117    0.4148    0.1698    0.0982]);
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);

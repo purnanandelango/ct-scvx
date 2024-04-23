@@ -38,7 +38,7 @@ xlim([-30,30]);
 ylim([-30,30]);
 xticks([-30,-10,10,30]);
 yticks([-20,0,20]);
-title('Position');
+% title('Position');
 
 ax = gca;
 ax.Box = 'off';
@@ -107,7 +107,7 @@ elseif interpreter == "tex"
 end
 xlim([0,tvec(end)])
 ylim([-0.25,1.1*prb.Tmax])
-title('Acceleration');
+% title('Acceleration');
 ax = gca;
 ax.Box = "off";
 ax.Units = "pixels";
@@ -115,8 +115,8 @@ ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 
 %%% Magnified inset
 annotation(fig,"rectangle",[0.3820    0.2479    0.1768    0.1255],'LineWidth',1);
-annotation(fig,"arrow",'Position',[0.5638    0.3359    0.0808    0.1684],...
-           'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
+% annotation(fig,"arrow",'Position',[0.5638    0.3359    0.0808    0.1684],...
+%            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
 axes('Position',[0.5208,0.5269,0.3273,0.2822]);
 plot(tvecbar,prb.Tmin*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
@@ -156,7 +156,7 @@ elseif interpreter == "tex"
     ylabel("[m s^{"+char(8722)+"1}]");
     xlabel('{\it t} [s]');
 end
-title('Speed');
+% title('Speed');
 xlim([0,tvec(end)])
 ylim([0,1.1*prb.vmax])
 ax = gca;
@@ -177,7 +177,7 @@ if interpreter == "latex"
 elseif interpreter == "tex"
     xlabel('\tau');
 end
-title('Dilation factor');
+% title('Dilation factor');
 xlim([0,1])
 ylim([-2,1.05*prb.smax])
 ax = gca;

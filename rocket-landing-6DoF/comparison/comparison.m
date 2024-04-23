@@ -46,7 +46,7 @@ legend('off');
 ylabel('Altitude [m]');
 xlabel('Downrange [m]');
 ylim([0,520]);
-title('Position');
+% title('Position');
 
 ax = gca;
 ax.XDir = "reverse";
@@ -78,7 +78,7 @@ plot(s1.tvecbar,nrm_Tbar1,'.k');
 plot(s1.tvec,nrm_T1,'-k');
 plot(s2.tvecbar,nrm_Tbar2,'.','Color',[0.5,0.5,1]);
 plot(s2.tvec,nrm_T2,'-','Color',[0,0,1,0.5]);
-title('Thrust');
+% title('Thrust');
 if interpreter == "tex"
     xlabel('{\it t} [s]');
 elseif interpreter == "latex"
@@ -94,8 +94,8 @@ ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 
 %%% Magnified inset
 annotation(fig,"rectangle",[0.1281    0.2414    0.0639    0.0570],'LineWidth',1);
-annotation(fig,"arrow",'Position',[ 0.1965    0.3003    0.3132    0.1330],...
-           'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
+% annotation(fig,"arrow",'Position',[ 0.1965    0.3003    0.3132    0.1330],...
+%            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
 axes('Position',[0.5366    0.4794    0.2484    0.2605]);
 plot(s1.tvec,prb.TBmin*ones(1,length(s1.tvec)),'-','Color',[1,0.5,0.5],'LineWidth',4.5);
@@ -130,7 +130,7 @@ plot(s1.tvec,nrm_omg1,'-k');
 plot(s2.tvecbar,nrm_omgbar2,'.','Color',[0.5,0.5,1]);
 plot(s2.tvec,nrm_omg2,'-','Color',[0,0,1,0.5]);
 xlim([0,s1.tvec(end)]);
-title('Angular speed');
+% title('Angular speed');
 if interpreter == "tex"
     xlabel('{\it t} [s]');
     ylabel("[deg s^{"+char(8722)+"1}]");
@@ -163,16 +163,17 @@ elseif interpreter == "latex"
 end
 ylabel('[deg]');
 ylim([0,70]);
-title('Tilt angle');
+% title('Tilt angle');
 ax = gca;
 ax.Box = "off";
 ax.Units = "pixels";
 ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 
 %%% Magnified inset
-annotation(fig,"rectangle",[0.1348    0.6800    0.1672    0.1544],'LineWidth',1);
-annotation(fig,"arrow",'Position',[0.3063    0.7722    0.1956   -0.2381],...
-           'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
+% annotation(fig,"rectangle",[0.1348    0.6800    0.1672    0.1544],'LineWidth',1);
+annotation(fig,"rectangle",[0.1348    0.7165    0.1672    0.1544],'LineWidth',1); % no title
+% annotation(fig,"arrow",'Position',[0.3063    0.7722    0.1956   -0.2381],...
+%            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 axes('Position',[0.5159    0.4045    0.2975    0.3132]);
 
 plot(s1.tvec,prb.thetmax*ones(1,length(s1.tvec))*180/pi,'-','Color',[1,0.5,0.5],'LineWidth',4.5);
