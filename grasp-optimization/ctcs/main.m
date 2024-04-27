@@ -16,9 +16,9 @@ load('recent_solution_cvx','x_guess','u');
 [xbar,ubar] = misc.create_initialization(prb,2, ...
                                          x_guess,u,[]);
 
-% scp.diagnose_ptr_handparse(xbar,ubar,prb,@sys_cnstr_cost,"affine-var")
+% scp.diagnose_ctscvx_handparse(xbar,ubar,prb,@sys_cnstr_cost,"affine-var")
 
-[xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+[xbar,ubar] = scp.ctscvx_handparse_noparam(xbar,ubar,prb);
 
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 taubar = prb.tau;

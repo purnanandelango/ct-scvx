@@ -5,7 +5,7 @@ clearvars
 load recent_solution
 
 figure
-plt_ptr = plot3(x(1,:),x(2,:),x(3,:),'--k');
+plt_ctscvx = plot3(x(1,:),x(2,:),x(3,:),'--k');
 hold on
 plot3(xbar(1,:),xbar(2,:),xbar(3,:),'.k','MarkerSize',13);
 axis('manual')
@@ -45,7 +45,7 @@ plt_cvx = plot3(x_sim(1,:),x_sim(2,:),x_sim(3,:),'-m');
 hold on
 plot3(x(1,:),x(2,:),x(3,:),'om','MarkerSize',13);
 
-legend([plt_ptr,plt_cvx],{'Prox-Linear','One-shot Convex Solve'},'Location','north')
+legend([plt_ctscvx,plt_cvx],{'Prox-Linear','One-shot Convex Solve'},'Location','north')
 
 ax = gca;
 ax.PlotBoxAspectRatio = [1,1,1];

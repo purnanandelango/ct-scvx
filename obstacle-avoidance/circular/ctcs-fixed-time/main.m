@@ -17,9 +17,9 @@ load('recent_solution','xbar','ubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,[]);
 
-scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
+scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
 
-[xbar,ubar,cost_val] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+[xbar,ubar,cost_val] = scp.ctscvx_handparse_noparam(xbar,ubar,prb);
 
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 

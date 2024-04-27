@@ -16,7 +16,7 @@ load('recent_solution','xbar','ubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,[]);
 
-[xbar,ubar,cost_val] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+[xbar,ubar,cost_val] = scp.ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 
 % Simulate solution on fine grid

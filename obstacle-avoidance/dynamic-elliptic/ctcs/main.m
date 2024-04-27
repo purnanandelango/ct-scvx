@@ -15,11 +15,11 @@ load('recent_solution','xbar','ubar','taubar');
 writematrix(xbar',"initialguess.csv")
 writematrix((diag([1,1,1/(prb.K-1)])*ubar)',"initialguess.csv","WriteMode","append")
 
-% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
-% scp.diagnose_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"dvar_","handparse"})
+% scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
+% scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"dvar_","handparse"})
 
-% [xbar,ubar] = scp.run_ptr_noparam(xbar,ubar,prb,@sys_cnstr_cost);
-[xbar,ubar] = scp.run_ptr_handparse_noparam(xbar,ubar,prb);
+% [xbar,ubar] = scp.ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost);
+[xbar,ubar] = scp.ctscvx_handparse_noparam(xbar,ubar,prb);
 
 tvecbar = prb.time_grid(prb.tau,xbar,ubar);
 taubar = prb.tau;
