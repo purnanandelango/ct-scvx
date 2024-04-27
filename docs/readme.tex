@@ -2,8 +2,9 @@
 
 \input preamble
 
-\title{{\Large Trajectory Optimization with Continuous-Time Constraint Satisfaction\\via Penalized Trust Region Sequential Convex Programming}\\[0.5cm]{\Large\texttt{trajopt-ctcs}}}
+\title{{\Large Successive Convexification for Trajectory Optimization with \\Continuous-Time Constraint Satisfaction}\\[0.5cm]{\Large{\ctscvx}}}
 \author{{\normalsize Autonomous Controls Laboratory}\\{\normalsize University of Washington, Seattle}}
+
 \date{}
 
 \begin{document}
@@ -340,72 +341,6 @@ and its gradient with respect to $z$ is defined as
     \partial\mr{sd}(z,\mc{Y}) = \begin{cases}\displaystyle\frac{z-\underset{y\in\partial\mc{Y}}{\mr{argmin}}\,\|z-y\|_2}{\mr{sd}(z,\mc{Y})} &\text{if }z\notin\partial\mc{Y}\\\hat{n}(z,\mc{Y}) &\text{otherwise}\end{cases}\label{sgn-dist-jac}
 \end{align}
 where $\partial \mc{Y}$ is the boundary of set $\mc{Y}$, and $\hat{n}(z,\mc{Y})$ is an outward unit-normal at a point $z\in\partial\mc{Y}$.
-
-\subsection{Passive Safety}
-
-\newcommand{\deriv}[1]{\overset{\diamond}{#1}}
-
-Given a trajectory $x(\tau)\in\bR{n_x}$, for $\tau\in[\tau_{\mr{i}},\tau_{\mr{f}}]$, passive safety with respect to set $\mc{A}\subset\bR{n_x}$ requires that the free-drift starting from the trajectory does not intersect with $\mc{A}$ for a finite duration, say $\tau_\mr{s}$. In other words:
-\begin{align}
-    x^\tau(\gamma) \notin \mc{A} \label{passive-safe}
-\end{align}
-for $\gamma\in[0,\tau_\mr{s}]$, where $x^\tau(\gamma)$ solve the following initial value problem over $[0,\gamma]$:
-\begin{align}
-    \frac{\mr{d}x(\gamma)}{\mr{d}\gamma} = \deriv{x}(\gamma) = f(x(\gamma),0_{n_u})\label{free-drift}
-\end{align}
-with initial condition $x^\tau(0) = x(\tau)$. For simplicity, we assume that $\mc{A}$ is a polytope defined by:
-$$
-    \mc{A} = \big\{\,z\in\bR{n_x}\,\big|\,H_{\mc{A}}z \le h_{\mc{A}}\,\big\}
-$$
-Since \eqref{passive-safe} is a nonconvex constraint, we will linearize \eqref{passive-safe} with respect to an arbitrary trajectory $\bar{x}(\tau)\in\bR{n_x}$, for $\tau\in[\tau_{\mr{i}},\tau_{\mr{f}}]$.
-
-For each $\tau\in[\tau_{\mr{i}},\tau_{\mr{f}}]$, let $\bar{x}^\tau(\gamma)$ denote the solution to \eqref{free-drift} over $[0,\tau_{\mr{s}}]$ with initial condition $\bar{x}(\tau)$. The Jacobian of $f$ in \eqref{free-drift} evaluated on $\bar{x}^\tau(\gamma)$ is denoted by:
-\begin{align*}
-    A^\tau(\gamma) = \frac{\partial f(\bar{x}^\tau(\gamma),0_{n_u})}{\partial x}
-\end{align*}
-Then, the free-drift $x^\tau(\gamma)$, for $\gamma\in[0,\tau_{\mr{s}}]$, starting from $x(\tau)$ can be approximated as:
-\begin{align*}
-    x^\tau(\gamma) \approx{} & \bar{x}^\tau(\gamma) + \Phi^\tau(\gamma,0)(x(\tau) - \bar{x}(\tau))\\
-    ={} & \Phi^\tau(\gamma,0)x(\tau) + \phi^\tau(\gamma,0)
-\end{align*}
-where $\Phi^\tau(\gamma,0)$ solves the following initial value problem over $[0,\gamma]$:
-\begin{subequations}
-\begin{align}
-    & \deriv{\Phi}{}^{\tau}(\gamma,0) = A^\tau(\gamma)\Phi^\tau(\gamma,0)\\
-    & \Phi^\tau(0,0) = I_{n_x}
-\end{align}\label{free-drift-STM}%
-\end{subequations}
-and $\phi^\tau(\gamma,0) = \bar{x}^\tau(\gamma) - \Phi^\tau(\gamma,0)\bar{x}(\tau)$.
-
-The passive safety constraint on $x(\tau)$ can be approximated as
-\begin{align*}
-     & \Phi^\tau(\gamma,0)x(\tau) + \phi^\tau(\gamma,0) \notin \mc{A}\\
-\iff & x(\tau) \notin \mc{B}^\tau_\gamma = \big\{\,z\,\big|\,H_{\mc{A}}\Phi^\tau(\gamma,0)\le h_{\mc{A}}-H_{\mc{A}}\phi^\tau(\gamma,0)\,\big\}\\
-\iff & \mr{sd}(x(\tau),\mc{B}^\tau_\gamma) > 0\\
-\impliedby & \mr{sd}(\bar{x}(\tau),\mc{B}^\tau_\gamma) + \partial\mr{sd}(\bar{x}(\tau),\mc{B}^\tau_\gamma)(x(\tau)-\bar{x}(\tau)) > 0
-\end{align*}
-for $\gamma\in[0,\tau_{\mr{s}}]$, where $\Phi^\tau(\gamma,0)$ is invertible. The final implication holds because of the convexity of $\mc{B}^\tau_\gamma$.
-
-The sets $\mc{B}^\tau_\gamma$ are the backward reachable sets (BRS) associated with the polytope $\mc{A}$ for the affine system:
-\begin{align}
-    \deriv{x}(\gamma) = A^\tau(\gamma)x(\gamma) + f(\bar{x}^\tau(\gamma),0_{n_u})-A^\tau(\gamma)\bar{x}^\tau(\gamma)\label{free-drift-affine}
-\end{align}
-Suppose that $\hat{x}^\tau(\gamma)$, for $\gamma\in[0,\tau_{\mr{s}}]$, is a solution to \eqref{free-drift-affine}, and let $\hat{x}^\tau(0)\in\mc{B}^\tau_{\tilde{\gamma}}$, for some $\tilde{\gamma}\in[0,\tau_{\mr{s}}]$. Then, $\hat{x}^\tau(\tilde{\gamma}) \in \mc{A}$.
-
-\subsubsection{\texttt{node-only-cnstr}}
-
-Impose \eqref{passive-safe} at the nodes of a 2D grid defined in $[\tau_{\mr{i}},\tau_{\mr{f}}]\times[0,\tau_{\mr{s}}]$.
-
-Similar to \eqref{disc-grid}, define a grid with $K_{\mr{s}}$ nodes in $[0,\tau_{\mr{s}}]$:
-\begin{align*}
-    0 = \gamma_1 < \ldots < \gamma_{K_{\mr{s}}} = \tau_{\mr{s}} 
-\end{align*}
-Given a arbitrary sequence of state $\bar{x}_k$ at nodes $\tau_k$, for $k=1,\ldots,K$, compute $\Phi^{\tau_k}(\gamma_j,0)$ by solving \eqref{free-drift-STM} with $A^{\tau_k}(\gamma)$ evaluated on the free drift starting from $\bar{x}_k$. Then, compute the backward reachable set $\mc{B}_{\gamma_j}^{\tau_k}$
-\begin{align*}
-    & \mr{sd}(\bar{x}_k,\mc{B}^{\tau_k}_{\gamma_j}) + \partial\mr{sd}(\bar{x}_k,\mc{B}^{\tau_k}_{\gamma_j})(x_k - \bar{x}_k) > 0\\
-    \implies & \Phi^{\tau_k}(\gamma_j,0)x_k + \phi^{\tau_k}(\gamma_j,0) \notin \mc{A}\\
-\end{align*}
-for $k=1,\ldots,K$ and $j=1,\ldots,K_{\mr{s}}$.
 
 \section{Examples}
 
