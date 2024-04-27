@@ -23,9 +23,11 @@ tvec = prb.time_grid(tau,x,u);
 r = x(1:prb.n,:);
 v = x(prb.n+1:2*prb.n,:);
 
+traj_cost = sum(sum( u(1:prb.n,1:end-1) .^ 2 , 1) .* diff(tvec));
+
 fprintf('\nFinal position error: %.3f\nFinal velocity error: %.3f\n',norm(r(:,end)-prb.rK),norm(v(:,end)-prb.vK));
 
 save('recent_solution','r','v','tvec','tau','u','x','prb',...
-                       'xbar','ubar','tvecbar');
+                       'xbar','ubar','tvecbar','traj_cost');
 
 % plot_solution;

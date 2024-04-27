@@ -105,8 +105,8 @@ function prb = problem_data_cvx(K,T)
     % prb.Bdp = Gam1/prb.dtau;    
     % prb.wd = M(1:7,7+9);
 
-    prb.solver_settings = sdpsettings('solver','gurobi','verbose',true,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
-    % prb.solver_settings = sdpsettings('solver','ecos','verbose',true,'ecos.abstol',1e-8,'ecos.reltol',1e-8);
+    % prb.solver_settings = sdpsettings('solver','gurobi','verbose',true,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
+    prb.solver_settings = sdpsettings('solver','ecos','verbose',true,'ecos.abstol',1e-8,'ecos.reltol',1e-8);
     % prb.solver_settings = sdpsettings('solver','mosek');
 
     prb.dyn_func = @(tau,x,u) prb.Ac*x + prb.Bc*u + prb.wc;    

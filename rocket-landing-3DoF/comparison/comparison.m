@@ -102,20 +102,22 @@ subplot(1,2,1)
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
 hold on
 plot(prb.tau,prb.rho2*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
-plot(s1.tau,nrm_thrust1,'-k');
-plot(s1.tau,sig1,'--','Color',[0.5,0.5,1]);
-plot(prb.tau,nrm_thrust_bar1,'.k');
+plt1 = plot(s1.tau,nrm_thrust1,'-','Color',[0, 0, 0]/255);
+plt2 = plot(s1.tau,sig1,'--','Color',[185, 185, 185]/255);
+plot(prb.tau,nrm_thrust_bar1,'.','Color',[0, 0, 0]/255);
 ylabel('[N]');
 xlim([0,s1.tvec(end)]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
 xticks([0,25,50,75]);
 yticks([3000,6000,9000,12000]);
 if interpreter == "latex"
+    leg = legend([plt1,plt2],{'$\|T(t)\|$','$\sigma(t)$'});
     xlabel('$t$ [s]');
 elseif interpreter == "tex"
+    leg = legend([plt1,plt2],{char(8214)+"{\itT{\rm(}t{\rm)}}"+char(8214),'\sigma({\itt})'});    
     xlabel('{\itt} [s]');
 end
-
+set(leg,'LineWidth',1,'Position',[0.3626    0.7162    0.1162    0.1517],'FontSize',30);
 ax = gca;
 ax.Box = "off";
 ax.Units = "pixels";
@@ -125,9 +127,9 @@ subplot(1,2,2)
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
 hold on
 plot(prb.tau,prb.rho2*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
-plt1 = plot(s2.tau_sim,nrm_thrust2,'-k');
-plt2 = plot(s2.tau_sim,sig2,'--','Color',[0.5,0.5,1]);
-plot(prb.tau,nrm_thrust_bar2,'.k');
+plt1 = plot(s2.tau_sim,nrm_thrust2,'-','Color',[117, 117, 255]/255);
+plt2 = plot(s2.tau_sim,sig2,'--','Color',[250, 201, 184]/255);
+plot(prb.tau,nrm_thrust_bar2,'.','Color',[117, 117, 255]/255);
 if interpreter == "latex"
     leg = legend([plt1,plt2],{'$\|T(t)\|$','$\sigma(t)$'});
     xlabel('$t$ [s]');
@@ -155,9 +157,9 @@ axes('Position',[0.6117    0.4148    0.1698    0.0982]);
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
 hold on
 plot(prb.tau,prb.rho2*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
-plt1 = plot(s2.tau_sim,nrm_thrust2,'-k');
-plt2 = plot(s2.tau_sim,sig2,'--','Color',[0.5,0.5,1]);
-plot(prb.tau,nrm_thrust_bar2,'.k');
+plt1 = plot(s2.tau_sim,nrm_thrust2,'-','Color',[117, 117, 255]/255);
+plt2 = plot(s2.tau_sim,sig2,'--','Color',[250, 201, 184]/255);
+plot(prb.tau,nrm_thrust_bar2,'.','Color',[117, 117, 255]/255);
 ylim([4850,5050]);
 xlim([41,67]);
 xticks([45,55,65]);
