@@ -6,8 +6,8 @@ cnstr_type = "single-integrator-state";
 
 prb = problem_data(07, ...          % K
                    100, ...         % scp_iters
-                   4e1, ...         % wvc
-                   1.00, ...        % wtr
+                   4e1, ...         % w_ep
+                   1.00, ...        % w_px
                    0.70,...         % cost_factor
                    cnstr_type);
 

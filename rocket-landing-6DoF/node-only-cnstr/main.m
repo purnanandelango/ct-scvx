@@ -3,14 +3,14 @@ clearvars
 
 % prb = problem_data(07,  ...         % K
 %                    100,  ...        % scp_iters
-%                    5e1, ...         % wvc
-%                    1.00, ...        % wtr
+%                    5e1, ...         % w_ep
+%                    1.00, ...        % w_px
 %                    0.01);           % cost_factor
 
 prb = problem_data_lunar(05,  ...         % K
                          050,  ...        % scp_iters
-                         2e1, ...         % wvc
-                         1.00, ...        % wtr
+                         2e1, ...         % w_ep
+                         1.00, ...        % w_px
                          0.01);           % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');

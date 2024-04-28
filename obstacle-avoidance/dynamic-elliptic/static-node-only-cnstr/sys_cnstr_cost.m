@@ -45,6 +45,6 @@ function [cnstr,cost_fun,vc_cnstr] = sys_cnstr_cost(x,u,prb,...
 
     vc_cnstr = sum(nu_ncvx(:));    
 
-    cost_fun = cost_fun + prb.wvc*vc_cnstr;
+    cost_fun = cost_fun + prb.w_ep*vc_cnstr;
 
 end

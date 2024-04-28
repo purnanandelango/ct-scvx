@@ -1,4 +1,4 @@
-function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
+function prb = problem_data(tau_f,K,scp_iters,w_ep,w_px,cost_factor,cnstr_type)
     
     prb.K = K;
 
@@ -153,7 +153,7 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     % SCP parameters
 
     prb.disc = "FOH";
-    prb.foh_type = "v3_parallel";
+    prb.foh_type = "v3";
 
     % prb.disc = "ZOH";
     % prb.foh_type = "v3";    
@@ -162,7 +162,7 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     % prb.impulse_type = "v3";    
 
     % prb.disc = "FBP";
-    % prb.fbp_type = "v3_parallel";
+    % prb.fbp_type = "v3";
 
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
@@ -183,16 +183,16 @@ function prb = problem_data(tau_f,K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
     % prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.75,'lambda',1,'omega',20,'test_termination',500);
 
-    % prb.tr_norm = 2;
-    % prb.tr_norm = inf;    
-    prb.tr_norm = 'quad';
+    % prb.px_norm = 2;
+    % prb.px_norm = inf;    
+    prb.px_norm = 'quad';
     
-    prb.wvc = wvc;
-    prb.wtr = wtr;
+    prb.w_ep = w_ep;
+    prb.w_px = w_px;
     prb.cost_factor = cost_factor;
     
-    prb.epsvc = 1e-7;
-    prb.epstr = 1e-3;
+    prb.eps_ep = 1e-7;
+    prb.eps_px = 1e-3;
 
     % Time grid and time of manuever
     prb.time_of_maneuver = @(x,u)     tau_f;    

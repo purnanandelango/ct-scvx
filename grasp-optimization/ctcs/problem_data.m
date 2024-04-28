@@ -1,5 +1,5 @@
 function prb = problem_data(K,T, ...
-                            scp_iters,wvc,wtr,cost_factor)
+                            scp_iters,w_ep,w_px,cost_factor)
 
     prb.K = K;
 
@@ -149,7 +149,7 @@ function prb = problem_data(K,T, ...
 % SCP parameters
 
     prb.disc = "ZOH";
-    prb.zoh_type = "v3_parallel";
+    prb.zoh_type = "v3";
     prb.ode_solver = {'ode45',odeset('RelTol',1e-4,'AbsTol',1e-5)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
 
@@ -168,14 +168,14 @@ function prb = problem_data(K,T, ...
     % prb.solver = struct('name',"osqp",'eps_abs',1e-8,'eps_rel',1e-8,'verbose',0,'max_iter',5e4);
     % prb.solver = struct('name',"pipg",'eps_abs',1e-9,'verbose',0,'max_iter',5e4,'rho',1.5,'lambda',0.05,'omega',100,'test_termination',500);    
 
-    prb.tr_norm = 'quad';
+    prb.px_norm = 'quad';
     
-    prb.wvc = wvc;
-    prb.wtr = wtr;
+    prb.w_ep = w_ep;
+    prb.w_px = w_px;
     prb.cost_factor = cost_factor;
     
-    prb.epsvc = 1e-7;
-    prb.epstr = 5e-4;
+    prb.eps_ep = 1e-7;
+    prb.eps_px = 5e-4;
 
     % Takes in unscaled data
     prb.time_of_maneuver = @(z,u) T;    

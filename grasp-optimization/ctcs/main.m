@@ -4,8 +4,8 @@ clc
 prb = problem_data(07, ...          % K
                    12.1, ...        % T
                    100, ...         % scp_iters
-                   2e2, ...         % wvc
-                   1.00, ...        % wtr
+                   2e2, ...         % w_ep
+                   1.00, ...        % w_px
                    0.001);           % cost_factor
 
 % load('recent_solution','xbar','ubar','taubar');

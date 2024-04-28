@@ -3,8 +3,8 @@ clc
 
 prb = problem_data(10, ...          % K
                    100, ...         % scp_iters
-                   2e1, ...         % wvc
-                   1.00, ...        % wtr
+                   2e1, ...         % w_ep
+                   1.00, ...        % w_px
                    0.003);           % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
@@ -53,8 +53,7 @@ save(file_name,'r','v','x','u','tvec','tau', ...
                        't_grid', 'x_grid', 'u_grid');
 
 % Compare against SCvxGEN solution
-solution_file = "../../../../scvxgen/examples/obstacle_avoidance/code_dynamic_obstacle_avoidance/build/solution.csv";
-% solution_file = "solution.csv";
+solution_file = "solution.csv";
 if exist(solution_file)
     xx = readmatrix(solution_file,"Range",[1 1 prb.K prb.nx])';
     uu = diag([1,1,prb.K-1])*readmatrix("solution.csv","Range",[prb.K+1 1 2*prb.K prb.nu])';

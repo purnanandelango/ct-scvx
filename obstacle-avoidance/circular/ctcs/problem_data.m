@@ -1,4 +1,4 @@
-function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
+function prb = problem_data(K,scp_iters,w_ep,w_px,cost_factor,cnstr_type)
     
     prb.K = K;
 
@@ -137,16 +137,16 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor,cnstr_type)
     prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.AbsTol',1e-8,'ecos.RelTol',1e-8);
     % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);
 
-    % prb.tr_norm = 2;
-    % prb.tr_norm = inf;    
-    prb.tr_norm = 'quad';
+    % prb.px_norm = 2;
+    % prb.px_norm = inf;    
+    prb.px_norm = 'quad';
     
-    prb.wvc = wvc;
-    prb.wtr = wtr;
+    prb.w_ep = w_ep;
+    prb.w_px = w_px;
     prb.cost_factor = cost_factor;
     
-    prb.epsvc = 1e-7;
-    prb.epstr = 1e-3;
+    prb.eps_ep = 1e-7;
+    prb.eps_px = 1e-3;
 
     % Time grid and time of manuever
     prb.time_of_maneuver = @(x,u)     disc.time_of_maneuver(prb.disc,prb.tau,u(prb.n+1,:));    

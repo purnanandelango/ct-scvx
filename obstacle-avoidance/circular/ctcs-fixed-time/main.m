@@ -7,8 +7,8 @@ cnstr_type = "single-integrator-state";
 prb = problem_data(10, ...          % tau_f
                    06, ...          % K
                    100, ...         % scp_iters
-                   5e1, ...         % wvc
-                   2.00, ...        % wtr
+                   5e1, ...         % w_ep
+                   2.00, ...        % w_px
                    0.001,...         % cost_factor
                    cnstr_type);
 
@@ -17,7 +17,7 @@ load('recent_solution','xbar','ubar');
 [xbar,ubar] = misc.create_initialization(prb,1, ...
                                          xbar,ubar,[]);
 
-scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
+% scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
 
 [xbar,ubar,cost_val] = scp.ctscvx_handparse_noparam(xbar,ubar,prb);
 

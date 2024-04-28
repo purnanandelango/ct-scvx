@@ -3,15 +3,15 @@ clearvars
 
 % prb = problem_data_2D(05, ...          % K
 %                       100, ...         % scp_iters
-%                       4e1, ...         % wvc
-%                       1.00, ...        % wtr
+%                       4e1, ...         % w_ep
+%                       1.00, ...        % w_px
 %                       0.01);           % cost_factor
 
 prb = problem_data_3D(05, ...          % K
-                      010, ...         % scp_iters
-                      4e1, ...         % wvc
-                      2.00, ...        % wtr
-                      0.70);           % cost_factor
+                      100, ...         % scp_iters
+                      4e1, ...         % w_ep
+                      2.00, ...        % w_px
+                      0.01);           % cost_factor
 
 
 load('recent_solution','xbar','ubar','taubar');
@@ -20,7 +20,7 @@ load('recent_solution','xbar','ubar','taubar');
 
 % scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"","handparse"},{"",[]})
 % scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"dvar_","handparse"},{"dvar_",[]})
-scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"",[]},{"dvar_",[]})
+% scp.diagnose_ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost,{"",[]},{"dvar_",[]})
 
 % [xbar,ubar] = scp.ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost);
 [xbar,ubar] = scp.ctscvx_dvar_handparse_noparam(xbar,ubar,prb);

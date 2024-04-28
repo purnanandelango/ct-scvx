@@ -1,4 +1,4 @@
-function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
+function prb = problem_data(K,scp_iters,w_ep,w_px,cost_factor)
     
     prb.K = K;
 
@@ -86,7 +86,7 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     % SCP parameters
 
     prb.disc = "FOH";
-    prb.foh_type = "v3_parallel";
+    prb.foh_type = "v3";
 
     prb.ode_solver = {'ode45',odeset('AbsTol',1e-5,'RelTol',1e-6)};
     prb.scp_iters = scp_iters; % Maximum SCP iterations
@@ -94,16 +94,16 @@ function prb = problem_data(K,scp_iters,wvc,wtr,cost_factor)
     prb.solver_settings = sdpsettings('solver','ecos','verbose',false,'ecos.AbsTol',1e-8,'ecos.RelTol',1e-8);
     % prb.solver_settings = sdpsettings('solver','gurobi','verbose',false,'gurobi.OptimalityTol',1e-9,'gurobi.FeasibilityTol',1e-9);    
     
-    % prb.tr_norm = 2;
-    % prb.tr_norm = inf;
-    prb.tr_norm = 'quad';
+    % prb.px_norm = 2;
+    % prb.px_norm = inf;
+    prb.px_norm = 'quad';
     
-    prb.wvc = wvc;
-    prb.wtr = wtr;
+    prb.w_ep = w_ep;
+    prb.w_px = w_px;
     prb.cost_factor = cost_factor;
     
-    prb.epsvc = 1e-7;
-    prb.epstr = 7.5e-4;
+    prb.eps_ep = 1e-7;
+    prb.eps_px = 7.5e-4;
 
     % Time grid and time of manuever
     prb.time_of_maneuver = @(x,u)     disc.time_of_maneuver(prb.disc,prb.tau,u(prb.n+1,:));    

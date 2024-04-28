@@ -56,9 +56,9 @@ function [cnstr,cost_fun,vcvb_cnstr] = sys_cnstr_cost(x,u,prb,...
 
     vcvb_cnstr = 0;
 
-    vcvb_cnstr = vcvb_cnstr + prb.wvc*sum(vb_TBmin(:));
+    vcvb_cnstr = vcvb_cnstr + prb.w_ep*sum(vb_TBmin(:));
 
-    % vcvb_cnstr = vcvb_cnstr + prb.wvc*sum(vb_stc(:));
+    % vcvb_cnstr = vcvb_cnstr + prb.w_ep*sum(vb_stc(:));
 
     cost_fun = cost_fun + vcvb_cnstr;
 

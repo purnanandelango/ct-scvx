@@ -6,8 +6,8 @@ clc
 % prb = problem_data(08, ...          % K
 %                    84, ...          % T
 %                    300, ...         % scp_iters
-%                    2e1, ...         % wvc
-%                    1.00, ...        % wtr
+%                    2e1, ...         % w_ep
+%                    1.00, ...        % w_px
 %                    0.0200);         % cost_factor (0.0200,0.0002)
 % 
 % load('recent_solution','xbar','ubar','taubar');
@@ -19,8 +19,8 @@ clc
 prb = problem_data(08, ...          % K
                    84, ...          % T
                    300, ...         % scp_iters
-                   2e1, ...         % wvc
-                   1.00, ...        % wtr
+                   2e1, ...         % w_ep
+                   1.00, ...        % w_px
                    0.003);           % cost_factor
 
 load('../node-only-cnstr/recent_solution_cvx','x_guess','u');

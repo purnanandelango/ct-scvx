@@ -4,12 +4,12 @@ clc
 prb = problem_data(2, ...               % n
                    07, ...              % K
                    300, ...             % scp_iters
-                   4e1, ...             % wvc
-                   1.00, ...            % wtr
-                   0.50);               % cost_factor
+                   4e1, ...             % w_ep
+                   1.00, ...            % w_px
+                   0.10);               % cost_factor
 
 load('recent_solution','xbar','ubar','taubar');
-[xbar,ubar] = misc.create_initialization(prb,2 ...
+[xbar,ubar] = misc.create_initialization(prb,1 ...
                                          ,xbar,ubar,taubar);
 
 [xbar,ubar,cost_val] = scp.ctscvx_noparam(xbar,ubar,prb,@sys_cnstr_cost);
