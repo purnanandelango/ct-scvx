@@ -1,4 +1,4 @@
-<h1 align="center"">$\text{CT}\text{\Large{-}}\text{\Large{SC}}\text{VX}$</h1>
+<h1 align="center">$\text{\small{CT}}\text{\large{-}}\text{\large{SC}}\text{\small{VX}}$</h1>
 
 <h2 align="center">Successive Convexification for Trajectory Optimization with<br>Continuous-Time Constraint Satisfaction</h1>
 
