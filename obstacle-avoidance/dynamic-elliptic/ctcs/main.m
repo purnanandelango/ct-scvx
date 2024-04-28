@@ -53,7 +53,7 @@ save(file_name,'r','v','x','u','tvec','tau', ...
                        't_grid', 'x_grid', 'u_grid');
 
 % Compare against SCvxGEN solution
-solution_file = "solution.csv";
+solution_file = "../SCvxGEN/data/solution.csv";
 if exist(solution_file)
     xx = readmatrix(solution_file,"Range",[1 1 prb.K prb.nx])';
     uu = diag([1,1,prb.K-1])*readmatrix("solution.csv","Range",[prb.K+1 1 2*prb.K prb.nu])';

@@ -214,7 +214,7 @@ function prb = problem_data(K,scp_iters,w_ep,w_px,cost_factor)
     prb.w_px = w_px;
     prb.cost_factor = cost_factor;
     
-    prb.eps_epp = 1e-7;
+    prb.eps_ep = 1e-7;
     prb.eps_px = 1e-4;
 
     % Takes in unscaled data

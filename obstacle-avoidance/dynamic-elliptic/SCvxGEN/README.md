@@ -1,0 +1,1 @@
+SCvxGEN binaries were compiled for Apple M processor.

@@ -211,7 +211,7 @@ function prb = problem_data_lunar(K,scp_iters,w_ep,w_px,cost_factor)
     prb.cost_factor = cost_factor;
     
     prb.eps_ep = 1e-7;
-    prb.eps_px = 5e-4;
+    prb.eps_px = 1e-3;
 
     % Takes in unscaled data
     prb.time_of_maneuver =     @(x,u) disc.time_of_maneuver(prb.disc,prb.tau,u(4,:));    
