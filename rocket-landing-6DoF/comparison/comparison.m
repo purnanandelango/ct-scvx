@@ -2,8 +2,10 @@ clc
 clearvars
 close all
 
-interpreter = "tex";
-% interpreter = "latex";
+% interpreter = "tex";
+interpreter = "latex";
+
+save_figures = true;
 
 pxaxwidth = 1110; % [pixels]
 
@@ -61,8 +63,11 @@ ax.Box = "off";
 ax.Units = "pixels";
 ax.OuterPosition = [0, 0,  pxaxwidth, pxaxheight];
 
-exportgraphics(fig,'traj.pdf','ContentType','vector');
-savefig(fig,'traj.fig');
+if save_figures
+    file_name = "traj-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
+end
 
 % Thrust
 pxaxheight = pxaxwidth/2.5;
@@ -76,8 +81,8 @@ plot(s1.tvec,prb.TBmax*ones(1,length(s1.tvec)),'-','Color',[1,0.5,0.5],'LineWidt
 plot(s1.tvec,prb.TBmin*ones(1,length(s1.tvec)),'-','Color',[1,0.5,0.5],'LineWidth',4.5);
 plot(s1.tvecbar,nrm_Tbar1,'.k');
 plot(s1.tvec,nrm_T1,'-k');
-plot(s2.tvecbar,nrm_Tbar2,'.','Color',[0.5,0.5,1]);
 plot(s2.tvec,nrm_T2,'-','Color',[0,0,1,0.5]);
+plot(s2.tvecbar,nrm_Tbar2,'.','Color',[0.5,0.5,1]);
 % title('Thrust');
 if interpreter == "tex"
     xlabel('{\it t} [s]');
@@ -93,53 +98,58 @@ ax.Units = "pixels";
 ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 
 %%% Magnified inset
-annotation(fig,"rectangle",[0.1281    0.2414    0.0639    0.0570],'LineWidth',1);
+annotation(fig,"rectangle",[0.1281    0.2543    0.0639    0.0570],'LineWidth',1); % normal scale
+% annotation(fig,"rectangle",[0.135    0.3208    0.0639   0.0570],'LineWidth',1); % small scale
+
 % annotation(fig,"arrow",'Position',[ 0.1965    0.3003    0.3132    0.1330],...
 %            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
-axes('Position',[0.5366    0.4794    0.2484    0.2605]);
+axes('Position',[0.5366    0.4794    0.2484    0.2605]); % normal scale
+% axes('Position',[0.5306    0.5416    0.2484    0.2605]); % small scale
 plot(s1.tvec,prb.TBmin*ones(1,length(s1.tvec)),'-','Color',[1,0.5,0.5],'LineWidth',4.5);
 hold on
 plot(s1.tvecbar,nrm_Tbar1,'.k');
 plot(s1.tvec,nrm_T1,'-k');
-plot(s2.tvecbar,nrm_Tbar2,'.','Color',[0.5,0.5,1]);
 plot(s2.tvec,nrm_T2,'-','Color',[0,0,1,0.5]);
+plot(s2.tvecbar,nrm_Tbar2,'.','Color',[0.5,0.5,1]);
 xlim([0,7]);
 ylim([4000,6000]);
 xticks([0,3,6]);
 yticks([4000,6000]);
 
 ax = gca;
-ax.FontSize = 30;
+ax.FontSize = 30; % normal scale
+% ax.FontSize = 45; % small scale
 set(ax,'LineWidth',1);
 %%%
 
-exportgraphics(fig,'thrust.pdf','ContentType','vector');
-savefig(fig,'thrust.fig');
+if save_figures
+    file_name = "thrust-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
+end
 
 % Angular speed
-fig = figure('Position',[215,669,407,228]);
-nrm_omg1 = misc.compute_vec_norm(s1.x(12:14,:))*180/pi;
-nrm_omgbar1 = misc.compute_vec_norm(s1.xbar(12:14,:))*180/pi;
-nrm_omg2 = misc.compute_vec_norm(s2.x(12:14,:))*180/pi;
-nrm_omgbar2 = misc.compute_vec_norm(s2.xbar(12:14,:))*180/pi;
-hold on 
-plot(s1.tvec,prb.omgmax*ones(1,length(s1.tvec))*180/pi,'-','Color',[1,0.5,0.5],'LineWidth',4.5);
-plot(s1.tvecbar,nrm_omgbar1,'.k');
-plot(s1.tvec,nrm_omg1,'-k');
-plot(s2.tvecbar,nrm_omgbar2,'.','Color',[0.5,0.5,1]);
-plot(s2.tvec,nrm_omg2,'-','Color',[0,0,1,0.5]);
-xlim([0,s1.tvec(end)]);
+% fig = figure('Position',[215,669,407,228]);
+% nrm_omg1 = misc.compute_vec_norm(s1.x(12:14,:))*180/pi;
+% nrm_omgbar1 = misc.compute_vec_norm(s1.xbar(12:14,:))*180/pi;
+% nrm_omg2 = misc.compute_vec_norm(s2.x(12:14,:))*180/pi;
+% nrm_omgbar2 = misc.compute_vec_norm(s2.xbar(12:14,:))*180/pi;
+% hold on 
+% plot(s1.tvec,prb.omgmax*ones(1,length(s1.tvec))*180/pi,'-','Color',[1,0.5,0.5],'LineWidth',4.5);
+% plot(s1.tvecbar,nrm_omgbar1,'.k');
+% plot(s1.tvec,nrm_omg1,'-k');
+% plot(s2.tvecbar,nrm_omgbar2,'.','Color',[0.5,0.5,1]);
+% plot(s2.tvec,nrm_omg2,'-','Color',[0,0,1,0.5]);
+% xlim([0,s1.tvec(end)]);
 % title('Angular speed');
-if interpreter == "tex"
-    xlabel('{\it t} [s]');
-    ylabel("[deg s^{"+char(8722)+"1}]");
-elseif interpreter == "latex"
-    xlabel('$t$ [s]');
-    ylabel('[deg s$^{-1}$]')
-end
-ax = gca;
-ax.FontSize = 20;
+% if interpreter == "tex"
+%     xlabel('{\it t} [s]');
+%     ylabel("[deg s^{"+char(8722)+"1}]");
+% elseif interpreter == "latex"
+%     xlabel('$t$ [s]');
+%     ylabel('[deg s$^{-1}$]')
+% end
 % exportgraphics(fig,'angspeed.pdf','ContentType','vector');
 
 % Tilt angle
@@ -153,8 +163,8 @@ hold on
 plot(s1.tvec,prb.thetmax*ones(1,length(s1.tvec))*180/pi,'-','Color',[1,0.5,0.5],'LineWidth',4.5);
 plot(s1.tvecbar,nrm_tiltbar1,'.k');
 plot(s1.tvec,nrm_tilt1,'-k');
-plot(s2.tvecbar,nrm_tiltbar2,'.','Color',[0.5,0.5,1]);
 plot(s2.tvec,nrm_tilt2,'-','Color',[0,0,1,0.5]);
+plot(s2.tvecbar,nrm_tiltbar2,'.','Color',[0.5,0.5,1]);
 xlim([0,s1.tvec(end)]);
 if interpreter == "tex"
     xlabel('{\it t} [s]');
@@ -170,27 +180,33 @@ ax.Units = "pixels";
 ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 
 %%% Magnified inset
-% annotation(fig,"rectangle",[0.1348    0.6800    0.1672    0.1544],'LineWidth',1);
-annotation(fig,"rectangle",[0.1348    0.7165    0.1672    0.1544],'LineWidth',1); % no title
+% annotation(fig,"rectangle",[0.1348    0.6800    0.1672    0.1544],'LineWidth',1); % normal scale title included
+annotation(fig,"rectangle",[0.1348    0.7165    0.1672    0.1544],'LineWidth',1); % normal scale
+% annotation(fig,"rectangle",[0.1365    0.7380    0.1673    0.1397],'LineWidth',1); % small scale
+
 % annotation(fig,"arrow",'Position',[0.3063    0.7722    0.1956   -0.2381],...
 %            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
-axes('Position',[0.5159    0.4045    0.2975    0.3132]);
 
+axes('Position',[0.5159    0.4045    0.2975    0.3132]); % normal scale
+% axes('Position',[0.5211    0.5118    0.2975    0.3132]); % small scale
 plot(s1.tvec,prb.thetmax*ones(1,length(s1.tvec))*180/pi,'-','Color',[1,0.5,0.5],'LineWidth',4.5);
 hold on
 plot(s1.tvecbar,nrm_tiltbar1,'.k');
 plot(s1.tvec,nrm_tilt1,'-k');
-plot(s2.tvecbar,nrm_tiltbar2,'.','Color',[0.5,0.5,1]);
 plot(s2.tvec,nrm_tilt2,'-','Color',[0,0,1,0.5]);
+plot(s2.tvecbar,nrm_tiltbar2,'.','Color',[0.5,0.5,1]);
 ylim([54,70]);
 xlim([1,17]);
 yticks([55,65]);
 xticks([5,15]);
 
 ax = gca;
-ax.FontSize = 30;
+ax.FontSize = 30; % normal scale
+% ax.FontSize = 45; % small scale
 set(ax,'LineWidth',1);
 %%%
-
-exportgraphics(fig,'tilt.pdf','ContentType','vector');
-savefig(fig,'tilt.fig');
+if save_figures
+    file_name = "tilt-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
+end

@@ -2,8 +2,8 @@ clc
 clearvars
 close all
 
-interpreter = "tex";
-% interpreter = "latex";
+% interpreter = "tex";
+interpreter = "latex";
 
 pxaxwidth = 1110; % [pixels]
 
@@ -50,11 +50,13 @@ ax.Units = "pixels";
 ax.OuterPosition = [0, 0,  pxaxwidth, pxaxheight];
 
 %%% Magnified inset
-annotation(fig,"rectangle",[0.5713    0.2367    0.0913    0.0926],'LineWidth',1);
+annotation(fig,"rectangle",[0.5704    0.2453    0.0913    0.0926],'LineWidth',1); % normal scale
+% annotation(fig,"rectangle",[0.5833    0.3019    0.0913    0.0926],'LineWidth',1); % small scale
 % annotation(fig,"arrow",'Position',[0.6661    0.3362    0.0506    0.2144],...
 %            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
-axes('Position',[0.6011    0.5851    0.2500    0.2500])
+axes('Position',[0.6011    0.5851    0.2500    0.2500]); % normal scale
+% axes('Position',[0.2509    0.5902    0.2500    0.2500]); % small scale
 plot(linspace(0,4000),tand(prb.gam_gs)*linspace(0,4000),'-','LineWidth',4.5,'Color',[1,0.5,0.5])
 hold on
 plot(s1.x(1,:),s1.x(3,:),'-k');
@@ -69,13 +71,15 @@ yticks([200,400]);
 ax = gca;
 % ax.PlotBoxAspectRatio = [1,1,1];
 % ax.DataAspectRatio = [1,1,1];
-ax.FontSize = 30;
+ax.FontSize = 30; % normal scale
+% ax.FontSize = 45; % small scale
 set(ax,'LineWidth',1);
 %%%
 
 if save_figures 
-    exportgraphics(fig,'traj.pdf','ContentType','vector');
-    savefig(fig,'traj.fig');
+    file_name = "traj-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
 end
 
 mass_bar1 = exp(s1.xbar(7,:));
@@ -117,11 +121,40 @@ elseif interpreter == "tex"
     leg = legend([plt1,plt2],{char(8214)+"{\itT{\rm(}t{\rm)}}"+char(8214),'\sigma({\itt})'});    
     xlabel('{\itt} [s]');
 end
-set(leg,'LineWidth',1,'Position',[0.3626    0.7162    0.1162    0.1517],'FontSize',30);
+set(leg,'LineWidth',1,'Position',[0.3626    0.7162    0.1162    0.1517],...
+    'FontSize',30); % normal scale
+    % 'FontSize',45); % small scale
 ax = gca;
 ax.Box = "off";
 ax.Units = "pixels";
 ax.OuterPosition = [0, 0,  pxaxwidth/2+30, pxaxheight];
+
+%%% Magnified inset
+annotation(fig,"rectangle",[0.3092    0.2158    0.1057    0.0361],'LineWidth',1); % normal scale
+% annotation(fig,"rectangle",[0.3307    0.2724    0.1057    0.0361],'LineWidth',1); % small scale
+
+% annotation(fig,"arrow",'Position',[0.7554    0.2316   -0.0189    0.1544],...
+%            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
+
+
+axes('Position',[0.2339    0.4148    0.1698    0.0982]); % normal scale
+% axes('Position',[0.312    0.4474    0.1698    0.0982]); % small scale
+plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
+hold on
+plot(prb.tau,prb.rho2*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
+plt1 = plot(s1.tau,nrm_thrust1,'-','Color',[0, 0, 0]/255);
+plt2 = plot(s1.tau,sig1,'--','Color',[185, 185, 185]/255);
+plot(prb.tau,nrm_thrust_bar1,'.','Color',[0, 0, 0]/255);
+ylim([4900,5100]);
+xlim([41,67]);
+xticks([45,55,65]);
+yticks([4900,5100]);
+
+ax = gca;
+ax.FontSize = 30; % normal scale
+% ax.FontSize = 45; % small scale
+set(ax,'LineWidth',1);
+%%%
 
 subplot(1,2,2)
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
@@ -137,7 +170,9 @@ elseif interpreter == "tex"
     leg = legend([plt1,plt2],{char(8214)+"{\itT{\rm(}t{\rm)}}"+char(8214),'\sigma({\itt})'});    
     xlabel('{\it t} [s]')
 end
-set(leg,'LineWidth',1,'Position',[0.7377    0.7162    0.1162    0.1517],'FontSize',30);
+set(leg,'LineWidth',1,'Position',[0.7377    0.7162    0.1162    0.1517],...
+    'FontSize',30); % normal scale
+    % 'FontSize',45); % small scale
 xlim([0,s1.tvec(end)]);
 xticks([0,25,50,75]);
 ylim([0.9*prb.rho1,1.05*prb.rho2]);
@@ -149,11 +184,13 @@ ax.OuterPosition = [pxaxwidth/2-30, 0, pxaxwidth/2+30, pxaxheight];
 ax.YTickLabel = {};
 
 %%% Magnified inset
-annotation(fig,"rectangle",[0.6900    0.1935    0.1057    0.0361],'LineWidth',1);
+annotation(fig,"rectangle",[0.6900    0.2038    0.1057    0.0361],'LineWidth',1); % normal scale
+% annotation(fig,"rectangle",[0.6866    0.2638    0.1057    0.0361],'LineWidth',1); % small scale
 % annotation(fig,"arrow",'Position',[0.7554    0.2316   -0.0189    0.1544],...
 %            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
-axes('Position',[0.6117    0.4148    0.1698    0.0982]);
+axes('Position',[0.6117    0.4148    0.1698    0.0982]); % normal scale
+% axes('Position',[0.6289    0.4474    0.1698    0.0982]); % small scale
 plot(prb.tau,prb.rho1*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
 hold on
 plot(prb.tau,prb.rho2*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
@@ -166,11 +203,13 @@ xticks([45,55,65]);
 yticks([4850,5050]);
 
 ax = gca;
-ax.FontSize = 30;
+ax.FontSize = 30; % normal scale
+% ax.FontSize = 45; % small scale
 set(ax,'LineWidth',1);
 %%%
 
 if save_figures
-    exportgraphics(fig,'thrust.pdf','ContentType','vector');
-    savefig(fig,'thrust.fig');
+    file_name = "thrust-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
 end

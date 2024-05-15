@@ -2,8 +2,10 @@ clc
 clearvars
 close all
 
-interpreter = "tex";
-% interpreter = "latex";
+% interpreter = "tex";
+interpreter = "latex";
+
+save_figures = true;
 
 pxaxwidth = 1110; % [pixels]
 
@@ -45,7 +47,6 @@ ax.Box = 'off';
 ax.Units = "pixels";
 ax.OuterPosition = [0, 0,  pxaxwidth, pxaxheight];
 
-
 if interpreter == "latex"
     ticklab = ax.XTickLabel;
     for j = 1:length(ticklab)
@@ -62,8 +63,11 @@ elseif interpreter == "tex"
     ax.YTickLabel = strrep(ax.YTickLabel,'-',char(8722));
 end
 
-exportgraphics(fig,'traj.pdf','ContentType','vector');
-savefig(fig,'traj.fig');
+if save_figures
+    file_name = "traj-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
+end
 
 Kfine = length(tau);
 
@@ -114,11 +118,14 @@ ax.Units = "pixels";
 ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 
 %%% Magnified inset
-annotation(fig,"rectangle",[0.3820    0.2479    0.1768    0.1255],'LineWidth',1);
+annotation(fig,"rectangle",[0.3803   0.2629    0.1768   0.1255],'LineWidth',1); % normal scale
+% annotation(fig,"rectangle",[0.376    0.3273    0.1768    0.1255],'LineWidth',1); % small scale
+
 % annotation(fig,"arrow",'Position',[0.5638    0.3359    0.0808    0.1684],...
 %            'LineWidth',2,'HeadStyle','plain','HeadLength',9,'HeadWidth',6,'Color',[0.2,0.2,0.2]);
 
-axes('Position',[0.5208,0.5269,0.3273,0.2822]);
+axes('Position',[0.5208,0.5269,0.3273,0.2822]); % normal scale
+% axes('Position',[0.5208,0.5805,0.3273,0.2822]); % small scale
 plot(tvecbar,prb.Tmin*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
 hold on 
 plot(tvecbar,prb.Tmax*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
@@ -132,54 +139,52 @@ xticks([8,12]);
 yticks([0.2,1]);
 
 ax = gca;
-ax.FontSize = 30;
+ax.FontSize = 30; % normal scale
+% ax.FontSize = 45; % small scale
 set(ax,'LineWidth',1);
 %%%
 
-exportgraphics(fig,'acceleration.pdf','ContentType','vector');
-savefig(fig,'acceleration.fig');
-
-
+if save_figures
+    file_name = "acceleration-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
+end
 
 % Speed
-fig = figure('Position',[215,669,407,228]);
-plot(tvecbar,prb.vmax*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
-hold on 
-plot(tvec,nrm_v1,'-k');
-plot(tvecbar,nrm_vbar1,'.k');
-plot(tvec,nrm_v2,'-','Color',[0,0,1,0.5]);
-plot(tvecbar,nrm_vbar2,'.','Color',[0.5,0.5,1]);
-if interpreter == "latex"
-    ylabel('[m s$^{-1}$]');
-    xlabel('$t$ [s]');
-elseif interpreter == "tex"
-    ylabel("[m s^{"+char(8722)+"1}]");
-    xlabel('{\it t} [s]');
-end
+% fig = figure('Position',[215,669,407,228]);
+% plot(tvecbar,prb.vmax*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
+% hold on 
+% plot(tvec,nrm_v1,'-k');
+% plot(tvecbar,nrm_vbar1,'.k');
+% plot(tvec,nrm_v2,'-','Color',[0,0,1,0.5]);
+% plot(tvecbar,nrm_vbar2,'.','Color',[0.5,0.5,1]);
+% if interpreter == "latex"
+%     ylabel('[m s$^{-1}$]');
+%     xlabel('$t$ [s]');
+% elseif interpreter == "tex"
+%     ylabel("[m s^{"+char(8722)+"1}]");
+%     xlabel('{\it t} [s]');
+% end
 % title('Speed');
-xlim([0,tvec(end)])
-ylim([0,1.1*prb.vmax])
-ax = gca;
-ax.FontSize = 20;
+% xlim([0,tvec(end)])
+% ylim([0,1.1*prb.vmax])
 % exportgraphics(fig,'speed.pdf','ContentType','vector');
 
 % Dilation and time
-fig = figure('Position',[215,669,407,228]);
-hold on
-plot(prb.tau,prb.smin*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
-plot(prb.tau,prb.smax*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
-plot(prb.tau,s1.ubar(prb.n+1,:),'.k');
-plot(tau,s1.u(prb.n+1,:),'-k');
-plot(s2.prb.tau,s2.ubar(prb.n+1,:),'.','Color',[0.5,0.5,1]);
-plot(tau,s2.u(prb.n+1,:),'-','Color',[0,0,1,0.5]);
-if interpreter == "latex"
-    xlabel('$\tau$');
-elseif interpreter == "tex"
-    xlabel('\tau');
-end
+% fig = figure('Position',[215,669,407,228]);
+% hold on
+% plot(prb.tau,prb.smin*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
+% plot(prb.tau,prb.smax*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
+% plot(prb.tau,s1.ubar(prb.n+1,:),'.k');
+% plot(tau,s1.u(prb.n+1,:),'-k');
+% plot(s2.prb.tau,s2.ubar(prb.n+1,:),'.','Color',[0.5,0.5,1]);
+% plot(tau,s2.u(prb.n+1,:),'-','Color',[0,0,1,0.5]);
+% if interpreter == "latex"
+%     xlabel('$\tau$');
+% elseif interpreter == "tex"
+%     xlabel('\tau');
+% end
 % title('Dilation factor');
-xlim([0,1])
-ylim([-2,1.05*prb.smax])
-ax = gca;
-ax.FontSize = 20;
+% xlim([0,1])
+% ylim([-2,1.05*prb.smax])
 % exportgraphics(fig,'dilation.pdf','ContentType','vector');

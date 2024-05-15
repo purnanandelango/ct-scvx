@@ -2,8 +2,13 @@ clc
 clearvars
 close all
 
+interpreter = "latex";
+% interpreter = "tex";
+
 pxaxwidth = 1110; % [pixels]
 pxaxheight = pxaxwidth/2.5; % [pixels]
+
+save_figures = true;
 
 % Load solutions
 for k = 6:-1:1
@@ -19,23 +24,40 @@ semilogy(s(4).tvec,max(s(4).cnstr_viol(1:10,:)*100,[],1),'-','DisplayName','10^{
 semilogy(s(2).tvec,max(s(2).cnstr_viol(1:10,:)*100,[],1),'-','DisplayName','10^{-2}','Color',[101, 51, 113, 175]/255);
 % title("Constraint violation");
 leg = legend();
-leg.FontSize = 30;
-leg.Title.String = "\epsilon";
-leg.String = strrep(leg.String,'-',char(8722));
+leg.FontSize = 30; % normal scale
+% leg.FontSize = 45; % small scale
+if interpreter == "tex"
+    leg.Title.String = "\epsilon";
+    leg.String = strrep(leg.String,'-',char(8722));
+elseif interpreter == "latex"
+    leg.Title.String = "$\epsilon$";
+    for k = 1:length(leg.String)
+        leg.String{k} = horzcat('$',leg.String{k},'$');
+    end
+end
 leg.Position = [0.25,0.468,0.089,0.288];
 leg.LineWidth = 1;
 xlim([7,25.5]);
 ylim([1e-2,1e+1]);
 yticks([1e-1,1e1]);
-xlabel('{\itt} [s]');
-ylabel('%');
+if interpreter == "tex"
+    xlabel('{\itt} [s]');
+    ylabel('%');
+else
+    xlabel('$t$ [s]');
+    ylabel('$\%$');
+end
 ax = gca;
 ax.Box = "off";
 ax.Units = "pixels";
 ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 ax.YTickLabel = strrep(ax.YTickLabel,'-',char(8722));
 
-exportgraphics(fig,"cnstr-viol-eps-sweep.pdf","ContentType","vector");
+if save_figures
+    file_name = "cnstr-viol-eps-sweep-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
+end
 
 prb = s(5).prb;
 tau = s(5).tau;
@@ -61,8 +83,13 @@ hold on
 plot(tvecbar,prb.Tmax*ones(1,prb.K),'-','LineWidth',4.5,'Color',[1,0.5,0.5]);
 plot(tvec,nrm_T1,'-k');
 plot(tvecbar,nrm_Tbar1,'.k');
-ylabel("[m s^{"+char(8722)+"2}]");
-xlabel('{\itt} [s]');
+if interpreter == "tex"
+    ylabel("[m s^{"+char(8722)+"2}]");
+    xlabel('{\itt} [s]');
+else
+    ylabel("[m s$^{-2}$]");
+    xlabel('$t$ [s]');    
+end
 xlim([0,tvec(end)])
 ylim([-0.25,1.1*prb.Tmax])
 % title('Acceleration');
@@ -72,5 +99,8 @@ ax.Box = "off";
 ax.Units = "pixels";
 ax.OuterPosition = [0, 0, pxaxwidth, pxaxheight];
 
-exportgraphics(fig,'acceleration-dyn.pdf','ContentType','vector');
-savefig(fig,'acceleration-dyn.fig');
+if save_figures
+    file_name = "acceleration-dyn-notitle-latex";
+    exportgraphics(fig,file_name+".pdf",'ContentType','vector');
+    savefig(fig,file_name+".fig");
+end
