@@ -11,7 +11,7 @@
 - Grasp optimization
 
 ## Citation
-
+[arXiv:2404.16826](https://arxiv.org/abs/2404.16826)
 ```
 @misc{ct-scvx,
   doi = {10.48550/ARXIV.2404.16826},
