@@ -63,8 +63,10 @@ function prb = problem_data_2D(K,scp_iters,w_ep,w_px,cost_factor)
 
     prb.Ei = eye(prb.nx);
     prb.zi = [prb.r1;prb.v1;prb.p1;prb.y1];
+    prb.i_idx   = 1:prb.nx;
     prb.Ef = prb.Ei(1:2*n,:);
     prb.zf = [prb.rK;prb.vK];
+    prb.f_idx   = 1:2*prb.n;    
     prb.term_cost_vec = [zeros(2*n,1);1;0];    
 
     % Initialization generator

@@ -34,8 +34,20 @@ if prb.dyn_obs
         ax.PlotBoxAspectRatio = [1,1,1];        
         ax.XLim = [-80,80];
         ax.YLim = [-30,30];
-        ax.YTickLabel = strrep(ax.YTickLabel,'-',char(8722));
-        ax.XTickLabel = strrep(ax.XTickLabel,'-',char(8722));
+
+        % ax.YTickLabel = strrep(ax.YTickLabel,'-',char(8722));
+        % ax.XTickLabel = strrep(ax.XTickLabel,'-',char(8722));
+
+        % ticklab = ax.XTickLabel;
+        % for j = 1:length(ticklab)
+        %     ticklab{j} = horzcat('$',ticklab{j},'$');
+        % end
+        % ax.XTickLabel = ticklab;
+        % ticklab = ax.YTickLabel;
+        % for j = 1:length(ticklab)
+        %     ticklab{j} = horzcat('$',ticklab{j},'$');
+        % end
+        % ax.YTickLabel = ticklab;        
 
         title('Position');
         ylabel('[m]');
